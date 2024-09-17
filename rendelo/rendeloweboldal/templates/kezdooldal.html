@@ -1,19 +1,108 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kezdőoldal</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <header>
-        <h1>Üdvözöljük a Kezdőoldalon</h1>
+        <div class="header-container">
+            <img src="{% static 'Images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
+            <div class="overlay">
+                <h1 class="header-title">Üdvözöljük a Kezdőoldalon</h1>
+            </div>
+        </div>
     </header>
     <main>
-        <p>Ez egy alap HTML sablon.</p>
+        <nav>
+            <ul class="navbar">
+                <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
+                <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
+                <li><a href="{% url 'admin_view' %}">Admin</a></li>
+            </ul>
+        </nav>
+        <section class="intro">
+            <p>
+                Üdvözöljük az IldiDental magán fogorvosi rendelőben, ahol a legmodernebb technológiák és a szakképzett fogorvosi csapat várja Önt! Rendelőnk célja, hogy a fogászati ellátás ne csupán a kezelésekről, hanem az egészséges és szép mosoly élményéről szóljon. Tudjuk, hogy sokan tartanak a fogorvosi látogatástól, ezért mindent megteszünk azért, hogy barátságos, nyugodt környezetet biztosítsunk, ahol pácienseink bizalommal fordulhatnak hozzánk.
+                Szolgáltatásaink között megtalálható a fogtömés, gyökérkezelés, fogpótlás, fogfehérítés, valamint esztétikai és implantációs beavatkozások is. Rendelőnk minden életkorú páciens számára nyitva áll, legyen szó gyermekekről, fiatal felnőttekről, vagy idősebbekről. Fogorvosaink folyamatosan továbbképzik magukat, hogy naprakészek legyenek a legújabb technikák és kezelési módszerek terén, ezáltal Ön a legmagasabb színvonalú ellátást kaphatja.
+                Minden esetben személyre szabott kezelési tervet készítünk, amely a páciens igényeire, fogainak állapotára és az egészségügyi szempontokra épül. Fontos számunkra a hosszú távú eredmények biztosítása, így nemcsak a jelenlegi problémákat oldjuk meg, hanem segítünk az egészséges szájhigiénia fenntartásában is.
+                Várjuk Önt rendelőnkben, ahol szakértői csapatunk szeretettel és odafigyeléssel áll rendelkezésére!
+            </p>
+        </section>
+        <section class="pricing">
+            <h2>Áraink:</h2>
+            <table>
+                <tr>
+                    <th>Szolgáltatás</th>
+                    <th>Ár</th>
+                </tr>
+                <tr>
+                    <td>Első konzultáció és állapotfelmérés (röntgennel együtt)</td>
+                    <td>15 000 Ft</td>
+                </tr>
+                <tr>
+                    <td>Digitális panorámaröntgen</td>
+                    <td>7 000 Ft</td>
+                </tr>
+                <tr>
+                    <td>Fogtömés (kompozit tömőanyag)</td>
+                    <td>20 000 Ft-tól</td>
+                </tr>
+                <tr>
+                    <td>Fogkő-eltávolítás ultrahangos tisztítással és polírozással</td>
+                    <td>18 000 Ft</td>
+                </tr>
+                <tr>
+                    <td>Gyökérkezelés foganként</td>
+                    <td>45 000 Ft-tól</td>
+                </tr>
+                <tr>
+                    <td>Korona (cirkónium)</td>
+                    <td>70 000 Ft</td>
+                </tr>
+                <tr>
+                    <td>Implantátum beültetés (egy fog esetén)</td>
+                    <td>180 000 Ft-tól</td>
+                </tr>
+                <tr>
+                    <td>Professzionális fogfehérítés (otthoni sínes eljárással)</td>
+                    <td>45 000 Ft</td>
+                </tr>
+                <tr>
+                    <td>Fogszabályozó konzultáció</td>
+                    <td>25 000 Ft</td>
+                </tr>
+                <tr>
+                    <td>Láthatatlan fogszabályozó</td>
+                    <td>300 000 Ft-tól</td>
+                </tr>
+                <tr>
+                    <td>Helyi érzéstelenítés</td>
+                    <td>5 000 Ft</td>
+                </tr>
+                <tr>
+                    <td>Éjszakai harapásemelő sín</td>
+                    <td>30 000 Ft</td>
+                </tr>
+            </table>
+            <p>
+                Az árak változhatnak a beavatkozások egyedi igényei alapján. A végleges kezelési költségeket az állapotfelmérés során határozzuk meg, és részletes tájékoztatást nyújtunk pácienseinknek.
+            </p>
+        </section>
     </main>
     <footer>
+        <div class="contact-info">
+            <h2>Elérhetőségek:</h2>
+            <p><strong>Cím:</strong> 1062 Budapest, Mosoly utca 12.</p>
+            <p><strong>Telefon:</strong> +36 1 789 4567</p>
+            <p><strong>E-mail:</strong> <a href="mailto:kapcsolat@mosolyfogaszat.hu">kapcsolat@mosolyfogaszat.hu</a></p>
+            <p><strong>Nyitvatartás:</strong> Hétfőtől péntekig 8:00-19:00, szombaton 9:00-13:00</p>
+            <p><strong>Parkolás:</strong> Ingyenes parkolási lehetőség a rendelő előtt.</p>
+            <p><strong>Tömegközlekedés:</strong> A 4-es és 6-os villamossal, valamint az M1-es metróval könnyen megközelíthető.</p>
+        </div>
         <p>&copy; 2023 Minden jog fenntartva.</p>
     </footer>
 </body>

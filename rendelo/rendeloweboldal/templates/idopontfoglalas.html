@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Időpontfoglalás</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <img src="{% static 'Images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
+            <div class="overlay">
+                <h1 class="header-title">Időpontfoglalás</h1>
+            </div>
+        </div>
+    </header>
+    <main>
+        <nav>
+            <ul class="navbar">
+                <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
+                <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
+                <li><a href="{% url 'admin_view' %}">Admin</a></li>
+            </ul>
+        </nav>
+        <section class="booking">
+            <h2>Időpontfoglalás</h2>
+            <!-- Időpontfoglalás tartalom ide -->
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Minden jog fenntartva.</p>
+    </footer>
+</body>
+</html>
