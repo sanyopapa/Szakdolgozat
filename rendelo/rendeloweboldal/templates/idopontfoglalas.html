@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Időpontfoglalás</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> <!-- Favicon hozzáadása -->
 </head>
 <body>
     <header>
@@ -24,13 +25,68 @@
                 <li><a href="{% url 'admin_view' %}">Admin</a></li>
             </ul>
         </nav>
+        
+        <!-- Orvosok szekció -->
+        <section class="doctors">
+            <h2>Válasszon orvost</h2>
+            <div class="doctor-list">
+                <a href="#" class="doctor" data-doctor="Dr. Kovács Julianna">
+                    <img src="{% static 'images/fogorvos.jpg' %}" alt="Dr. Kovács Julianna">
+                    <p>Dr. Kovács Julianna</p>
+                </a>
+            </div>
+        </section>
+
         <section class="booking">
             <h2>Időpontfoglalás</h2>
-            <!-- Időpontfoglalás tartalom ide -->
+            <form action="{% url 'book' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" id="selected_doctor" name="selected_doctor" required>
+                
+                <label for="appointment_datetime">Válasszon időpontot:</label>
+                <input type="datetime-local" id="appointment_datetime" name="appointment_datetime" required>
+                
+                <label for="treatment">Válasszon kezelést:</label>
+                <select id="treatment" name="treatment" required>
+                    <option value="fogtomes">Fogtömés</option>
+                    <option value="gyokerkezeles">Gyökérkezelés</option>
+                    <option value="fogpotlas">Fogpótlás</option>
+                    <option value="fogfeherites">Fogfehérítés</option>
+                    <option value="esztetikai">Esztétikai beavatkozás</option>
+                    <option value="implantacio">Implantáció</option>
+                </select>
+                
+                <button type="submit">Időpont foglalása</button>
+            </form>
         </section>
     </main>
     <footer>
+        <div class="contact-info">
+            <h2>Elérhetőségek:</h2>
+            <p><strong>Cím:</strong> 1062 Budapest, Mosoly utca 12.</p>
+            <p><strong>Telefon:</strong> +36 1 789 4567</p>
+            <p><strong>E-mail:</strong> <a href="mailto:kapcsolat@mosolyfogaszat.hu">kapcsolat@mosolyfogaszat.hu</a></p>
+            <p><strong>Nyitvatartás:</strong> Hétfőtől péntekig 8:00-19:00, szombaton 9:00-13:00</p>
+            <p><strong>Parkolás:</strong> Ingyenes parkolási lehetőség a rendelő előtt.</p>
+            <p><strong>Tömegközlekedés:</strong> A 4-es és 6-os villamossal, valamint az M1-es metróval könnyen megközelíthető.</p>
+        </div>
         <p>&copy; 2023 Minden jog fenntartva.</p>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const doctorLinks = document.querySelectorAll('.doctor');
+            const selectedDoctorInput = document.getElementById('selected_doctor');
+            
+            doctorLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const doctorName = this.getAttribute('data-doctor');
+                    selectedDoctorInput.value = doctorName;
+                    doctorLinks.forEach(link => link.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+        });
+    </script>
 </body>
 </html>

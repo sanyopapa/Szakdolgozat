@@ -1,3 +1,91 @@
+/* Orvosok szekció stílusai */
+section.doctors {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+section.doctors .doctor-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+section.doctors .doctor {
+    text-align: center;
+    text-decoration: none;
+    color: black;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+section.doctors .doctor img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+section.doctors .doctor p {
+    margin: 0;
+    padding: 10px;
+    background-color: #f2f2f2;
+}
+
+section.doctors .doctor:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+section.doctors .doctor.selected {
+    border-color: #333;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Időpontfoglalás szekció stílusai */
+section.booking {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+section.booking form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+section.booking label {
+    font-weight: bold;
+}
+
+section.booking input,
+section.booking select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+section.booking button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+section.booking button:hover {
+    background-color: #555;
+}
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
@@ -126,5 +214,22 @@ footer {
 }
 
 .contact-info a:hover {
+    text-decoration: underline;
+}
+.contact-info a[href^="mailto:"] {
+    color: yellow; 
+    text-decoration: none;
+}
+
+.contact-info a[href^="mailto:"]:hover {
+    text-decoration: underline;
+}
+
+a[href^="mailto:"] {
+    color: yellow; 
+    text-decoration: none;
+}
+
+a[href^="mailto:"]:hover {
     text-decoration: underline;
 }
