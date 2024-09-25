@@ -74,6 +74,16 @@ WSGI_APPLICATION = 'rendelo.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'fhir_database',  # Az adatbázis neve
+#         'USER': 'felhasznalonev',  # Az adatbázis felhasználó neve
+#         'PASSWORD': 'jelszo',  # Az adatbázis felhasználó jelszava
+#         'HOST': 'localhost',  # Az adatbázis szerver címe
+#         'PORT': '5432',  # Az adatbázis szerver portja
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -119,6 +129,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    BASE_DIR / "rendeloweboldal" / "static",
 ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
