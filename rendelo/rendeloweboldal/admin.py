@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Doctor, Treatment, Appointment, Patient
+from .models import RendeloUser, Doctor, Treatment, Appointment, Patient
 
-admin.site.register(User, UserAdmin)
+admin.site.register(RendeloUser)
 admin.site.register(Doctor)
 admin.site.register(Treatment)
 admin.site.register(Appointment)

@@ -1,35 +1,31 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
-from .forms import RegistrationForm, LoginForm
+from django import forms
+from .models import RendeloUser
 
-def register_view(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password1']
-            )
-            login(request, user)
-            return redirect('home') 
-    else:
-        form = RegistrationForm()
-    return render(request, 'registration.html', {'form': form})
+class RegistrationForm(forms.ModelForm):
+    class Meta:
+        model = RendeloUser
+        fields = ['name', 'email', 'mobile_number', 'password1', 'password2']
+    
+    name = forms.CharField(max_length=255, label='Név')
+    email = forms.EmailField(label='Email cím')
+    mobile_number = forms.CharField(max_length=11, label='Telefonszám')
+    password1 = forms.CharField(widget=forms.PasswordInput, label='Jelszó')
+    password2 = forms.CharField(widget=forms.PasswordInput, label='Jelszó megerősítése')
 
-def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=email, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('home')  
-            else:
-                form.add_error(None, 'Invalid email or password')
-    else:
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("A két jelszó nem egyezik meg.")
+        return password2
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+        if commit:
+            user.save()
+        return user
+
+class LoginForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
