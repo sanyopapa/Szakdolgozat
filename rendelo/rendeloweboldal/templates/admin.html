@@ -23,6 +23,12 @@
                 <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
                 <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
                 <li><a href="{% url 'admin_view' %}">Admin</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'profile' %}">Profil</a></li>
+                    <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
+                {% endif %}
             </ul>
         </nav>
         <section class="admin">

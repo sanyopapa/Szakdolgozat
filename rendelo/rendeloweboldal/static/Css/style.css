@@ -284,3 +284,36 @@ section.register button, section.login button {
 section.register button:hover, section.login button:hover {
     background-color: #555;
 }
+section.login button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+section.login button:hover {
+    background-color: #555;
+}
+
+section.login a.button-like {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 1em;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 10px; /* Optional: Adds some space between the button and the link */
+}
+
+section.login a.button-like:hover {
+    background-color: #555;
+}

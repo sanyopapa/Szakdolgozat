@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Appointment
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from .forms import RegistrationForm, LoginForm
 from .models import RendeloUser
+from django.contrib.auth.decorators import login_required
 
 def kezdooldal(request):
     return render(request, 'kezdooldal.html')
@@ -26,23 +27,32 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)  # User already created with form.save()
-            return HttpResponse('Sikeres regisztráció')
+            return redirect('/')
     else:
         form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
 
 def login_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=email, password=password)
+            email = form.cleaned_data.get("email")
+            password = form.cleaned_data.get("password")
+            user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                return redirect('/')
             else:
-                form.add_error(None, 'Invalid email or password')
+                form.add_error(None, "Helytelen bejelentkezési adatok.")
     else:
         form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+
+    return render(request, "login.html", {"form": form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
+
+@login_required
+def profile_view(request):
+    return render(request, 'profile.html', {'user': request.user})

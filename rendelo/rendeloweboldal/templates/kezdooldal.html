@@ -23,8 +23,15 @@
                 <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
                 <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
                 <li><a href="{% url 'admin_view' %}">Admin</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'profile' %}">Profil</a></li>
+                    <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
+                {% endif %}
             </ul>
         </nav>
+        
         <section class="intro">
             <p>
                 Üdvözöljük az IldiDental magán fogorvosi rendelőben, ahol a legmodernebb technológiák és a szakképzett fogorvosi csapat várja Önt! Rendelőnk célja, hogy a fogászati ellátás ne csupán a kezelésekről, hanem az egészséges és szép mosoly élményéről szóljon. Tudjuk, hogy sokan tartanak a fogorvosi látogatástól, ezért mindent megteszünk azért, hogy barátságos, nyugodt környezetet biztosítsunk, ahol pácienseink bizalommal fordulhatnak hozzánk.

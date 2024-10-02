@@ -84,6 +84,8 @@ WSGI_APPLICATION = 'rendelo.wsgi.application'
 #         'PORT': '5432',  # Az adatbázis szerver portja
 #     }
 # }
+AUTH_USER_MODEL = 'rendeloweboldal.RendeloUser'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -136,6 +138,3 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-AUTH_USER_MODEL = 'rendeloweboldal.RendeloUser'
