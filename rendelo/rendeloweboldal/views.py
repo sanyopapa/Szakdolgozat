@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Appointment
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login as auth_login, authenticate, logout
 from .forms import RegistrationForm, LoginForm
 from .models import RendeloUser
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.backends import ModelBackend
+
 
 def kezdooldal(request):
     return render(request, 'kezdooldal.html')
@@ -26,7 +28,8 @@ def register_view(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # User already created with form.save()
+            # Add the backend argument
+            auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('/')
     else:
         form = RegistrationForm()
@@ -40,8 +43,8 @@ def login_view(request):
             password = form.cleaned_data.get("password")
             user = authenticate(request, email=email, password=password)
             if user is not None:
-                login(request, user)
-                return redirect('/')
+                auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                return redirect('home')
             else:
                 form.add_error(None, "Helytelen bejelentkezési adatok.")
     else:

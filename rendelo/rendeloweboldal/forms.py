@@ -4,9 +4,9 @@ from .models import RendeloUser
 class RegistrationForm(forms.ModelForm):
     class Meta:
         model = RendeloUser
-        fields = ['name', 'email', 'mobile_number', 'password1', 'password2']
+        fields = ['username', 'email', 'mobile_number', 'password1', 'password2']
     
-    name = forms.CharField(max_length=255, label='Név')
+    username = forms.CharField(max_length=255, label='Felhasználónév')
     email = forms.EmailField(label='Email cím')
     mobile_number = forms.CharField(max_length=11, label='Telefonszám')
     password1 = forms.CharField(widget=forms.PasswordInput, label='Jelszó')
@@ -27,5 +27,5 @@ class RegistrationForm(forms.ModelForm):
         return user
 
 class LoginForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.CharField(max_length=255, label='Email Cím')
+    password = forms.CharField(widget=forms.PasswordInput, label='Jelszó')

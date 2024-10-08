@@ -3,10 +3,14 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
 class RendeloUser(AbstractUser):
-    name = models.TextField()
     email = models.EmailField(unique=True)
     mobile_number = models.CharField(unique=True, max_length=11)
-    is_admin = models.BooleanField(default=False, help_text='Designates whether the user is an admin.')
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'mobile_number']
+
+    def __str__(self):
+        return self.email
 
 def get_current_time():
     return timezone.now().time().isoformat()
