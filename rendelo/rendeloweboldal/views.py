@@ -1,25 +1,27 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Appointment, Treatment
+from .models import Appointment, Treatment, Doctor  
 from django.contrib.auth import login as auth_login, authenticate, logout
 from .forms import RegistrationForm, LoginForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.backends import ModelBackend
 
-
 def kezdooldal(request):
     treatments = Treatment.objects.all()  
     return render(request, 'kezdooldal.html', {'treatments': treatments})  
-
 
 def idopontfoglalas(request):
     if request.method == 'POST':
         appointment_datetime = request.POST['appointment_datetime']
         treatment = request.POST['treatment']
+        selected_doctor = request.POST['selected_doctor']
         # Itt mentem az adatbázisba
-        Appointment.objects.create(datetime=appointment_datetime, treatment=treatment)
+        doctor = Doctor.objects.get(name=selected_doctor)
+        Appointment.objects.create(datetime=appointment_datetime, treatment=treatment, doctor=doctor)
         return redirect('home')
-    return render(request, 'idopontfoglalas.html')
+    doctors = Doctor.objects.all()
+    treatments = Treatment.objects.all()
+    return render(request, 'idopontfoglalas.html', {'doctors': doctors, 'treatments': treatments})
 
 def admin_view(request):
     return render(request, 'admin.html')

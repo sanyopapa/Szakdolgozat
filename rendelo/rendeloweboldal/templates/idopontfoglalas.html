@@ -38,10 +38,12 @@
         <section class="doctors">
             <h2>Válasszon orvost</h2>
             <div class="doctor-list">
-                <a href="#" class="doctor" data-doctor="Dr. Kovács Julianna">
-                    <img src="{% static 'images/fogorvos.jpg' %}" alt="Dr. Kovács Julianna">
-                    <p>Dr. Kovács Julianna</p>
+                {% for doctor in doctors %}
+                <a href="#" class="doctor" data-doctor="{{ doctor.name }}">
+                    <img src="{{ doctor.profile_picture.url }}" alt="{{ doctor.name }}">
+                    <p>{{ doctor.name }}</p>
                 </a>
+                {% endfor %}
             </div>
         </section>
 
@@ -56,12 +58,9 @@
                 
                 <label for="treatment">Válasszon kezelést:</label>
                 <select id="treatment" name="treatment" required>
-                    <option value="fogtomes">Fogtömés</option>
-                    <option value="gyokerkezeles">Gyökérkezelés</option>
-                    <option value="fogpotlas">Fogpótlás</option>
-                    <option value="fogfeherites">Fogfehérítés</option>
-                    <option value="esztetikai">Esztétikai beavatkozás</option>
-                    <option value="implantacio">Implantáció</option>
+                    {% for treatment in treatments %}
+                    <option value="{{ treatment.id }}">{{ treatment.title }}</option>
+                    {% endfor %}
                 </select>
                 
                 <button type="submit">Időpont foglalása</button>

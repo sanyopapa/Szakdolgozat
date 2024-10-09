@@ -17,7 +17,7 @@ def get_current_time():
 
 class Doctor(models.Model):
     name = models.CharField(max_length=255)
-    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='doctor_pictures/', null=True, blank=True)
 
 class Treatment(models.Model):
     title = models.CharField(max_length=255)
