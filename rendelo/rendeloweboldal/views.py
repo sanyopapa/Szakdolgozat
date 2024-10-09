@@ -1,15 +1,16 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Appointment
+from .models import Appointment, Treatment
 from django.contrib.auth import login as auth_login, authenticate, logout
 from .forms import RegistrationForm, LoginForm
-from .models import RendeloUser
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.backends import ModelBackend
 
 
 def kezdooldal(request):
-    return render(request, 'kezdooldal.html')
+    treatments = Treatment.objects.all()  
+    return render(request, 'kezdooldal.html', {'treatments': treatments})  
+
 
 def idopontfoglalas(request):
     if request.method == 'POST':

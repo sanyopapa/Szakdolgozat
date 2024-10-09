@@ -49,54 +49,12 @@
                     <th>Szolgáltatás</th>
                     <th>Ár</th>
                 </tr>
+                {% for treatment in treatments %}
                 <tr>
-                    <td>Első konzultáció és állapotfelmérés (röntgennel együtt)</td>
-                    <td>15 000 Ft</td>
+                    <td>{{ treatment.title }}</td>
+                    <td>{{ treatment.price }} Ft</td>
                 </tr>
-                <tr>
-                    <td>Digitális panorámaröntgen</td>
-                    <td>7 000 Ft</td>
-                </tr>
-                <tr>
-                    <td>Fogtömés (kompozit tömőanyag)</td>
-                    <td>20 000 Ft-tól</td>
-                </tr>
-                <tr>
-                    <td>Fogkő-eltávolítás ultrahangos tisztítással és polírozással</td>
-                    <td>18 000 Ft</td>
-                </tr>
-                <tr>
-                    <td>Gyökérkezelés foganként</td>
-                    <td>45 000 Ft-tól</td>
-                </tr>
-                <tr>
-                    <td>Korona (cirkónium)</td>
-                    <td>70 000 Ft</td>
-                </tr>
-                <tr>
-                    <td>Implantátum beültetés (egy fog esetén)</td>
-                    <td>180 000 Ft-tól</td>
-                </tr>
-                <tr>
-                    <td>Professzionális fogfehérítés (otthoni sínes eljárással)</td>
-                    <td>45 000 Ft</td>
-                </tr>
-                <tr>
-                    <td>Fogszabályozó konzultáció</td>
-                    <td>25 000 Ft</td>
-                </tr>
-                <tr>
-                    <td>Láthatatlan fogszabályozó</td>
-                    <td>300 000 Ft-tól</td>
-                </tr>
-                <tr>
-                    <td>Helyi érzéstelenítés</td>
-                    <td>5 000 Ft</td>
-                </tr>
-                <tr>
-                    <td>Éjszakai harapásemelő sín</td>
-                    <td>30 000 Ft</td>
-                </tr>
+                {% endfor %}
             </table>
             <p>
                 Az árak változhatnak a beavatkozások egyedi igényei alapján. A végleges kezelési költségeket az állapotfelmérés során határozzuk meg, és részletes tájékoztatást nyújtunk pácienseinknek.
