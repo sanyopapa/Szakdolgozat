@@ -1,23 +1,28 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Appointment, Treatment, Doctor  
+from .models import Appointment, Treatment, Doctor, Patient
 from django.contrib.auth import login as auth_login, authenticate, logout
 from .forms import RegistrationForm, LoginForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.backends import ModelBackend
 
 def kezdooldal(request):
-    treatments = Treatment.objects.all()  
-    return render(request, 'kezdooldal.html', {'treatments': treatments})  
+    treatments = Treatment.objects.all()
+    return render(request, 'kezdooldal.html', {'treatments': treatments})
 
 def idopontfoglalas(request):
     if request.method == 'POST':
         appointment_datetime = request.POST['appointment_datetime']
-        treatment = request.POST['treatment']
-        selected_doctor = request.POST['selected_doctor']
-        # Itt mentem az adatbázisba
-        doctor = Doctor.objects.get(name=selected_doctor)
-        Appointment.objects.create(datetime=appointment_datetime, treatment=treatment, doctor=doctor)
+        treatment_id = request.POST['treatment']
+        selected_doctor_id = request.POST['selected_doctor']
+        doctor = Doctor.objects.get(id=selected_doctor_id)
+        treatment = Treatment.objects.get(id=treatment_id)
+        Appointment.objects.create(
+            start=appointment_datetime,
+            treatment=treatment,
+            practitioner=doctor,
+            patient=request.user.patient  # Assuming the user has a related patient object
+        )
         return redirect('home')
     doctors = Doctor.objects.all()
     treatments = Treatment.objects.all()
@@ -31,7 +36,6 @@ def register_view(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Add the backend argument
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('/')
     else:

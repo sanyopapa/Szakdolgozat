@@ -1,5 +1,5 @@
 from django import forms
-from .models import RendeloUser
+from .models import RendeloUser, Patient
 
 class RegistrationForm(forms.ModelForm):
     class Meta:
@@ -24,6 +24,7 @@ class RegistrationForm(forms.ModelForm):
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
+            Patient.objects.create(id=user.id, name=user.username)
         return user
 
 class LoginForm(forms.Form):

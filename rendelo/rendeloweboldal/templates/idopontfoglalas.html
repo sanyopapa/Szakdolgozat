@@ -33,39 +33,42 @@
                 {% endif %}
             </ul>
         </nav>
-        
-        <!-- Orvosok szekció -->
-        <section class="doctors">
-            <h2>Válasszon orvost</h2>
-            <div class="doctor-list">
-                {% for doctor in doctors %}
-                <a href="#" class="doctor" data-doctor="{{ doctor.name }}">
-                    <img src="{{ doctor.profile_picture.url }}" alt="{{ doctor.name }}">
-                    <p>{{ doctor.name }}</p>
-                </a>
-                {% endfor %}
-            </div>
-        </section>
-
-        <section class="booking">
-            <h2>Időpontfoglalás</h2>
-            <form action="{% url 'book' %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" id="selected_doctor" name="selected_doctor" required>
-                
-                <label for="appointment_datetime">Válasszon időpontot:</label>
-                <input type="datetime-local" id="appointment_datetime" name="appointment_datetime" required>
-                
-                <label for="treatment">Válasszon kezelést:</label>
-                <select id="treatment" name="treatment" required>
-                    {% for treatment in treatments %}
-                    <option value="{{ treatment.id }}">{{ treatment.title }}</option>
+        {% if user.is_authenticated %}
+            <section class="doctors">
+                <h2>Válasszon orvost</h2>
+                <div class="doctor-list">
+                    {% for doctor in doctors %}
+                    <a href="#" class="doctor" data-doctor="{{ doctor.id }}">
+                        <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}">
+                        <p>{{ doctor.name }}</p>
+                    </a>
                     {% endfor %}
-                </select>
-                
-                <button type="submit">Időpont foglalása</button>
-            </form>
-        </section>
+                </div>
+            </section>
+
+            <section class="booking">
+                <h2>Időpontfoglalás</h2>
+                <form action="{% url 'book' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="selected_doctor" name="selected_doctor" required>
+                    
+                    <label for="treatment">Válasszon kezelést:</label>
+                    <select id="treatment" name="treatment" required>
+                        {% for treatment in treatments %}
+                        <option value="{{ treatment.id }}">{{ treatment.description }} - {{ treatment.price }} Ft</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="appointment_datetime">Válasszon időpontot:</label>
+                    <input type="datetime-local" id="appointment_datetime" name="appointment_datetime" required>
+                    
+                    <button type="submit">Időpont foglalása</button>
+                </form>
+            </section>
+        {% else %}
+            <h2>Időpont foglaláshoz kérem, jelentkezzen be, vagy hozzon létre egy új fiókot!</h2>
+        {% endif %}
+
     </main>
     <footer>
         <div class="contact-info">
@@ -87,8 +90,8 @@
             doctorLinks.forEach(link => {
                 link.addEventListener('click', function(event) {
                     event.preventDefault();
-                    const doctorName = this.getAttribute('data-doctor');
-                    selectedDoctorInput.value = doctorName;
+                    const doctorId = this.getAttribute('data-doctor');
+                    selectedDoctorInput.value = doctorId;
                     doctorLinks.forEach(link => link.classList.remove('selected'));
                     this.classList.add('selected');
                 });
