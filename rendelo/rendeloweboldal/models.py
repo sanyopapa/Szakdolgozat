@@ -39,7 +39,6 @@ class Treatment(models.Model):
     duration = models.DurationField(null=True, blank=True)  # Kezelés hossza (opcionális)
     price = models.DecimalField(max_digits=10, decimal_places=0)  # Ár
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='treatments', null=True, blank=True)  # Kapcsolat a pácienssel
-    performer = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='performed_treatments', null=True, blank=True)  # Kapcsolat az orvossal (nem kötelező)
 
     def __str__(self):
         return self.description

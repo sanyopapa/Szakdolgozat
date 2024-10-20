@@ -30,3 +30,24 @@ class RegistrationForm(forms.ModelForm):
 class LoginForm(forms.Form):
     email = forms.CharField(max_length=255, label='Email Cím')
     password = forms.CharField(widget=forms.PasswordInput, label='Jelszó')
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = RendeloUser
+        fields = ['username', 'email', 'mobile_number']
+    
+    username = forms.CharField(max_length=255, label='Felhasználónév')
+    email = forms.EmailField(label='Email cím')
+    mobile_number = forms.CharField(max_length=11, label='Telefonszám')
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if RendeloUser.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Ez az email cím már foglalt.")
+        return email
+
+    def clean_mobile_number(self):
+        mobile_number = self.cleaned_data.get('mobile_number')
+        if RendeloUser.objects.filter(mobile_number=mobile_number).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Ez a telefonszám már foglalt.")
+        return mobile_number

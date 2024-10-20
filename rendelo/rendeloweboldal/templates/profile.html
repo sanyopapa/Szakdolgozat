@@ -31,7 +31,14 @@
                 {% endif %}
             </ul>
         </nav>
-        
+        <section class="profile">
+            <h2>Profil adatok</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Módosítás</button>
+            </form>
+        </section>
     </main>
     <footer>
         <div class="contact-info">

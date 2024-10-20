@@ -1,4 +1,3 @@
-
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
@@ -126,9 +125,10 @@ footer {
     text-decoration: none;
 }
 
-.contact-info a:hover {
+contact-info a:hover {
     text-decoration: underline;
 }
+
 .contact-info a[href^="mailto:"] {
     color: yellow; 
     text-decoration: none;
@@ -150,6 +150,7 @@ a[href^="mailto:"] {
 a[href^="mailto:"]:hover {
     text-decoration: underline;
 }
+
 /* Orvosok szekció stílusai */
 section.doctors {
     background-color: white;
@@ -239,6 +240,7 @@ section.booking button {
 section.booking button:hover {
     background-color: #555;
 }
+
 /* Regisztráció és bejelentkezés szekció stílusai */
 section.register, section.login {
     background-color: white;
@@ -284,6 +286,7 @@ section.register button, section.login button {
 section.register button:hover, section.login button:hover {
     background-color: #555;
 }
+
 section.login button {
     padding: 10px 20px;
     border: none;
@@ -311,9 +314,55 @@ section.login a.button-like {
     text-decoration: none;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-left: 10px; /* Optional: Adds some space between the button and the link */
+    margin-left: 10px; 
 }
 
 section.login a.button-like:hover {
+    background-color: #555;
+}
+
+/* Profil szekció stílusai */
+section.profile {
+    background-color: white;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+}
+
+section.profile h2 {
+    text-align: center;
+}
+
+section.profile form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+section.profile label {
+    font-weight: bold;
+}
+
+section.profile input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+section.profile button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+section.profile button:hover {
     background-color: #555;
 }
