@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from uuid import uuid4
 
 class RendeloUser(AbstractUser):
-    id = models.CharField(max_length=64, primary_key=True)  # FHIR resource identifier
+    id = models.CharField(max_length=64, primary_key=True, default=str(uuid4()))  # FHIR resource identifier
     email = models.EmailField(unique=True)
     mobile_number = models.CharField(unique=True, max_length=11)
+    patient = models.OneToOneField('Patient', on_delete=models.CASCADE, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'mobile_number']
@@ -44,7 +46,7 @@ class Treatment(models.Model):
         return self.description
 
 class Appointment(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)  # FHIR resource identifier
+    id = models.CharField(max_length=64, primary_key=True, default=str(uuid4()))  # FHIR resource identifier
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)  # Link to Patient resource
     practitioner = models.ForeignKey(Doctor, on_delete=models.CASCADE)  # Link to Practitioner resource
     treatment = models.ForeignKey(Treatment, on_delete=models.SET_NULL, null=True, blank=True)  # Link to Treatment
