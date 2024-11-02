@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from .models import Appointment, Treatment, Doctor, Patient
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from .models import Appointment, Treatment, Doctor, Patient, RendeloUser
 from django.contrib.auth import login as auth_login, authenticate, logout
 from .forms import RegistrationForm, LoginForm, ProfileForm
 from django.contrib.auth.decorators import login_required
@@ -12,21 +12,23 @@ def kezdooldal(request):
 
 def idopontfoglalas(request):
     if request.method == 'POST':
-        appointment_datetime = request.POST['appointment_datetime']
-        treatment_id = request.POST['treatment']
-        selected_doctor_id = request.POST['selected_doctor']
-        doctor = Doctor.objects.get(id=selected_doctor_id)
-        treatment = Treatment.objects.get(id=treatment_id)
-        Appointment.objects.create(
-            start=appointment_datetime,
-            treatment=treatment,
-            practitioner=doctor,
-            patient=request.user.patient  # Assuming the user has a related patient object
-        )
-        return redirect('home')
-    doctors = Doctor.objects.all()
-    treatments = Treatment.objects.all()
-    return render(request, 'idopontfoglalas.html', {'doctors': doctors, 'treatments': treatments})
+        rendelo_user_id = request.user.id
+        try:
+            patient = Patient.objects.get(id=rendelo_user_id)  
+        except Patient.DoesNotExist:
+            return HttpResponse("Nincs páciens rekord a felhasználóhoz társítva.", status=400)
+        try:
+            Appointment.objects.create(
+                patient=patient,
+                practitioner_id=request.POST['selected_doctor'],
+                treatment_id=request.POST['treatment'],
+                start=request.POST['appointment_datetime']
+            )
+            return redirect('home')
+        except Exception as e:
+            return JsonResponse({"error": str(e), "user_id": rendelo_user_id, "patient_id": patient.id}, status=400)
+        
+    return render(request, 'idopontfoglalas.html', {'doctors': Doctor.objects.all(), 'treatments': Treatment.objects.all()})
 
 def admin_view(request):
     return render(request, 'admin.html')

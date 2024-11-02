@@ -16,7 +16,7 @@ class RendeloUser(AbstractUser):
         return self.email
 
 class Patient(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)  # FHIR resource identifier
+    id = models.CharField(max_length=64, primary_key=True)  # same as RendeloUser.id
     name = models.CharField(max_length=255)  # FHIR 'name' field
     gender = models.CharField(max_length=10, choices=[('male', 'Male'), ('female', 'Female')])
     birthDate = models.DateField(null=True, blank=True)  # FHIR 'birthDate' field

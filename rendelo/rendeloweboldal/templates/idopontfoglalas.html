@@ -33,7 +33,9 @@
                 {% endif %}
             </ul>
         </nav>
-        {% if user.is_authenticated %}
+        {%if user.is_superuser%}
+            <h2>Admin fiókkal nem kérhetsz időpontot!</h2>
+        {%elif user.is_authenticated %}
             <section class="doctors">
                 <h2>Válasszon orvost</h2>
                 <div class="doctor-list">
