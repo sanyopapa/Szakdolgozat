@@ -48,8 +48,8 @@ class Appointment(models.Model):
     practitioner = models.ForeignKey(Doctor, on_delete=models.CASCADE)  # Link to Practitioner resource
     treatment = models.ForeignKey(Treatment, on_delete=models.SET_NULL, null=True, blank=True)  # Link to Treatment
     start = models.DateTimeField(default=timezone.now)  # FHIR 'start' field
-    end = models.DateTimeField(null=True, blank=True)  # FHIR 'end' field
-    status = models.CharField(max_length=20, default='booked', choices=[('booked', 'Booked'), ('cancelled', 'Cancelled')])
+    end = models.DateTimeField(default=timezone.now)  # FHIR 'end' field
+    status = models.CharField(max_length=20, default='available', choices=[('available', 'Available'), ('booked', 'Booked'), ('cancelled', 'Cancelled')])
 
     def __str__(self):
         return f"Appointment for {self.patient} with {self.practitioner.name}"

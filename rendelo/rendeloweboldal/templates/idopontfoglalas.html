@@ -57,14 +57,26 @@
                     <label for="treatment">Válasszon kezelést:</label>
                     <select id="treatment" name="treatment" required>
                         {% for treatment in treatments %}
-                        <option value="{{ treatment.id }}">{{ treatment.description }} - {{ treatment.price }} Ft</option>
+                        <option value="{{ treatment.id }}" data-duration="{{ treatment.duration.total_seconds }}">{{ treatment.description }}</option>
                         {% endfor %}
                     </select>
 
-                    <label for="appointment_datetime">Válasszon időpontot:</label>
-                    <input type="datetime-local" id="appointment_datetime" name="appointment_datetime" required>
-                    
-                    <button type="submit">Időpont foglalása</button>
+                    <label for="appointment_date">Dátum:</label>
+                    <input type="date" id="appointment_date" name="appointment_date" required>
+
+                    <div id="time_slots">
+                        <div id="morning_section" style="display: none;">
+                            <h3>Délelőtt</h3>
+                            <div id="morning_slots" class="time-slots"></div>
+                        </div>
+                        <div id="afternoon_section" style="display: none;">
+                            <h3>Délután</h3>
+                            <div id="afternoon_slots" class="time-slots"></div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="appointment_datetime" name="appointment_datetime">
+                    <button type="submit" id="submit_button" disabled>Foglalás</button>
                 </form>
             </section>
         {% else %}
@@ -96,8 +108,60 @@
                     selectedDoctorInput.value = doctorId;
                     doctorLinks.forEach(link => link.classList.remove('selected'));
                     this.classList.add('selected');
+                    updateAvailableSlots();
                 });
             });
+
+            document.getElementById('treatment').addEventListener('change', function() {
+                const duration = this.options[this.selectedIndex].getAttribute('data-duration');
+                if (duration) {
+                    document.getElementById('submit_button').disabled = false;
+                } else {
+                    document.getElementById('submit_button').disabled = true;
+                }
+            });
+
+            document.getElementById('appointment_date').addEventListener('change', function() {
+                updateAvailableSlots();
+            });
+
+            function updateAvailableSlots() {
+                const selectedDoctor = document.getElementById('selected_doctor').value;
+                const selectedDate = document.getElementById('appointment_date').value;
+                if (selectedDoctor && selectedDate) {
+                    fetch(`/get_available_slots/?doctor=${selectedDoctor}&date=${selectedDate}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const morningSection = document.getElementById('morning_section');
+                            const afternoonSection = document.getElementById('afternoon_section');
+                            const morningSlotsDiv = document.getElementById('morning_slots');
+                            const afternoonSlotsDiv = document.getElementById('afternoon_slots');
+                            morningSlotsDiv.innerHTML = '';
+                            afternoonSlotsDiv.innerHTML = '';
+                            let morningSlotsExist = false;
+                            let afternoonSlotsExist = false;
+                            data.slots.forEach(slot => {
+                                const button = document.createElement('button');
+                                button.type = 'button';
+                                button.textContent = slot.time;
+                                button.disabled = !slot.available;
+                                button.addEventListener('click', function() {
+                                    document.getElementById('appointment_datetime').value = `${selectedDate} ${slot.time}`;
+                                    document.getElementById('submit_button').disabled = false;
+                                });
+                                if (parseInt(slot.time.split(':')[0]) < 12) {
+                                    morningSlotsDiv.appendChild(button);
+                                    morningSlotsExist = true;
+                                } else {
+                                    afternoonSlotsDiv.appendChild(button);
+                                    afternoonSlotsExist = true;
+                                }
+                            });
+                            morningSection.style.display = morningSlotsExist ? 'block' : 'none';
+                            afternoonSection.style.display = afternoonSlotsExist ? 'block' : 'none';
+                        });
+                }
+            }
         });
     </script>
 </body>

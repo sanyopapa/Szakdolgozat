@@ -11,7 +11,7 @@
 <body>
     <header>
         <div class="header-container">
-            <img src="{% static 'Images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
+            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
             <div class="overlay">
                 <h1 class="header-title">Profil</h1>
             </div>
@@ -30,6 +30,8 @@
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'profile' %}">Profil</a></li>
                     <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -41,17 +43,16 @@
                 {% if patient_form %}
                     {{ patient_form.as_p }}
                 {% endif %}
-                <button type="submit">Módosítás</button>
+                <button type="submit">Mentés</button>
             </form>
-            {% if user.is_authenticated and not user.is_superuser %}
-                <h2>Időpontok</h2>
-            {% endif %}
+
+            <h2>Időpontok</h2>
             <ul>
                 {% for appointment in appointments %}
                     <li>
                         {{ appointment.start }} - {{ appointment.practitioner.name }} - {{ appointment.treatment.description }}
-                        {% if appointment.start > now %}
-                            <form method="post" action="{% url 'cancel_appointment' appointment.id %}">
+                        {% if appointment.start|date:"Y-m-d" > now|date:"Y-m-d" %}
+                            <form method="post" action="{% url 'cancel_appointment' appointment.id %}" style="display:inline;" onsubmit="return confirm('Biztosan le akarja mondani az időpontot?');">
                                 {% csrf_token %}
                                 <button type="submit">Lemondás</button>
                             </form>

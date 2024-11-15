@@ -5,8 +5,8 @@ from .models import Appointment, Treatment, Doctor, Patient, RendeloUser
 from django.contrib.auth import login as auth_login, authenticate, logout
 from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.backends import ModelBackend
 from django.utils import timezone
+from datetime import timedelta
 
 def kezdooldal(request):
     treatments = Treatment.objects.all()
@@ -18,13 +18,31 @@ def idopontfoglalas(request):
 
     if request.method == 'POST':
         try:
-            Appointment.objects.create(
-                id=str(uuid4()),  
-                patient=request.user.id,
-                practitioner_id=request.POST['selected_doctor'],
-                treatment_id=request.POST['treatment'],
-                start=request.POST['appointment_datetime']
-            )
+            treatment = Treatment.objects.get(id=request.POST['treatment'])
+            start_time = timezone.datetime.strptime(request.POST['appointment_datetime'], '%Y-%m-%d %H:%M')
+            end_time = start_time + treatment.duration
+
+            # Ellenőrizzük, hogy az összes szükséges időpont szabad-e
+            current_time = start_time
+            while current_time < end_time:
+                if Appointment.objects.filter(practitioner_id=request.POST['selected_doctor'], start=current_time, status='booked').exists():
+                    return JsonResponse({"error": "Az időpont már foglalt."}, status=400)
+                current_time += timedelta(minutes=15)
+
+            # Foglaljuk le az összes szükséges időpontot
+            current_time = start_time
+            while current_time < end_time:
+                Appointment.objects.create(
+                    id=str(uuid4()),
+                    patient=request.user.id,
+                    practitioner_id=request.POST['selected_doctor'],
+                    treatment=treatment,
+                    start=current_time,
+                    end=current_time + timedelta(minutes=15),
+                    status='booked'
+                )
+                current_time += timedelta(minutes=15)
+
             return redirect('home')
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
@@ -91,14 +109,33 @@ def profile_view(request):
         if not user.is_superuser and not hasattr(user, 'doctor'):
             patient_form = PatientForm(instance=patient)
     
-    appointments = Appointment.objects.filter(patient=user.id)
-    return render(request, 'profile.html', {'form': form, 'patient_form': patient_form, 'appointments': appointments})
+    appointments = Appointment.objects.filter(patient=user.id, status='booked')
+    now = timezone.now()
+    return render(request, 'profile.html', {'form': form, 'patient_form': patient_form, 'appointments': appointments, 'now': now})
 
 @login_required
 def cancel_appointment(request, appointment_id):
-    patient = get_object_or_404(Patient, id=request.user.id)
-    appointment = get_object_or_404(Appointment, id=appointment_id, patient=patient)
-    if appointment.start > timezone.now():
-        appointment.status = 'cancelled'
+    appointments = Appointment.objects.filter(id=appointment_id, patient=request.user.id, status='booked')
+    for appointment in appointments:
+        appointment.status = 'available'
+        appointment.patient = None
         appointment.save()
     return redirect('profile')
+
+def get_available_slots(request):
+    doctor_id = request.GET.get('doctor')
+    date = request.GET.get('date')
+    start_time = timezone.datetime.strptime(date, '%Y-%m-%d').replace(hour=8, minute=0, second=0)
+    end_time = start_time.replace(hour=20, minute=0, second=0)
+
+    slots = []
+    current_time = start_time
+    while current_time < end_time:
+        slot = {
+            'time': current_time.strftime('%H:%M'),
+            'available': not Appointment.objects.filter(practitioner_id=doctor_id, start=current_time, status='booked').exists()
+        }
+        slots.append(slot)
+        current_time += timedelta(minutes=15)
+
+    return JsonResponse({'slots': slots})
