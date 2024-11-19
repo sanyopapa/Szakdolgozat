@@ -241,6 +241,15 @@ section.booking button:hover {
     background-color: #555;
 }
 
+section.booking input[type="date"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+    background-color: white;
+    cursor: pointer;
+}
+
 .time-slots {
     display: flex;
     flex-wrap: wrap;
@@ -384,6 +393,25 @@ section.profile input {
     font-size: 1em;
 }
 
+section.profile input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+    background-color: white;
+    cursor: text;
+}
+
+section.profile select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+    background-color: white;
+    cursor: pointer;
+}
+
 section.profile button {
     padding: 10px 20px;
     border: none;
@@ -397,4 +425,67 @@ section.profile button {
 
 section.profile button:hover {
     background-color: #555;
+}
+
+section.profile .form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+section.profile .form-group label {
+    flex: 0 0 150px;
+    font-weight: bold;
+}
+
+section.profile .form-group input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+    background-color: white;
+    cursor: text;
+}
+
+.appointments-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.appointment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    flex-wrap: nowrap; 
+}
+
+.appointment-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-right: 10px; 
+}
+
+.appointment-time,
+.appointment-practitioner,
+.appointment-treatment {
+    margin-bottom: 5px;
+}
+
+.cancel-button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #e74c3c;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 0; 
+}
+
+.cancel-button:hover {
+    background-color: #c0392b;
 }

@@ -31,7 +31,7 @@ class PatientForm(forms.ModelForm):
         fields = ['name', 'gender', 'birthDate', 'telecom']
     
     name = forms.CharField(max_length=255, label='Név')
-    gender = forms.ChoiceField(choices=[('male', 'Male'), ('female', 'Female')], label='Nem')
+    gender = forms.ChoiceField(choices=[('male', 'Férfi'), ('female', 'Nő')], label='Nem')
     birthDate = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Születési dátum')
     telecom = forms.CharField(max_length=255, label='Telefonszám', required=False)
 
@@ -45,10 +45,4 @@ class ProfileForm(forms.ModelForm):
         fields = ['username', 'email']
     
     username = forms.CharField(max_length=255, label='Felhasználónév')
-    email = forms.EmailField(label='Email cím')
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if RendeloUser.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
-            raise forms.ValidationError("Ez az email cím már foglalt.")
-        return email
+    email = forms.EmailField(label='Email cím', widget=forms.EmailInput(attrs={'style': 'width: 100%;'}))

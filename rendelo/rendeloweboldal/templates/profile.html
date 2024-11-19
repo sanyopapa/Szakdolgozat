@@ -39,7 +39,14 @@
             <h2>Profil adatok</h2>
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                <div class="form-group">
+                    <label for="id_username">Felhasználónév:</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    <label for="id_email">Email cím:</label>
+                    {{ form.email }}
+                </div>
                 {% if patient_form %}
                     {{ patient_form.as_p }}
                 {% endif %}
@@ -47,19 +54,27 @@
             </form>
 
             <h2>Időpontok</h2>
-            <ul>
-                {% for appointment in appointments %}
-                    <li>
-                        {{ appointment.start }} - {{ appointment.practitioner.name }} - {{ appointment.treatment.description }}
-                        {% if appointment.start|date:"Y-m-d" > now|date:"Y-m-d" %}
-                            <form method="post" action="{% url 'cancel_appointment' appointment.id %}" style="display:inline;" onsubmit="return confirm('Biztosan le akarja mondani az időpontot?');">
-                                {% csrf_token %}
-                                <button type="submit">Lemondás</button>
-                            </form>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
+            {% if appointments %}
+                <ul class="appointments-list">
+                    {% for appointment in appointments %}
+                        <li class="appointment-item">
+                            <div class="appointment-details">
+                                <span class="appointment-time">{{ appointment.start }}</span>
+                                <span class="appointment-practitioner">{{ appointment.practitioner.name }}</span>
+                                <span class="appointment-treatment">{{ appointment.treatment.description }}</span>
+                            </div>
+                            {% if appointment.start|date:"Y-m-d" > now|date:"Y-m-d" %}
+                                <form method="post" action="{% url 'cancel_appointment' appointment.id %}" style="display:inline;" onsubmit="return confirm('Biztosan le akarja mondani az időpontot?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="cancel-button">Lemondás</button>
+                                </form>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Nincsenek lefoglalt időpontjai.</p>
+            {% endif %}
         </section>
     </main>
     <footer>

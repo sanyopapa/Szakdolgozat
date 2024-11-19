@@ -52,7 +52,7 @@
 
             <section class="booking">
                 <h2>Időpontfoglalás</h2>
-                <form action="{% url 'book' %}" method="post">
+                <form method="post">
                     {% csrf_token %}
                     <input type="hidden" id="selected_doctor" name="selected_doctor" required>
                     
@@ -65,7 +65,7 @@
                     </select>
 
                     <label for="appointment_date">Dátum:</label>
-                    <input type="date" id="appointment_date" name="appointment_date" required>
+                    <input type="date" id="appointment_date" name="appointment_date" required style="cursor: pointer;">
 
                     <div id="time_slots">
                         <div id="morning_section" style="display: none;">
@@ -116,13 +116,7 @@
             });
 
             document.getElementById('treatment').addEventListener('change', function() {
-                const duration = this.options[this.selectedIndex].getAttribute('data-duration');
-                if (duration) {
-                    document.getElementById('submit_button').disabled = false;
-                    updateAvailableSlots();
-                } else {
-                    document.getElementById('submit_button').disabled = true;
-                }
+                updateAvailableSlots();
             });
 
             document.getElementById('appointment_date').addEventListener('change', function() {
@@ -130,7 +124,7 @@
             });
 
             function updateAvailableSlots() {
-                const selectedDoctor = document.getElementById('selected_doctor').value;
+                const selectedDoctor = selectedDoctorInput.value;
                 const selectedDate = document.getElementById('appointment_date').value;
                 const selectedTreatment = document.getElementById('treatment').value;
                 if (selectedDoctor && selectedDate && selectedTreatment) {
@@ -150,7 +144,7 @@
                                 button.type = 'button';
                                 button.textContent = slot.time;
                                 button.disabled = !slot.available;
-                                button.classList.toggle('selected', slot.selected);
+                                button.classList.remove('selected'); 
                                 button.addEventListener('click', function() {
                                     document.getElementById('appointment_datetime').value = `${selectedDate} ${slot.time}`;
                                     document.getElementById('submit_button').disabled = false;
@@ -170,6 +164,23 @@
                         });
                 }
             }
+
+            const appointmentDateInput = document.getElementById('appointment_date');
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const yyyy = tomorrow.getFullYear();
+            const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            const dd = String(tomorrow.getDate()).padStart(2, '0');
+            const minDate = `${yyyy}-${mm}-${dd}`;
+            appointmentDateInput.setAttribute('min', minDate);
+
+            appointmentDateInput.addEventListener('blur', function() {
+                const selectedDate = new Date(this.value);
+                if (selectedDate < tomorrow) {
+                    this.value = minDate;
+                }
+            });
         });
     </script>
 </body>

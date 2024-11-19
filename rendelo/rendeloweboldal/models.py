@@ -44,7 +44,7 @@ class Treatment(models.Model):
 
 class Appointment(models.Model):
     id = models.CharField(max_length=64, primary_key=True, default=uuid4)  # FHIR resource identifier
-    patient = models.CharField(max_length=64)  # Az időpontot foglaló páciens azonosítója
+    patient = models.CharField(max_length=64, null=True, blank=True)  # Az időpontot foglaló páciens azonosítója
     practitioner = models.ForeignKey(Doctor, on_delete=models.CASCADE)  # Link to Practitioner resource
     treatment = models.ForeignKey(Treatment, on_delete=models.SET_NULL, null=True, blank=True)  # Link to Treatment
     start = models.DateTimeField(default=timezone.now)  # FHIR 'start' field

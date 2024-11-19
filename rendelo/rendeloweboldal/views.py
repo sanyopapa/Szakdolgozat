@@ -22,18 +22,15 @@ def idopontfoglalas(request):
             start_time = timezone.make_aware(datetime.strptime(request.POST['appointment_datetime'], '%Y-%m-%d %H:%M'))
             treatment_duration = treatment.duration.total_seconds() // 60
 
-            # Felfelé kerekítés 15 perces intervallumokra
             treatment_duration = ((treatment_duration + 14) // 15) * 15
             end_time = start_time + timedelta(minutes=treatment_duration)
 
-            # Ellenőrizzük, hogy az időpont szabad-e
             current_time = start_time
             while current_time < end_time:
                 if Appointment.objects.filter(practitioner_id=request.POST['selected_doctor'], start__lte=current_time, end__gt=current_time, status='booked').exists():
                     return render(request, 'idopontfoglalas.html', {'error_message': 'Az időpont foglalt.'})
                 current_time += timedelta(minutes=15)
 
-            # Időpont mentése
             Appointment.objects.create(
                 id=str(uuid4()),
                 patient=request.user.id,
@@ -119,7 +116,6 @@ def cancel_appointment(request, appointment_id):
     appointments = Appointment.objects.filter(id=appointment_id, patient=request.user.id, status='booked')
     for appointment in appointments:
         appointment.status = 'available'
-        appointment.patient = None
         appointment.save()
     return redirect('profile')
 
