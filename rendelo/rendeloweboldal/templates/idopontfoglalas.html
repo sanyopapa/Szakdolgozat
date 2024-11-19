@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Időpontfoglalás</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> <!-- Favicon hozzáadása -->
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
 </head>
 <body>
     <header>
@@ -33,9 +33,11 @@
                 {% endif %}
             </ul>
         </nav>
-        {%if user.is_superuser%}
+        {% if error_message %}
+            <h2>{{ error_message }}</h2>
+        {% elif user.is_superuser %}
             <h2>Admin fiókkal nem kérhetsz időpontot!</h2>
-        {%elif user.is_authenticated %}
+        {% elif user.is_authenticated %}
             <section class="doctors">
                 <h2>Válasszon orvost</h2>
                 <div class="doctor-list">
@@ -56,6 +58,7 @@
                     
                     <label for="treatment">Válasszon kezelést:</label>
                     <select id="treatment" name="treatment" required>
+                        <option value="" disabled selected>Kérem válasszon kezelést!</option>
                         {% for treatment in treatments %}
                         <option value="{{ treatment.id }}" data-duration="{{ treatment.duration.total_seconds }}">{{ treatment.description }}</option>
                         {% endfor %}
@@ -116,6 +119,7 @@
                 const duration = this.options[this.selectedIndex].getAttribute('data-duration');
                 if (duration) {
                     document.getElementById('submit_button').disabled = false;
+                    updateAvailableSlots();
                 } else {
                     document.getElementById('submit_button').disabled = true;
                 }
@@ -128,8 +132,9 @@
             function updateAvailableSlots() {
                 const selectedDoctor = document.getElementById('selected_doctor').value;
                 const selectedDate = document.getElementById('appointment_date').value;
-                if (selectedDoctor && selectedDate) {
-                    fetch(`/get_available_slots/?doctor=${selectedDoctor}&date=${selectedDate}`)
+                const selectedTreatment = document.getElementById('treatment').value;
+                if (selectedDoctor && selectedDate && selectedTreatment) {
+                    fetch(`/get_available_slots/?doctor=${selectedDoctor}&date=${selectedDate}&treatment=${selectedTreatment}`)
                         .then(response => response.json())
                         .then(data => {
                             const morningSection = document.getElementById('morning_section');
@@ -145,9 +150,12 @@
                                 button.type = 'button';
                                 button.textContent = slot.time;
                                 button.disabled = !slot.available;
+                                button.classList.toggle('selected', slot.selected);
                                 button.addEventListener('click', function() {
                                     document.getElementById('appointment_datetime').value = `${selectedDate} ${slot.time}`;
                                     document.getElementById('submit_button').disabled = false;
+                                    document.querySelectorAll('.time-slots button').forEach(btn => btn.classList.remove('selected'));
+                                    this.classList.add('selected');
                                 });
                                 if (parseInt(slot.time.split(':')[0]) < 12) {
                                     morningSlotsDiv.appendChild(button);

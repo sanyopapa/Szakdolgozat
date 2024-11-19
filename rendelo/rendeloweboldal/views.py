@@ -6,7 +6,7 @@ from django.contrib.auth import login as auth_login, authenticate, logout
 from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 def kezdooldal(request):
     treatments = Treatment.objects.all()
@@ -14,38 +14,39 @@ def kezdooldal(request):
 
 def idopontfoglalas(request):
     if request.user.is_superuser or hasattr(request.user, 'doctor'):
-        return HttpResponse("Superuser vagy doctor nem foglalhat időpontot.", status=403)
+        return render(request, 'idopontfoglalas.html', {'error_message': 'Superuser vagy doctor nem foglalhat időpontot.'})
 
     if request.method == 'POST':
         try:
             treatment = Treatment.objects.get(id=request.POST['treatment'])
-            start_time = timezone.datetime.strptime(request.POST['appointment_datetime'], '%Y-%m-%d %H:%M')
-            end_time = start_time + treatment.duration
+            start_time = timezone.make_aware(datetime.strptime(request.POST['appointment_datetime'], '%Y-%m-%d %H:%M'))
+            treatment_duration = treatment.duration.total_seconds() // 60
 
-            # Ellenőrizzük, hogy az összes szükséges időpont szabad-e
+            # Felfelé kerekítés 15 perces intervallumokra
+            treatment_duration = ((treatment_duration + 14) // 15) * 15
+            end_time = start_time + timedelta(minutes=treatment_duration)
+
+            # Ellenőrizzük, hogy az időpont szabad-e
             current_time = start_time
             while current_time < end_time:
-                if Appointment.objects.filter(practitioner_id=request.POST['selected_doctor'], start=current_time, status='booked').exists():
-                    return JsonResponse({"error": "Az időpont már foglalt."}, status=400)
+                if Appointment.objects.filter(practitioner_id=request.POST['selected_doctor'], start__lte=current_time, end__gt=current_time, status='booked').exists():
+                    return render(request, 'idopontfoglalas.html', {'error_message': 'Az időpont foglalt.'})
                 current_time += timedelta(minutes=15)
 
-            # Foglaljuk le az összes szükséges időpontot
-            current_time = start_time
-            while current_time < end_time:
-                Appointment.objects.create(
-                    id=str(uuid4()),
-                    patient=request.user.id,
-                    practitioner_id=request.POST['selected_doctor'],
-                    treatment=treatment,
-                    start=current_time,
-                    end=current_time + timedelta(minutes=15),
-                    status='booked'
-                )
-                current_time += timedelta(minutes=15)
+            # Időpont mentése
+            Appointment.objects.create(
+                id=str(uuid4()),
+                patient=request.user.id,
+                practitioner_id=request.POST['selected_doctor'],
+                treatment=treatment,
+                start=start_time,
+                end=end_time,
+                status='booked'
+            )
 
-            return redirect('home')
+            return redirect('profile')
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
+            return render(request, 'idopontfoglalas.html', {'error_message': 'Hiba történt az időpont foglalása során.'})
         
     return render(request, 'idopontfoglalas.html', {'doctors': Doctor.objects.all(), 'treatments': Treatment.objects.all()})
 
@@ -125,17 +126,32 @@ def cancel_appointment(request, appointment_id):
 def get_available_slots(request):
     doctor_id = request.GET.get('doctor')
     date = request.GET.get('date')
-    start_time = timezone.datetime.strptime(date, '%Y-%m-%d').replace(hour=8, minute=0, second=0)
+    treatment_id = request.GET.get('treatment')
+    treatment = Treatment.objects.get(id=treatment_id)
+    treatment_duration = treatment.duration.total_seconds() // 60
+
+    # Felfelé kerekítés 15 perces intervallumokra
+    treatment_duration = ((treatment_duration + 14) // 15) * 15
+
+    start_time = timezone.make_aware(datetime.strptime(date, '%Y-%m-%d').replace(hour=8, minute=0, second=0))
     end_time = start_time.replace(hour=20, minute=0, second=0)
 
     slots = []
     current_time = start_time
     while current_time < end_time:
-        slot = {
+        slot_end_time = current_time + timedelta(minutes=treatment_duration)
+        is_available = True
+        check_time = current_time
+        while check_time < slot_end_time:
+            if Appointment.objects.filter(practitioner_id=doctor_id, start__lte=check_time, end__gt=check_time, status='booked').exists():
+                is_available = False
+                break
+            check_time += timedelta(minutes=15)
+        
+        slots.append({
             'time': current_time.strftime('%H:%M'),
-            'available': not Appointment.objects.filter(practitioner_id=doctor_id, start=current_time, status='booked').exists()
-        }
-        slots.append(slot)
+            'available': is_available
+        })
         current_time += timedelta(minutes=15)
 
     return JsonResponse({'slots': slots})
