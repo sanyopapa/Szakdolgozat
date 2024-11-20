@@ -13,4 +13,5 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
     path('cancel_appointment/<str:appointment_id>/', views.cancel_appointment, name='cancel_appointment'),
     path('get_available_slots/', views.get_available_slots, name='get_available_slots'),
+    path('get_earliest_slot/', views.get_earliest_slot, name='get_earliest_slot'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

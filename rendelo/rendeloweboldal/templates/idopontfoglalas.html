@@ -63,6 +63,8 @@
                         {% endfor %}
                     </select>
 
+                    <button type="button" id="earliest-appointment-button">Leghamarabbi időpont kiválasztása</button>
+
                     <label for="appointment_date">Dátum:</label>
                     <input type="date" id="appointment_date" name="appointment_date" required style="cursor: pointer;">
 
@@ -122,6 +124,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const doctorLinks = document.querySelectorAll('.doctor');
             const selectedDoctorInput = document.getElementById('selected_doctor');
+            const earliestAppointmentButton = document.getElementById('earliest-appointment-button');
             
             doctorLinks.forEach(link => {
                 link.addEventListener('click', function(event) {
@@ -140,6 +143,31 @@
 
             document.getElementById('appointment_date').addEventListener('change', function() {
                 updateAvailableSlots();
+            });
+
+            earliestAppointmentButton.addEventListener('click', function() {
+                const selectedDoctor = selectedDoctorInput.value;
+                const selectedTreatment = document.getElementById('treatment').value;
+                if (selectedDoctor && selectedTreatment) {
+                    fetch(`/get_earliest_slot/?doctor=${selectedDoctor}&treatment=${selectedTreatment}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.earliest_slot) {
+                                document.getElementById('appointment_date').value = data.earliest_slot.date;
+                                updateAvailableSlots();
+                                setTimeout(() => {
+                                    const timeSlotButton = document.querySelector(`.time-slots button[data-time="${data.earliest_slot.time}"]`);
+                                    if (timeSlotButton) {
+                                        timeSlotButton.click();
+                                    }
+                                }, 500);
+                            } else {
+                                alert('Nincs elérhető időpont.');
+                            }
+                        });
+                } else {
+                    alert('Kérem válasszon orvost és kezelést.');
+                }
             });
 
             function updateAvailableSlots() {
@@ -164,6 +192,7 @@
                                 button.textContent = slot.time;
                                 button.disabled = !slot.available;
                                 button.classList.remove('selected'); 
+                                button.setAttribute('data-time', slot.time);
                                 button.addEventListener('click', function() {
                                     document.getElementById('appointment_datetime').value = `${selectedDate} ${slot.time}`;
                                     document.getElementById('submit_button').disabled = false;

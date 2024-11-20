@@ -139,7 +139,7 @@ def get_available_slots(request):
         is_available = True
         check_time = current_time
         while check_time < slot_end_time:
-            if Appointment.objects.filter(practitioner_id=doctor_id, start__lte=check_time, end__gt=check_time, status='booked').exists():
+            if Appointment.objects.filter(practitioner_id=doctor_id, start__lte=check_time, end__gt=check_time, status='booked').exists() or check_time.time() == end_time.time():
                 is_available = False
                 break
             check_time += timedelta(minutes=15)
@@ -151,3 +151,38 @@ def get_available_slots(request):
         current_time += timedelta(minutes=15)
 
     return JsonResponse({'slots': slots})
+
+def get_earliest_slot(request):
+    doctor_id = request.GET.get('doctor')
+    treatment_id = request.GET.get('treatment')
+    treatment = Treatment.objects.get(id=treatment_id)
+    treatment_duration = treatment.duration.total_seconds() // 60
+
+    # Felfelé kerekítés 15 perces intervallumokra
+    treatment_duration = ((treatment_duration + 14) // 15) * 15
+
+    start_time = timezone.now() + timedelta(days=1)
+    start_time = start_time.replace(hour=8, minute=0, second=0, microsecond=0)
+    end_time = start_time.replace(hour=20, minute=0, second=0, microsecond=0)
+
+    while True:
+        current_time = start_time
+        while current_time < end_time:
+            slot_end_time = current_time + timedelta(minutes=treatment_duration)
+            is_available = True
+            check_time = current_time
+            while check_time < slot_end_time:
+                if Appointment.objects.filter(practitioner_id=doctor_id, start__lte=check_time, end__gt=check_time, status='booked').exists() or check_time.time() == end_time.time():
+                    is_available = False
+                    break
+                check_time += timedelta(minutes=15)
+            
+            if is_available:
+                return JsonResponse({'earliest_slot': {'date': current_time.strftime('%Y-%m-%d'), 'time': current_time.strftime('%H:%M')}})
+            current_time += timedelta(minutes=15)
+        
+        start_time += timedelta(days=1)
+        start_time = start_time.replace(hour=8, minute=0, second=0, microsecond=0)
+        end_time = start_time.replace(hour=20, minute=0, second=0, microsecond=0)
+
+    return JsonResponse({'earliest_slot': None})
