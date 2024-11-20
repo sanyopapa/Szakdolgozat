@@ -11,7 +11,7 @@
 <body>
     <header>
         <div class="header-container">
-            <img src="{% static 'Images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
+            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
             <div class="overlay">
                 <h1 class="header-title">Időpontfoglalás</h1>
             </div>
@@ -43,16 +43,15 @@
                 <div class="doctor-list">
                     {% for doctor in doctors %}
                     <a href="#" class="doctor" data-doctor="{{ doctor.id }}">
-                        <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}">
-                        <p>{{ doctor.name }}</p>
+                        <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}" class="doctor-photo">
+                        <span>{{ doctor.name }}</span>
                     </a>
                     {% endfor %}
                 </div>
             </section>
-
             <section class="booking">
                 <h2>Időpontfoglalás</h2>
-                <form method="post">
+                <form id="booking-form" method="post">
                     {% csrf_token %}
                     <input type="hidden" id="selected_doctor" name="selected_doctor" required>
                     
@@ -85,8 +84,27 @@
         {% else %}
             <h2>Időpont foglaláshoz kérem, jelentkezzen be, vagy hozzon létre egy új fiókot!</h2>
         {% endif %}
-
     </main>
+
+    <!-- Egyedi párbeszédablak -->
+    <div id="confirmation-dialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-box">
+            <h3>Biztosan lefoglalja az időpontot?</h3>
+            <p id="confirmation-details"></p>
+            <div class="dialog-buttons">
+                <button id="confirm-button">OK</button>
+                <button id="cancel-button">Mégse</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sikeres foglalás üzenet -->
+    <div id="success-message" class="dialog-overlay" style="display: none;">
+        <div class="dialog-box">
+            <h3>Időpont sikeresen lefoglalva.</h3>
+        </div>
+    </div>
+
     <footer>
         <div class="contact-info">
             <h2>Elérhetőségek:</h2>
@@ -99,6 +117,7 @@
         </div>
         <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
     </footer>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const doctorLinks = document.querySelectorAll('.doctor');
@@ -180,6 +199,60 @@
                 if (selectedDate < tomorrow) {
                     this.value = minDate;
                 }
+            });
+
+            const bookingForm = document.getElementById('booking-form');
+            const confirmationDialog = document.getElementById('confirmation-dialog');
+            const confirmationDetails = document.getElementById('confirmation-details');
+            const confirmButton = document.getElementById('confirm-button');
+            const cancelButton = document.getElementById('cancel-button');
+            const submitButton = document.getElementById('submit_button');
+            const timeSlotButtons = document.querySelectorAll('.time-slots button');
+            const timeSlotsDiv = document.getElementById('time_slots');
+            const successMessage = document.getElementById('success-message');
+
+            bookingForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const selectedDoctor = document.querySelector('.doctor.selected').textContent;
+                const selectedTreatment = document.getElementById('treatment').selectedOptions[0].textContent;
+                const selectedDate = document.getElementById('appointment_date').value;
+                const selectedTime = document.getElementById('appointment_datetime').value.split(' ')[1];
+                confirmationDetails.textContent = `Orvos: ${selectedDoctor}\nKezelés: ${selectedTreatment}\nIdőpont: ${selectedDate} ${selectedTime}`;
+                confirmationDialog.style.display = 'flex';
+                submitButton.style.display = 'none';
+                timeSlotButtons.forEach(button => button.style.display = 'none');
+                timeSlotsDiv.style.display = 'none';
+            });
+
+            confirmButton.addEventListener('click', function() {
+                confirmationDialog.style.display = 'none';
+                // AJAX kérés a foglalás elküldéséhez
+                const formData = new FormData(bookingForm);
+                fetch(bookingForm.action, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        successMessage.style.display = 'flex';
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                            // Alaphelyzetbe állítás
+                            bookingForm.reset();
+                            document.getElementById('selected_doctor').value = '';
+                            doctorLinks.forEach(link => link.classList.remove('selected'));
+                            submitButton.style.display = 'block';
+                        }, 3000);
+                    } else {
+                        alert('Hiba történt a foglalás során.');
+                    }
+                });
+            });
+
+            cancelButton.addEventListener('click', function() {
+                confirmationDialog.style.display = 'none';
+                submitButton.style.display = 'block';
+                timeSlotButtons.forEach(button => button.style.display = 'inline-block');
+                timeSlotsDiv.style.display = 'block';
             });
         });
     </script>
