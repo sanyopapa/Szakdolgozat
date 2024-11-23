@@ -11,7 +11,7 @@
 <body>
     <header>
         <div class="header-container">
-            <img src="{% static 'Images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
+            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
             <div class="overlay">
                 <h1 class="header-title">Admin</h1>
             </div>
@@ -23,7 +23,7 @@
                 <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
                 <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
                 {% if user.is_authenticated and user.is_superuser %}
-                    <li><a href="{% url 'admin_view' %}">Admin</a></li>
+                    <li><a href="{% url 'admin_view' %}">Admin</a></li>  
                 {% endif %}
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'profile' %}">Profil</a></li>
@@ -35,6 +35,16 @@
         </nav>
         <section class="admin">
             <h2>Adminisztráció</h2>
+            <a href="{% url 'add_treatment' %}">Új kezelés hozzáadása</a>
+            <ul>
+                {% for treatment in treatments %}
+                <li>
+                    {{ treatment.description }} - {{ treatment.duration }}
+                    <a href="{% url 'edit_treatment' treatment.id %}">Szerkesztés</a>
+                    <a href="{% url 'delete_treatment' treatment.id %}">Törlés</a>
+                </li>
+                {% endfor %}
+            </ul>
         </section>
     </main>
     <footer>

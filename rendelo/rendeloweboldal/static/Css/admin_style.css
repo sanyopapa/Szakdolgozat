@@ -1,0 +1,123 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    margin-bottom: 20px;
+}
+
+.header-container {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+.header-image {
+    width: 100%;
+    height: auto;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-title {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: white;
+}
+
+main {
+    padding: 20px;
+}
+
+form {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+    font-weight: bold;
+}
+
+form input,
+form select,
+form textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #555;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.contact-info {
+    margin-bottom: 20px;
+}
+
+.contact-info h2 {
+    margin-top: 0;
+}
+
+.contact-info p {
+    margin: 5px 0;
+}
+
+.contact-info a {
+    color: #ffcc00;
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+.contact-info a[href^="mailto:"] {
+    color: yellow; 
+    text-decoration: none;
+}
+
+.contact-info a[href^="mailto:"]:hover {
+    text-decoration: underline;
+}
+
+.copy {
+    color: cornsilk;
+}

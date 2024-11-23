@@ -542,3 +542,51 @@ section.profile .form-group input {
 .dialog-box button:hover {
     background-color: #555;
 }
+
+/* Admin oldal stílusai */
+section.admin {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+section.admin h2 {
+    text-align: center;
+}
+
+section.admin a {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+section.admin a:hover {
+    background-color: #555;
+}
+
+section.admin ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+section.admin li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+section.admin li a {
+    margin-left: 10px;
+}

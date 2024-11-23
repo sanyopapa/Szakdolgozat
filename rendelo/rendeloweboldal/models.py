@@ -24,7 +24,7 @@ class Patient(models.Model):
         return self.name
 
 class Doctor(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)  # FHIR resource identifier
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)  # FHIR resource identifier
     name = models.CharField(max_length=255)
     photo = models.ImageField(upload_to='doctor_pictures/', null=True, blank=True)  # FHIR 'photo' field
     qualification = models.TextField(null=True, blank=True)  # FHIR 'qualification' field
@@ -33,8 +33,7 @@ class Doctor(models.Model):
         return self.name
 
 class Treatment(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)  # FHIR resource identifier
-    code = models.CharField(max_length=255)  # FHIR 'code' field for treatment code
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)  # FHIR resource identifier
     description = models.TextField()  # FHIR 'description' field
     duration = models.DurationField(null=True, blank=True)  # Kezelés hossza (opcionális)
     price = models.DecimalField(max_digits=10, decimal_places=0)  # Ár
@@ -43,13 +42,13 @@ class Treatment(models.Model):
         return self.description
 
 class Appointment(models.Model):
-    id = models.CharField(max_length=64, primary_key=True, default=uuid4)  # FHIR resource identifier
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)  # FHIR resource identifier
     patient = models.CharField(max_length=64, null=True, blank=True)  # Az időpontot foglaló páciens azonosítója
     practitioner = models.ForeignKey(Doctor, on_delete=models.CASCADE)  # Link to Practitioner resource
     treatment = models.ForeignKey(Treatment, on_delete=models.SET_NULL, null=True, blank=True)  # Link to Treatment
-    start = models.DateTimeField(default=timezone.now)  # FHIR 'start' field
-    end = models.DateTimeField(default=timezone.now)  # FHIR 'end' field
-    status = models.CharField(max_length=20, default='available', choices=[('available', 'Available'), ('booked', 'Booked'), ('cancelled', 'Cancelled')])
+    start = models.DateTimeField()  # Kezdési időpont
+    end = models.DateTimeField()  # Befejezési időpont
+    status = models.CharField(max_length=64, null=True, blank=True)  # Időpont státusza (pl. foglalt, elérhető)
 
     def __str__(self):
         return f"Appointment for {self.patient} with {self.practitioner.name}"

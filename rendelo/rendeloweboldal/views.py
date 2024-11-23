@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from .models import Appointment, Treatment, Doctor, Patient, RendeloUser
 from django.contrib.auth import login as auth_login, authenticate, logout
-from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm
+from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -48,7 +48,39 @@ def idopontfoglalas(request):
     return render(request, 'idopontfoglalas.html', {'doctors': Doctor.objects.all(), 'treatments': Treatment.objects.all()})
 
 def admin_view(request):
-    return render(request, 'admin.html')
+    treatments = Treatment.objects.all()
+    return render(request, 'admin.html', {'treatments': treatments})
+
+@login_required
+def add_treatment(request):
+    if request.method == 'POST':
+        form = TreatmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_view')
+    else:
+        form = TreatmentForm()
+    return render(request, 'add_treatment.html', {'form': form})
+
+@login_required
+def edit_treatment(request, treatment_id):
+    treatment = get_object_or_404(Treatment, id=treatment_id)
+    if request.method == 'POST':
+        form = TreatmentForm(request.POST, instance=treatment)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_view')
+    else:
+        form = TreatmentForm(instance=treatment)
+    return render(request, 'edit_treatment.html', {'form': form, 'treatment': treatment})
+
+@login_required
+def delete_treatment(request, treatment_id):
+    treatment = get_object_or_404(Treatment, id=treatment_id)
+    if request.method == 'POST':
+        treatment.delete()
+        return redirect('admin_view')
+    return render(request, 'delete_treatment.html', {'treatment': treatment})
 
 def register_view(request):
     if request.method == 'POST':

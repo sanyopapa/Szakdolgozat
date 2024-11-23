@@ -1,5 +1,5 @@
 from django import forms
-from .models import RendeloUser, Patient
+from .models import RendeloUser, Patient, Treatment
 
 class RegistrationForm(forms.ModelForm):
     class Meta:
@@ -46,3 +46,12 @@ class ProfileForm(forms.ModelForm):
     
     username = forms.CharField(max_length=255, label='Felhasználónév')
     email = forms.EmailField(label='Email cím', widget=forms.EmailInput(attrs={'style': 'width: 100%;'}))
+
+class TreatmentForm(forms.ModelForm):
+    class Meta:
+        model = Treatment
+        fields = ['description', 'duration', 'price']
+    
+    description = forms.CharField(max_length=255, label='Leírás')
+    duration = forms.DurationField(label='Időtartam')
+    price = forms.DecimalField(max_digits=10, decimal_places=0, label='Ár')
