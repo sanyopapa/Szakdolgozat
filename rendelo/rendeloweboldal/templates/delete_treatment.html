@@ -23,6 +23,7 @@
         <form method="post">
             {% csrf_token %}
             <button type="submit">Törlés</button>
+            <a href="{% url 'admin_view' %}" class="button">Mégsem</a>
         </form>
     </main>
     <footer>

@@ -1,5 +1,6 @@
 from django import forms
 from .models import RendeloUser, Patient, Treatment
+from datetime import timedelta
 
 class RegistrationForm(forms.ModelForm):
     class Meta:
@@ -48,10 +49,21 @@ class ProfileForm(forms.ModelForm):
     email = forms.EmailField(label='Email cím', widget=forms.EmailInput(attrs={'style': 'width: 100%;'}))
 
 class TreatmentForm(forms.ModelForm):
+    duration = forms.IntegerField(label='Időtartam (perc)', min_value=0)
+
     class Meta:
         model = Treatment
-        fields = ['description', 'duration', 'price']
+        fields = ['name', 'description', 'duration', 'price']
     
+    name = forms.CharField(max_length=255, label='Név')
     description = forms.CharField(max_length=255, label='Leírás')
-    duration = forms.DurationField(label='Időtartam')
-    price = forms.DecimalField(max_digits=10, decimal_places=0, label='Ár')
+    price = forms.DecimalField(max_digits=10, decimal_places=0, label='Ár (forint)')
+
+    def clean_duration(self):
+        duration = self.cleaned_data['duration']
+        return timedelta(minutes=duration)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.duration:
+            self.initial['duration'] = int(self.instance.duration.total_seconds() // 60)

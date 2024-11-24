@@ -24,7 +24,7 @@ class Patient(models.Model):
         return self.name
 
 class Doctor(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)  # FHIR resource identifier
+    id = models.CharField(max_length=64, primary_key=True)  # FHIR resource identifier
     name = models.CharField(max_length=255)
     photo = models.ImageField(upload_to='doctor_pictures/', null=True, blank=True)  # FHIR 'photo' field
     qualification = models.TextField(null=True, blank=True)  # FHIR 'qualification' field
@@ -34,6 +34,7 @@ class Doctor(models.Model):
 
 class Treatment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)  # FHIR resource identifier
+    name = models.CharField(max_length=255)  # FHIR 'name' field
     description = models.TextField()  # FHIR 'description' field
     duration = models.DurationField(null=True, blank=True)  # Kezelés hossza (opcionális)
     price = models.DecimalField(max_digits=10, decimal_places=0)  # Ár

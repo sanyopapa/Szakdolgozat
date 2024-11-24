@@ -121,3 +121,99 @@ footer {
 .copy {
     color: cornsilk;
 }
+
+.button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #ccc;
+    color: black;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: #aaa;
+}
+
+.accordion {
+    margin-top: 20px;
+}
+
+.accordion-item {
+    margin-bottom: 10px;
+}
+
+.accordion-button {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    font-size: 1.2em;
+    transition: background-color 0.3s;
+}
+
+.accordion-button:hover {
+    background-color: #555;
+}
+
+.accordion-content {
+    display: none;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.treatment-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.treatment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.treatment-info {
+    flex: 1;
+}
+
+.treatment-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.treatment-name {
+    font-weight: bold;
+}
+
+.treatment-description {
+    margin-left: 10px;
+    color: #666;
+}
+
+.treatment-duration {
+    margin-left: 10px;
+    color: #999;
+}
+
+.delete-button {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+}

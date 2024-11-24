@@ -22,6 +22,7 @@
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Hozzáadás</button>
+            <a href="{% url 'admin_view' %}" class="button">Mégsem</a>
         </form>
     </main>
     <footer>

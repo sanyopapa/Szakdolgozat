@@ -56,7 +56,9 @@ def add_treatment(request):
     if request.method == 'POST':
         form = TreatmentForm(request.POST)
         if form.is_valid():
-            form.save()
+            treatment = form.save(commit=False)
+            treatment.duration = form.cleaned_data['duration']
+            treatment.save()
             return redirect('admin_view')
     else:
         form = TreatmentForm()
@@ -68,7 +70,9 @@ def edit_treatment(request, treatment_id):
     if request.method == 'POST':
         form = TreatmentForm(request.POST, instance=treatment)
         if form.is_valid():
-            form.save()
+            treatment = form.save(commit=False)
+            treatment.duration = form.cleaned_data['duration']
+            treatment.save()
             return redirect('admin_view')
     else:
         form = TreatmentForm(instance=treatment)
