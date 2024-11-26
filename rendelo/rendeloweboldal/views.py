@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from .models import Appointment, Treatment, Doctor, Patient, RendeloUser
 from django.contrib.auth import login as auth_login, authenticate, logout
-from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm
+from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm, DoctorForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -49,7 +49,8 @@ def idopontfoglalas(request):
 
 def admin_view(request):
     treatments = Treatment.objects.all()
-    return render(request, 'admin.html', {'treatments': treatments})
+    doctors = Doctor.objects.all()
+    return render(request, 'admin.html', {'treatments': treatments, 'doctors': doctors})
 
 @login_required
 def add_treatment(request):
@@ -85,6 +86,47 @@ def delete_treatment(request, treatment_id):
         treatment.delete()
         return redirect('admin_view')
     return render(request, 'delete_treatment.html', {'treatment': treatment})
+
+@login_required
+def add_doctor(request):
+    if request.method == 'POST':
+        form = DoctorForm(request.POST, request.FILES)
+        if form.is_valid():
+            doctor = form.save(commit=False)
+            if doctor:
+                doctor.save()
+                return redirect('admin_view')
+    else:
+        form = DoctorForm()
+    return render(request, 'add_doctor.html', {'form': form})
+
+@login_required
+def edit_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    user = get_object_or_404(RendeloUser, id=doctor_id)
+    if request.method == 'POST':
+        form = DoctorForm(request.POST, request.FILES, instance=doctor)
+        if form.is_valid():
+            user.email = form.cleaned_data['email']
+            if form.cleaned_data['password']:
+                user.set_password(form.cleaned_data['password'])
+            user.save()
+            form.save()
+            return redirect('admin_view')
+    else:
+        form = DoctorForm(instance=doctor)
+        form.fields['email'].initial = user.email
+    return render(request, 'edit_doctor.html', {'form': form, 'doctor': doctor})
+
+@login_required
+def delete_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    user = get_object_or_404(RendeloUser, id=doctor_id)
+    if request.method == 'POST':
+        user.delete()
+        doctor.delete()
+        return redirect('admin_view')
+    return render(request, 'delete_doctor.html', {'doctor': doctor})
 
 def register_view(request):
     if request.method == 'POST':

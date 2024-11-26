@@ -1,5 +1,6 @@
+from uuid import uuid4
 from django import forms
-from .models import RendeloUser, Patient, Treatment
+from .models import RendeloUser, Patient, Treatment, Doctor
 from datetime import timedelta
 
 class RegistrationForm(forms.ModelForm):
@@ -67,3 +68,36 @@ class TreatmentForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk and self.instance.duration:
             self.initial['duration'] = int(self.instance.duration.total_seconds() // 60)
+
+class DoctorForm(forms.ModelForm):
+    email = forms.EmailField(label='Email cím')
+    password = forms.CharField(widget=forms.PasswordInput, label='Jelszó', required=False)
+
+    class Meta:
+        model = Doctor
+        fields = ['name', 'photo', 'qualification']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['photo'].widget.attrs.update({'class': 'custom-file-input'})
+        self.fields['photo'].label = 'Fénykép'
+        self.fields['photo'].help_text = ''
+        self.fields['photo'].widget.attrs.update({'class': 'custom-file-input'})
+
+    def save(self, commit=True):
+        doctor = super().save(commit=False)
+        if not doctor.pk:
+            if RendeloUser.objects.filter(email=self.cleaned_data['email']).exists():
+                self.add_error('email', 'Ez az e-mail cím már létezik.')
+                return None
+            user_id = str(uuid4())
+            user = RendeloUser.objects.create_user(
+                id=user_id,
+                username=self.cleaned_data['email'],
+                email=self.cleaned_data['email'],
+                password=self.cleaned_data['password']
+            )
+            doctor.id = user_id
+        if commit:
+            doctor.save()
+        return doctor

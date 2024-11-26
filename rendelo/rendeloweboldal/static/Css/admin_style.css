@@ -159,6 +159,7 @@ footer {
     text-align: left;
     font-size: 1.2em;
     transition: background-color 0.3s;
+    margin-bottom: 10px;
 }
 
 .accordion-button:hover {
@@ -166,19 +167,23 @@ footer {
 }
 
 .accordion-content {
-    display: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
     background-color: white;
-    padding: 10px;
+    padding: 0 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
 
-.treatment-list {
+.treatment-list,
+.doctor-list {
     list-style-type: none;
     padding: 0;
 }
 
-.treatment-item {
+.treatment-item,
+.doctor-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -186,16 +191,19 @@ footer {
     border-bottom: 1px solid #ddd;
 }
 
-.treatment-info {
+.treatment-info,
+.doctor-info {
     flex: 1;
 }
 
-.treatment-actions {
+.treatment-actions,
+.doctor-actions {
     display: flex;
     gap: 10px;
 }
 
-.treatment-name {
+.treatment-name,
+.doctor-name {
     font-weight: bold;
 }
 
@@ -204,7 +212,8 @@ footer {
     color: #666;
 }
 
-.treatment-duration {
+.treatment-duration,
+.doctor-qualification {
     margin-left: 10px;
     color: #999;
 }
@@ -216,4 +225,65 @@ footer {
 
 .delete-button:hover {
     background-color: #c0392b;
+}
+
+.edit-button {
+    background-color: #3498db;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #2980b9;
+}
+
+.add-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #2ecc71;
+    color: white;
+    text-decoration: none;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-button:hover {
+    background-color: #27ae60;
+}
+
+.doctor-thumbnail {
+    max-width: 50px;
+    max-height: 50px;
+    margin-right: 10px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.custom-file-input {
+    display: none;
+}
+
+.photo-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }

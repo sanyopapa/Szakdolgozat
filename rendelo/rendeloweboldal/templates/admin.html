@@ -36,28 +36,32 @@
         </nav>
         <section class="admin">
             <h2>Adminisztráció</h2>
-            <div class="accordion">
-                <div class="accordion-item">
-                    <button class="accordion-button">Kezelések szerkesztése</button>
-                    <div class="accordion-content">
-                        <a href="{% url 'add_treatment' %}" class="button">Új kezelés hozzáadása</a>
-                        <ul class="treatment-list">
-                            {% for treatment in treatments %}
-                            <li class="treatment-item">
-                                <div class="treatment-info">
-                                    <span class="treatment-name">{{ treatment.name }}</span>
-                                    <span class="treatment-description">{{ treatment.description }}</span>
-                                    <span class="treatment-duration">{{ treatment.duration }}</span>
-                                </div>
-                                <div class="treatment-actions">
-                                    <a href="{% url 'edit_treatment' treatment.id %}" class="button">Szerkesztés</a>
-                                    <a href="{% url 'delete_treatment' treatment.id %}" class="button delete-button">Törlés</a>
-                                </div>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
+            <button class="accordion-button">Kezelések</button>
+            <div class="accordion-content">
+                <a href="{% url 'add_treatment' %}">Új kezelés hozzáadása</a>
+                <ul>
+                    {% for treatment in treatments %}
+                    <li>
+                        {{ treatment.description }} - {{ treatment.duration }}
+                        <a href="{% url 'edit_treatment' treatment.id %}">Szerkesztés</a>
+                        <a href="{% url 'delete_treatment' treatment.id %}">Törlés</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button class="accordion-button">Orvosok</button>
+            <div class="accordion-content">
+                <a href="{% url 'add_doctor' %}">Új orvos hozzáadása</a>
+                <ul>
+                    {% for doctor in doctors %}
+                    <li>
+                        <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}" class="doctor-thumbnail">
+                        {{ doctor.name }} - {{ doctor.qualification }}
+                        <a href="{% url 'edit_doctor' doctor.id %}">Szerkesztés</a>
+                        <a href="{% url 'delete_doctor' doctor.id %}">Törlés</a>
+                    </li>
+                    {% endfor %}
+                </ul>
             </div>
         </section>
     </main>
