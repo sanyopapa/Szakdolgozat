@@ -38,27 +38,37 @@
             <h2>Adminisztráció</h2>
             <button class="accordion-button">Kezelések</button>
             <div class="accordion-content">
-                <a href="{% url 'add_treatment' %}">Új kezelés hozzáadása</a>
-                <ul>
+                <a href="{% url 'add_treatment' %}" class="add-button">Új kezelés hozzáadása</a>
+                <ul class="treatment-list">
                     {% for treatment in treatments %}
-                    <li>
-                        {{ treatment.description }} - {{ treatment.duration }}
-                        <a href="{% url 'edit_treatment' treatment.id %}">Szerkesztés</a>
-                        <a href="{% url 'delete_treatment' treatment.id %}">Törlés</a>
+                    <li class="treatment-item">
+                        <div class="treatment-info">
+                            <span class="treatment-name">{{ treatment.name }}</span>
+                            <span class="treatment-duration">{{ treatment.duration }}</span>
+                        </div>
+                        <div class="treatment-actions">
+                            <a href="{% url 'edit_treatment' treatment.id %}" class="edit-button">Szerkesztés</a>
+                            <a href="{% url 'delete_treatment' treatment.id %}" class="delete-button">Törlés</a>
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
             <button class="accordion-button">Orvosok</button>
             <div class="accordion-content">
-                <a href="{% url 'add_doctor' %}">Új orvos hozzáadása</a>
-                <ul>
+                <a href="{% url 'add_doctor' %}" class="add-button">Új orvos hozzáadása</a>
+                <ul class="doctor-list">
                     {% for doctor in doctors %}
-                    <li>
+                    <li class="doctor-item">
                         <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}" class="doctor-thumbnail">
-                        {{ doctor.name }} - {{ doctor.qualification }}
-                        <a href="{% url 'edit_doctor' doctor.id %}">Szerkesztés</a>
-                        <a href="{% url 'delete_doctor' doctor.id %}">Törlés</a>
+                        <div class="doctor-info">
+                            <span class="doctor-name">{{ doctor.name }}</span>
+                            <span class="doctor-qualification">{{ doctor.qualification }}</span>
+                        </div>
+                        <div class="doctor-actions">
+                            <a href="{% url 'edit_doctor' doctor.id %}" class="edit-button">Szerkesztés</a>
+                            <a href="{% url 'delete_doctor' doctor.id %}" class="delete-button">Törlés</a>
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>
@@ -83,10 +93,10 @@
             accButtons.forEach(function(button) {
                 button.addEventListener('click', function() {
                     var content = this.nextElementSibling;
-                    if (content.style.display === 'block') {
-                        content.style.display = 'none';
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
                     } else {
-                        content.style.display = 'block';
+                        content.style.maxHeight = content.scrollHeight + "px";
                     }
                 });
             });
