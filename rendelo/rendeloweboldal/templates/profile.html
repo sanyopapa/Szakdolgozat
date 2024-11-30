@@ -59,7 +59,7 @@
                                 <div class="appointment-details">
                                     <span class="appointment-time">{{ appointment.start }}</span>
                                     <span class="appointment-practitioner">{{ appointment.practitioner.name }}</span>
-                                    <span class="appointment-treatment">{{ appointment.treatment.description }}</span>
+                                    <span class="appointment-treatment">{{ appointment.treatment.name }}</span>
                                 </div>
                                 {% if appointment.start|date:"Y-m-d" > now|date:"Y-m-d" %}
                                     <form method="post" action="{% url 'cancel_appointment' appointment.id %}" style="display:inline;" onsubmit="return confirm('Biztosan le akarja mondani az időpontot?');">

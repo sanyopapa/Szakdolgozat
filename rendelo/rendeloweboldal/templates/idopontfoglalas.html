@@ -59,7 +59,7 @@
                     <select id="treatment" name="treatment" required>
                         <option value="" disabled selected>Kérem válasszon kezelést!</option>
                         {% for treatment in treatments %}
-                        <option value="{{ treatment.id }}" data-duration="{{ treatment.duration.total_seconds }}">{{ treatment.description }}</option>
+                        <option value="{{ treatment.id }}" data-duration="{{ treatment.duration.total_seconds }}">{{ treatment.name }}</option>
                         {% endfor %}
                     </select>
 
