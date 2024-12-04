@@ -7,6 +7,7 @@ from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, Treatm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.contrib.auth import update_session_auth_hash
 
 def kezdooldal(request):
     treatments = Treatment.objects.all()
@@ -176,7 +177,11 @@ def profile_view(request):
     if request.method == 'POST':
         form = ProfileForm(request.POST, instance=user)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            if form.cleaned_data['password1']:
+                user.set_password(form.cleaned_data['password1'])
+            user.save()
+            update_session_auth_hash(request, user)  # Keep the user logged in after password change
             if patient_form and patient_form.is_valid():
                 patient_form.save()
             return redirect('profile')

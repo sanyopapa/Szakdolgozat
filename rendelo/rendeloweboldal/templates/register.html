@@ -18,15 +18,66 @@
         </div>
     </header>
     <main>
+        <nav>
+            <ul class="navbar">
+                <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
+                <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
+                {% if user.is_authenticated and user.is_superuser %}
+                    <li><a href="{% url 'admin_view' %}">Admin</a></li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'profile' %}">Profil</a></li>
+                    <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
+                {% endif %}
+            </ul>
+        </nav>
         <section class="register">
             <h2>Regisztráció</h2>
-            <form method="post">
+            <form method="post" onsubmit="return validatePasswords()">
                 {% csrf_token %}
                 {{ user_form.as_p }}
                 {{ patient_form.as_p }}
+                <div class="form-group">
+                    <label for="id_password1">Jelszó:</label>
+                    <div class="password-container">
+                        {{ user_form.password1 }}
+                        <button type="button" onclick="togglePasswordVisibility('id_password1')">Mutat</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="id_password2">Jelszó megerősítése:</label>
+                    <div class="password-container">
+                        {{ user_form.password2 }}
+                        <button type="button" onclick="togglePasswordVisibility('id_password2')">Mutat</button>
+                    </div>
+                </div>
+                <div id="password-error" style="color: red;"></div>
                 <button type="submit">Regisztráció</button>
+                <a href="{% url 'login' %}" class="button-like">Vissza a bejelentkezéshez</a>
             </form>
         </section>
     </main>
+    <script>
+        function togglePasswordVisibility(fieldId) {
+            var field = document.getElementById(fieldId);
+            if (field.type === "password") {
+                field.type = "text";
+            } else {
+                field.type = "password";
+            }
+        }
+
+        function validatePasswords() {
+            var password1 = document.getElementById('id_password1').value;
+            var password2 = document.getElementById('id_password2').value;
+            if (password1 !== password2) {
+                document.getElementById('password-error').innerText = "A két jelszó nem egyezik meg.";
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 </html>
