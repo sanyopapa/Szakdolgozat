@@ -176,12 +176,14 @@ footer {
     border-radius: 4px;
 }
 
+.user-list,
 .treatment-list,
 .doctor-list {
     list-style-type: none;
     padding: 0;
 }
 
+.user-item,
 .treatment-item,
 .doctor-item {
     display: flex;
@@ -191,31 +193,38 @@ footer {
     border-bottom: 1px solid #ddd;
 }
 
+.user-info,
 .treatment-info,
 .doctor-info {
     flex: 1;
 }
 
+.user-actions,
 .treatment-actions,
 .doctor-actions {
     display: flex;
     gap: 10px;
 }
 
+.user-name,
 .treatment-name,
 .doctor-name {
     font-weight: bold;
 }
 
-.treatment-description {
-    margin-left: 10px;
-    color: #666;
-}
-
+.user-email,
+.user-gender,
+.user-birthdate,
+.user-telecom,
 .treatment-duration,
 .doctor-qualification {
     margin-left: 10px;
     color: #999;
+}
+
+.user-info span {
+    display: block;
+    margin-bottom: 5px;
 }
 
 .delete-button {
@@ -286,4 +295,30 @@ footer {
     display: flex;
     align-items: center;
     gap: 20px;
+}
+
+.password-container {
+    display: flex;
+    align-items: center;
+}
+
+button[type="button"] {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button[type="button"]:hover {
+    background-color: #0056b3;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-bottom: 10px;
 }

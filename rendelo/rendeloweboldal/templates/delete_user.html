@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felhasználói fiók törlése</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
+            <div class="overlay">
+                <h1 class="header-title">Felhasználói fiók törlése</h1>
+            </div>
+        </div>
+    </header>
+    <main>
+        <section class="delete-user">
+            <h2>Biztosan törölni szeretné ezt a felhasználói fiókot?</h2>
+            <p><strong>Felhasználónév:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit">Törlés</button>
+                <a href="{% url 'admin_view' %}" class="button-like">Mégse</a>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

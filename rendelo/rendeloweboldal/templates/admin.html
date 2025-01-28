@@ -73,6 +73,35 @@
                     {% endfor %}
                 </ul>
             </div>
+            <button class="accordion-button">Felhasználói fiókok</button>
+            <div class="accordion-content">
+                <a href="{% url 'add_admin_user' %}" class="add-button">Új admin felhasználó hozzáadása</a>
+                <ul class="user-list">
+                    {% for user in users %}
+                    <li class="user-item">
+                        <div class="user-info">
+                            <span class="user-name">{{ user.username }}</span>
+                            <span class="user-email">{{ user.email }}</span>
+                            {% if user.is_superuser %}
+                            <span class="user-role">Superuser</span>
+                            {% else %}
+                            {% if user.patient %}
+                            <span class="user-gender">{{ user.patient.gender }}</span>
+                            <span class="user-birthdate">{{ user.patient.birthDate }}</span>
+                            <span class="user-telecom">{{ user.patient.telecom }}</span>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="user-actions">
+                            {% if user.id %}
+                            <a href="{% url 'edit_user' user.id %}" class="edit-button">Szerkesztés</a>
+                            <a href="{% url 'delete_user' user.id %}" class="delete-button">Törlés</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </section>
     </main>
     <footer>

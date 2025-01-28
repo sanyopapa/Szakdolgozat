@@ -3,11 +3,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from .models import Appointment, Treatment, Doctor, Patient, RendeloUser
 from django.contrib.auth import login as auth_login, authenticate, logout
-from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm, DoctorForm
+from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm, DoctorForm, CustomUserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import UserCreationForm
 
 def kezdooldal(request):
     treatments = Treatment.objects.all()
@@ -51,7 +52,8 @@ def idopontfoglalas(request):
 def admin_view(request):
     treatments = Treatment.objects.all()
     doctors = Doctor.objects.all()
-    return render(request, 'admin.html', {'treatments': treatments, 'doctors': doctors})
+    users = RendeloUser.objects.all()
+    return render(request, 'admin.html', {'treatments': treatments, 'doctors': doctors, 'users': users})
 
 @login_required
 def add_treatment(request):
@@ -128,6 +130,36 @@ def delete_doctor(request, doctor_id):
         doctor.delete()
         return redirect('admin_view')
     return render(request, 'delete_doctor.html', {'doctor': doctor})
+
+@login_required
+def edit_user(request, user_id):
+    user = get_object_or_404(RendeloUser, id=user_id)
+    patient = None
+    if not user.is_superuser:
+        patient = get_object_or_404(Patient, id=user_id)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=user)
+        patient_form = PatientForm(request.POST, instance=patient) if patient else None
+        if form.is_valid() and (patient_form is None or patient_form.is_valid()):
+            user = form.save(commit=False)
+            if form.cleaned_data['password1']:
+                user.set_password(form.cleaned_data['password1'])
+            user.save()
+            if patient_form:
+                patient_form.save()
+            return redirect('admin_view')
+    else:
+        form = ProfileForm(instance=user)
+        patient_form = PatientForm(instance=patient) if patient else None
+    return render(request, 'edit_user.html', {'form': form, 'patient_form': patient_form, 'user': user})
+
+@login_required
+def delete_user(request, user_id):
+    user = get_object_or_404(RendeloUser, id=user_id)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('admin_view')
+    return render(request, 'delete_user.html', {'user': user})
 
 def register_view(request):
     if request.method == 'POST':
@@ -269,3 +301,17 @@ def get_earliest_slot(request):
         end_time = start_time.replace(hour=20, minute=0, second=0, microsecond=0)
 
     return JsonResponse({'earliest_slot': None})
+
+@login_required
+def add_admin_user(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_superuser = True
+            user.is_staff = True
+            user.save()
+            return redirect('admin_view')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'add_admin_user.html', {'form': form})
