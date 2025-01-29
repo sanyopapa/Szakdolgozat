@@ -107,7 +107,8 @@ class TreatmentForm(forms.ModelForm):
 
 class DoctorForm(forms.ModelForm):
     email = forms.EmailField(label='Email cím')
-    password = forms.CharField(widget=forms.PasswordInput, label='Jelszó', required=False)
+    password1 = forms.CharField(widget=forms.PasswordInput, label='Jelszó', required=False)
+    password2 = forms.CharField(widget=forms.PasswordInput, label='Jelszó megerősítése', required=False)
 
     class Meta:
         model = Doctor
@@ -120,6 +121,13 @@ class DoctorForm(forms.ModelForm):
         self.fields['photo'].help_text = ''
         self.fields['photo'].widget.attrs.update({'class': 'custom-file-input'})
 
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("A két jelszó nem egyezik meg.")
+        return password2
+
     def save(self, commit=True):
         doctor = super().save(commit=False)
         if not doctor.pk:
@@ -129,11 +137,18 @@ class DoctorForm(forms.ModelForm):
             user_id = str(uuid4())
             user = RendeloUser.objects.create_user(
                 id=user_id,
-                username=self.cleaned_data['email'],
+                username=self.cleaned_data['name'],
                 email=self.cleaned_data['email'],
-                password=self.cleaned_data['password']
+                password=self.cleaned_data['password1'],
+                is_staff=True  
             )
             doctor.id = user_id
+        else:
+            user = RendeloUser.objects.get(id=doctor.id)
+            user.email = self.cleaned_data['email']
+            if self.cleaned_data['password1']:
+                user.set_password(self.cleaned_data['password1'])
+            user.save()
         if commit:
             doctor.save()
         return doctor

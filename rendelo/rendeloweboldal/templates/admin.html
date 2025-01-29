@@ -85,17 +85,21 @@
                             {% if user.is_superuser %}
                             <span class="user-role">Superuser</span>
                             {% else %}
-                            {% if user.patient %}
-                            <span class="user-gender">{{ user.patient.gender }}</span>
-                            <span class="user-birthdate">{{ user.patient.birthDate }}</span>
-                            <span class="user-telecom">{{ user.patient.telecom }}</span>
-                            {% endif %}
+                                {% if user.patient %}
+                                    <span class="user-gender">{{ user.patient.gender }}</span>
+                                    <span class="user-birthdate">{{ user.patient.birthDate }}</span>
+                                    <span class="user-telecom">{{ user.patient.telecom }}</span>
+                                {% endif %}
                             {% endif %}
                         </div>
                         <div class="user-actions">
                             {% if user.id %}
-                            <a href="{% url 'edit_user' user.id %}" class="edit-button">Szerkesztés</a>
-                            <a href="{% url 'delete_user' user.id %}" class="delete-button">Törlés</a>
+                                {% if not user.is_superuser and user.is_staff%}
+                                    Orvos, szerkeszthető az Orvosok menüben!
+                                {% else %}
+                                    <a href="{% url 'edit_user' user.id %}" class="edit-button">Szerkesztés</a>
+                                    <a href="{% url 'delete_user' user.id %}" class="delete-button">Törlés</a>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </li>
