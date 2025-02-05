@@ -440,6 +440,15 @@ section.login a.button-like:hover {
     background-color: #555;
 }
 
+/* Profil kép stílusok */
+.profile-image {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 50%;
+    display: block;
+    margin-bottom: 10px;
+}
+
 /* Profil szekció stílusai */
 section.profile {
     background-color: white;
@@ -464,30 +473,15 @@ section.profile label {
     font-weight: bold;
 }
 
-section.profile input {
+section.profile input,
+section.profile select,
+section.profile textarea {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1em;
-}
-
-section.profile input[type="email"] {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1em;
-    background-color: white;
-    cursor: text;
-}
-
-section.profile select {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1em;
-    background-color: white;
-    cursor: pointer;
+    margin-bottom: 10px;
 }
 
 section.profile button {
@@ -516,7 +510,9 @@ section.profile .form-group label {
     font-weight: bold;
 }
 
-section.profile .form-group input {
+section.profile .form-group input,
+section.profile .form-group select,
+section.profile .form-group textarea {
     flex: 1;
     padding: 10px;
     border: 1px solid #ddd;
@@ -526,6 +522,29 @@ section.profile .form-group input {
     cursor: text;
 }
 
+/* Eltávolítjuk a kép körüli szövegeket */
+.custom-file-input {
+    display: none;
+}
+
+.custom-file-input + label {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.custom-file-input + label:hover {
+    background-color: #ddd;
+}
+
+.custom-file-input:focus + label {
+    outline: 1px solid #007bff;
+    outline: -webkit-focus-ring-color auto 5px;
+}
 .appointments-list {
     list-style-type: none;
     padding: 0;

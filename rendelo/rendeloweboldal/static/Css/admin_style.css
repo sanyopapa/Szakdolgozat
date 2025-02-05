@@ -322,3 +322,10 @@ button[type="button"]:hover {
     font-size: 0.9em;
     margin-bottom: 10px;
 }
+
+.doctor-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    object-fit: cover;
+}

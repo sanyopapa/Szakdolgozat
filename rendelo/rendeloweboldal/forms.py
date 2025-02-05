@@ -1,8 +1,9 @@
 from uuid import uuid4
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UsernameField
 from .models import RendeloUser, Patient, Treatment, Doctor
 from datetime import timedelta
+from django.core.validators import RegexValidator
 
 class RegistrationForm(forms.ModelForm):
     class Meta:
@@ -75,7 +76,14 @@ class ProfileForm(forms.ModelForm):
         model = RendeloUser
         fields = ['username', 'email', 'password1', 'password2']
     
-    username = forms.CharField(max_length=255, label='Felhasználónév')
+    username = forms.CharField(
+        max_length=255, 
+        label='Felhasználónév',
+        validators=[RegexValidator(
+            regex=r'^[\w.@+\-_]+$', 
+            message='Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters.'
+        )]
+    )
     email = forms.EmailField(label='Email cím', widget=forms.EmailInput(attrs={'style': 'width: 100%;'}))
 
     def clean_password2(self):
@@ -84,6 +92,14 @@ class ProfileForm(forms.ModelForm):
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("A két jelszó nem egyezik meg.")
         return password2
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if self.cleaned_data['password1']:
+            user.set_password(self.cleaned_data['password1'])
+        if commit:
+            user.save()
+        return user
 
 class TreatmentForm(forms.ModelForm):
     duration = forms.IntegerField(label='Időtartam (perc)', min_value=0)
@@ -106,49 +122,16 @@ class TreatmentForm(forms.ModelForm):
             self.initial['duration'] = int(self.instance.duration.total_seconds() // 60)
 
 class DoctorForm(forms.ModelForm):
-    email = forms.EmailField(label='Email cím')
-    password1 = forms.CharField(widget=forms.PasswordInput, label='Jelszó', required=False)
-    password2 = forms.CharField(widget=forms.PasswordInput, label='Jelszó megerősítése', required=False)
-
     class Meta:
         model = Doctor
         fields = ['name', 'photo', 'qualification']
+
+    name = forms.CharField(max_length=255, label='Név')
+    photo = forms.ImageField(label='Fénykép', required=False, widget=forms.ClearableFileInput(attrs={'class': 'custom-file-input'}))
+    qualification = forms.CharField(max_length=255, label='Képesítés')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['photo'].widget.attrs.update({'class': 'custom-file-input'})
         self.fields['photo'].label = 'Fénykép'
         self.fields['photo'].help_text = ''
-        self.fields['photo'].widget.attrs.update({'class': 'custom-file-input'})
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError("A két jelszó nem egyezik meg.")
-        return password2
-
-    def save(self, commit=True):
-        doctor = super().save(commit=False)
-        if not doctor.pk:
-            if RendeloUser.objects.filter(email=self.cleaned_data['email']).exists():
-                self.add_error('email', 'Ez az e-mail cím már létezik.')
-                return None
-            user_id = str(uuid4())
-            user = RendeloUser.objects.create_user(
-                id=user_id,
-                username=self.cleaned_data['name'],
-                email=self.cleaned_data['email'],
-                password=self.cleaned_data['password1'],
-                is_staff=True  
-            )
-            doctor.id = user_id
-        else:
-            user = RendeloUser.objects.get(id=doctor.id)
-            user.email = self.cleaned_data['email']
-            if self.cleaned_data['password1']:
-                user.set_password(self.cleaned_data['password1'])
-            user.save()
-        if commit:
-            doctor.save()
-        return doctor

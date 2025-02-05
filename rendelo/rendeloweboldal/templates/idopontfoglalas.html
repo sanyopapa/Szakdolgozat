@@ -35,8 +35,8 @@
         </nav>
         {% if error_message %}
             <h2>{{ error_message }}</h2>
-        {% elif user.is_superuser %}
-            <h2>Admin fiókkal nem kérhetsz időpontot!</h2>
+        {% elif user.is_superuser or user.is_staff%}
+            <h2>Admin vagy orvos fiókkal nem kérhetsz időpontot!</h2>
         {% elif user.is_authenticated %}
             <section class="doctors">
                 <h2>Válasszon orvost</h2>

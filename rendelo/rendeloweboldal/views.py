@@ -9,6 +9,9 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm
+import logging
+
+logger = logging.getLogger(__name__)
 
 def kezdooldal(request):
     treatments = Treatment.objects.all()
@@ -93,33 +96,41 @@ def delete_treatment(request, treatment_id):
 @login_required
 def add_doctor(request):
     if request.method == 'POST':
-        form = DoctorForm(request.POST, request.FILES)
-        if form.is_valid():
-            doctor = form.save(commit=False)
-            if doctor:
-                doctor.save()
-                return redirect('admin_view')
+        user_form = CustomUserCreationForm(request.POST)
+        doctor_form = DoctorForm(request.POST, request.FILES)
+        if user_form.is_valid() and doctor_form.is_valid():
+            user = user_form.save(commit=False)
+            user.is_staff = True
+            user.save()
+            doctor = doctor_form.save(commit=False)
+            doctor.id = user.id
+            doctor.save()
+            return redirect('admin_view')
+        else:
+            logger.error("User form or doctor form is not valid: %s, %s", user_form.errors, doctor_form.errors)
     else:
-        form = DoctorForm()
-    return render(request, 'add_doctor.html', {'form': form})
+        user_form = CustomUserCreationForm()
+        doctor_form = DoctorForm()
+    return render(request, 'add_doctor.html', {'user_form': user_form, 'doctor_form': doctor_form})
 
 @login_required
 def edit_doctor(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
     user = get_object_or_404(RendeloUser, id=doctor_id)
     if request.method == 'POST':
-        form = DoctorForm(request.POST, request.FILES, instance=doctor)
-        if form.is_valid():
-            user.email = form.cleaned_data['email']
-            if form.cleaned_data['password']:
-                user.set_password(form.cleaned_data['password'])
+        user_form = ProfileForm(request.POST, instance=user)
+        doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
+        if user_form.is_valid() and doctor_form.is_valid():
+            user = user_form.save(commit=False)
+            if user_form.cleaned_data['password1']:
+                user.set_password(user_form.cleaned_data['password1'])
             user.save()
-            form.save()
+            doctor_form.save()
             return redirect('admin_view')
     else:
-        form = DoctorForm(instance=doctor)
-        form.fields['email'].initial = user.email
-    return render(request, 'edit_doctor.html', {'form': form, 'doctor': doctor})
+        user_form = ProfileForm(instance=user)
+        doctor_form = DoctorForm(instance=doctor)
+    return render(request, 'edit_doctor.html', {'user_form': user_form, 'doctor_form': doctor_form, 'doctor': doctor})
 
 @login_required
 def delete_doctor(request, doctor_id):
@@ -200,31 +211,43 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     user = request.user
-    if user.is_superuser or hasattr(user, 'doctor'):
+    patient_form = None
+    doctor_form = None
+
+    if user.is_superuser:
         patient_form = None
+    elif user.is_staff:
+        doctor = get_object_or_404(Doctor, id=user.id)
+        doctor_form = DoctorForm(request.POST or None, request.FILES or None, instance=doctor)
     else:
-        patient = get_object_or_404(Patient, id=user.id)
-        patient_form = PatientForm(request.POST or None, instance=patient)
+        try:
+            patient = get_object_or_404(Patient, id=user.id)
+            patient_form = PatientForm(request.POST or None, instance=patient)
+        except Patient.DoesNotExist:
+            patient_form = None
 
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=user)
+        form = ProfileForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             user = form.save(commit=False)
             if form.cleaned_data['password1']:
                 user.set_password(form.cleaned_data['password1'])
             user.save()
-            update_session_auth_hash(request, user)  # Keep the user logged in after password change
             if patient_form and patient_form.is_valid():
                 patient_form.save()
+            if doctor_form and doctor_form.is_valid():
+                doctor_form.save()
+            update_session_auth_hash(request, user)  
+            logger.info("Profile updated successfully")
             return redirect('profile')
+        else:
+            logger.error("Profile form is not valid: %s", form.errors)
     else:
         form = ProfileForm(instance=user)
-        if not user.is_superuser and not hasattr(user, 'doctor'):
-            patient_form = PatientForm(instance=patient)
-    
-    appointments = Appointment.objects.filter(patient=user.id, status='booked')
+
+    appointments = Appointment.objects.filter(patient=user.id, status='booked') if not user.is_superuser and not hasattr(user, 'doctor') else None
     now = timezone.now()
-    return render(request, 'profile.html', {'form': form, 'patient_form': patient_form, 'appointments': appointments, 'now': now})
+    return render(request, 'profile.html', {'form': form, 'patient_form': patient_form, 'doctor_form': doctor_form, 'appointments': appointments, 'now': now})
 
 @login_required
 def cancel_appointment(request, appointment_id):

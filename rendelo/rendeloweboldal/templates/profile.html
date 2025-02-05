@@ -35,7 +35,7 @@
         </nav>
         <section class="profile">
             <h2>Profil adatok</h2>
-            <form method="post" onsubmit="return validatePasswords()">
+            <form method="post" enctype="multipart/form-data" onsubmit="return validatePasswords()">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="id_username">Felhasználónév:</label>
@@ -59,9 +59,29 @@
                 {% if patient_form %}
                     {{ patient_form.as_p }}
                 {% endif %}
+                {% if doctor_form %}
+                    <div class="form-group">
+                        <label for="id_name">Név:</label>
+                        {{ doctor_form.name }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_photo">Profilkép:</label>
+                        <div class="photo-container">
+                            <input type="file" name="photo" id="id_photo" class="custom-file-input">
+                            {% if doctor_form.instance.photo %}
+                                <img id="current-photo" src="{{ doctor_form.instance.photo.url }}" alt="Profilkép" class="profile-image">
+                            {% endif %}
+                            <img id="new-photo-preview" class="profile-image" style="display:none;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_qualification">Képesítés:</label>
+                        {{ doctor_form.qualification }}
+                    </div>
+                {% endif %}
                 <button type="submit">Mentés</button>
             </form>
-            {% if not user.is_superuser %}
+            {% if not user.is_superuser and not user.is_staff %}
                 <h2>Időpontok</h2>
                 {% if appointments %}
                     <ul class="appointments-list">
@@ -118,6 +138,20 @@
             }
             return true;
         }
+
+        document.getElementById('id_photo').addEventListener('change', function(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var preview = document.getElementById('new-photo-preview');
+                preview.src = reader.result;
+                preview.style.display = 'block';
+                var currentPhoto = document.getElementById('current-photo');
+                if (currentPhoto) {
+                    currentPhoto.style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        });
     </script>
 </body>
 </html>

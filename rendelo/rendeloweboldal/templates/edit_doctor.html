@@ -5,58 +5,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orvos szerkesztése</title>
-    <link rel="stylesheet" href="{% static 'css/admin_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
 </head>
 <body>
     <header>
-        <div class="header-container">
-            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
-            <div class="overlay">
-                <h1 class="header-title">Orvos szerkesztése</h1>
-            </div>
-        </div>
+        <h1>Orvos szerkesztése</h1>
     </header>
     <main>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_name">Név:</label>
-                {{ form.name }}
-            </div>
-            <div class="form-group">
-                <label for="id_photo">Fénykép:</label>
-                <div class="photo-container">
-                    {% if doctor.photo %}
-                    <div class="doctor-photo">
-                        <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}" class="doctor-image" id="current-photo">
-                    </div>
-                    {% endif %}
-                    <input type="file" name="photo" id="id_photo" class="custom-file-input">
-                    <img id="new-photo-preview" class="doctor-image" style="display:none;">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="id_qualification">Képesítés:</label>
-                {{ form.qualification }}
+                <label for="id_username">Felhasználónév:</label>
+                {{ user_form.username }}
             </div>
             <div class="form-group">
                 <label for="id_email">Email cím:</label>
-                {{ form.email }}
+                {{ user_form.email }}
             </div>
             <div class="form-group">
-                <label for="id_password1">Jelszó:</label>
+                <label for="id_password1">Új jelszó:</label>
                 <div class="password-container">
-                    {{ form.password1 }}
+                    {{ user_form.password1 }}
                     <button type="button" onclick="togglePasswordVisibility('id_password1')">Mutat</button>
                 </div>
             </div>
             <div class="form-group">
-                <label for="id_password2">Jelszó megerősítése:</label>
+                <label for="id_password2">Új jelszó megerősítése:</label>
                 <div class="password-container">
-                    {{ form.password2 }}
+                    {{ user_form.password2 }}
                     <button type="button" onclick="togglePasswordVisibility('id_password2')">Mutat</button>
                 </div>
+            </div>
+            <div class="form-group">
+                <label for="id_name">Név:</label>
+                {{ doctor_form.name }}
+            </div>
+            <div class="form-group">
+                <label for="id_photo">Profilkép:</label>
+                <div class="photo-container">
+                    {{ doctor_form.photo }}
+                    {% if doctor_form.instance.photo %}
+                        <img id="current-photo" src="{{ doctor_form.instance.photo.url }}" alt="Profilkép" class="profile-image">
+                    {% endif %}
+                    <img id="new-photo-preview" class="profile-image" style="display:none;">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_qualification">Képesítés:</label>
+                {{ doctor_form.qualification }}
             </div>
             <button type="submit">Mentés</button>
             <a href="{% url 'admin_view' %}" class="button">Mégsem</a>
