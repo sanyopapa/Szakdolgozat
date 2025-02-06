@@ -23,4 +23,6 @@ urlpatterns = [
     path('cancel_appointment/<str:appointment_id>/', views.cancel_appointment, name='cancel_appointment'),
     path('get_available_slots/', views.get_available_slots, name='get_available_slots'),
     path('get_earliest_slot/', views.get_earliest_slot, name='get_earliest_slot'),
+    path('patients/', views.patients_view, name='patients'),  # Új útvonal hozzáadása
+    path('patients/<str:patient_id>/', views.patient_detail_view, name='patient_detail'),  # Új útvonal hozzáadása
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -25,6 +25,9 @@
                 {% if user.is_authenticated and user.is_superuser %}
                     <li><a href="{% url 'admin_view' %}">Admin</a></li>
                 {% endif %}
+                {% if user.is_authenticated and user.is_staff and not user.is_superuser %}
+                    <li><a href="{% url 'patients' %}">Páciensek</a></li>
+                {% endif %}
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'profile' %}">Profil</a></li>
                     <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>

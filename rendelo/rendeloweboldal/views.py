@@ -338,3 +338,16 @@ def add_admin_user(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'add_admin_user.html', {'form': form})
+
+@login_required
+def patients_view(request):
+    if not request.user.is_staff or request.user.is_superuser:
+        return redirect('home')
+    patients = Patient.objects.all()
+    return render(request, 'patients.html', {'patients': patients})
+
+@login_required
+def patient_detail_view(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    appointments = Appointment.objects.filter(patient=patient_id).order_by('start')
+    return render(request, 'patient_detail.html', {'patient': patient, 'appointments': appointments})
