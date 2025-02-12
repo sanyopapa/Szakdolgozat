@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Páciens adatai</title>
+    <title>Munkaidő</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
 </head>
@@ -13,7 +13,7 @@
         <div class="header-container">
             <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
             <div class="overlay">
-                <h1 class="header-title">Páciens adatai</h1>
+                <h1 class="header-title">Munkaidő</h1>
             </div>
         </div>
     </header>
@@ -38,41 +38,9 @@
                 {% endif %}
             </ul>
         </nav>
-        <section class="patient-detail">
-            <h2>{{ patient.name }} adatai</h2>
-            <div class="patient-info">
-                <p><strong>Név:</strong> {{ patient.name }}</p>
-                <p><strong>Nem:</strong> 
-                    {% if patient.gender == 'male' %}
-                        Férfi
-                    {% elif patient.gender == 'female' %}
-                        Nő
-                    {% endif %}
-                </p>
-                <p><strong>Születési dátum:</strong> {{ patient.birthDate }}</p>
-                <p><strong>Elérhetőség:</strong> {{ patient.telecom }}</p>
-            </div>
-            <button class="button-like" onclick="goToPatients()">Vissza a páciensekhez</button>
-            <h3>Időpontok</h3>
-            <form method="get" action="{% url 'patient_detail' patient.id %}">
-                <label for="month">Válassz egy hónapot:</label>
-                <input type="month" id="month" name="month" value="{{ request.GET.month }}">
-                <button type="submit">Szűrés</button>
-                <button type="button" onclick="showAllAppointments()">Összes időpont</button>
-            </form>
-            <div class="appointments">
-                {% for appointment in appointments %}
-                <div class="appointment">
-                    <div class="appointment-header">
-                        <span class="appointment-date">{{ appointment.start|date:"Y-m-d" }}</span>
-                        <span class="appointment-time">{{ appointment.start|date:"H:i" }}</span>
-                    </div>
-                    <p><strong>Kezelés:</strong> {{ appointment.treatment.name }}</p>
-                    <p><strong>Orvos:</strong> {{ appointment.practitioner.name }}</p>
-                    <p><strong>Leírás:</strong> {{ appointment.treatment.description }}</p>
-                </div>
-                {% endfor %}
-            </div>
+        <section class="working-hours">
+            <h2>Munkaidő</h2>
+            <!-- Itt hozzáadhatod a munkaidő tartalmát -->
         </section>
     </main>
     <footer>
@@ -87,13 +55,5 @@
         </div>
         <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
     </footer>
-    <script>
-        function goToPatients() {
-            window.location.href = "{% url 'patients' %}";
-        }
-        function showAllAppointments() {
-            window.location.href = "{% url 'patient_detail' patient.id %}";
-        }
-    </script>
 </body>
 </html>

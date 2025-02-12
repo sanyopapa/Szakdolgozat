@@ -341,13 +341,66 @@ def add_admin_user(request):
 
 @login_required
 def patients_view(request):
-    if not request.user.is_staff or request.user.is_superuser:
+    if not (request.user.is_staff and not request.user.is_superuser):
         return redirect('home')
-    patients = Patient.objects.all()
+    
+    search_query = request.GET.get('search', '')
+    if search_query:
+        patients = Patient.objects.filter(name__icontains=search_query)
+    else:
+        patients = Patient.objects.all()
+    
     return render(request, 'patients.html', {'patients': patients})
 
 @login_required
 def patient_detail_view(request, patient_id):
+    if not (request.user.is_staff and not request.user.is_superuser):
+        return redirect('home')
+    
     patient = get_object_or_404(Patient, id=patient_id)
-    appointments = Appointment.objects.filter(patient=patient_id).order_by('start')
+    appointments = Appointment.objects.filter(patient=patient_id).order_by('-start')
+    
+    month = request.GET.get('month')
+    if month:
+        year, month = map(int, month.split('-'))
+        appointments = appointments.filter(start__year=year, start__month=month)
+    
     return render(request, 'patient_detail.html', {'patient': patient, 'appointments': appointments})
+
+@login_required
+def appointments_today_view(request):
+    if not (request.user.is_staff and not request.user.is_superuser):
+        return redirect('home')
+    
+    doctor = get_object_or_404(Doctor, id=request.user.id)
+    
+    selected_date = request.GET.get('date', timezone.now().strftime('%Y-%m-%d'))
+    appointments = Appointment.objects.filter(practitioner=doctor, start__date=selected_date).order_by('start')
+    
+    return render(request, 'appointments_today.html', {'appointments': appointments, 'selected_date': selected_date})
+
+@login_required
+def edit_appointment(request, appointment_id):
+    if not (request.user.is_staff and not request.user.is_superuser):
+        return redirect('home')
+    
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    if request.method == 'POST':
+        description = request.POST.get('description')
+        appointment.treatment.description = description
+        appointment.treatment.save()
+        return redirect('appointments_today')
+    
+    return render(request, 'edit_appointment.html', {'appointment': appointment})
+
+@login_required
+def working_hours_view(request):
+    if not (request.user.is_staff and not request.user.is_superuser):
+        return redirect('home')
+    
+    doctor = get_object_or_404(Doctor, id=request.user.id)
+    
+    # Itt hozzáadhatod a munkaidő nézet logikáját
+    return render(request, 'working_hours.html')
+

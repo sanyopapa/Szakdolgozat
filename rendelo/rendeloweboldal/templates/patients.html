@@ -27,6 +27,8 @@
                 {% endif %}
                 {% if user.is_authenticated and user.is_staff and not user.is_superuser %}
                     <li><a href="{% url 'patients' %}">Páciensek</a></li>
+                    <li><a href="{% url 'appointments_today' %}">Időpontjaim mára</a></li>
+                    <li><a href="{% url 'working_hours' %}">Munkaidő</a></li>
                 {% endif %}
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'profile' %}">Profil</a></li>
@@ -38,6 +40,11 @@
         </nav>
         <section class="patients">
             <h2>Páciensek listája</h2>
+            <form method="get" action="{% url 'patients' %}">
+                <input type="text" name="search" placeholder="Keresés név alapján" value="{{ request.GET.search }}">
+                <button type="submit">Keresés</button>
+                <button type="button" onclick="showAllPatients()">Összes páciens</button>
+            </form>
             <table>
                 <thead>
                     <tr>
@@ -49,7 +56,7 @@
                 </thead>
                 <tbody>
                     {% for patient in patients %}
-                    <tr onclick="window.location.href='{% url 'patient_detail' patient.id %}'">
+                    <tr onclick="goToPatientDetail('{{ patient.id }}')" style="cursor: pointer;">
                         <td>{{ patient.name }}</td>
                         <td>
                             {% if patient.gender == 'male' %}
@@ -78,5 +85,13 @@
         </div>
         <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
     </footer>
+    <script>
+        function goToPatientDetail(patientId) {
+            window.location.href = "{% url 'patient_detail' 'PATIENT_ID' %}".replace('PATIENT_ID', patientId);
+        }
+        function showAllPatients() {
+            window.location.href = "{% url 'patients' %}";
+        }
+    </script>
 </body>
 </html>

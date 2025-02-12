@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Páciens adatai</title>
+    <title>Időpontjaim mára</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
 </head>
@@ -13,7 +13,7 @@
         <div class="header-container">
             <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
             <div class="overlay">
-                <h1 class="header-title">Páciens adatai</h1>
+                <h1 class="header-title">Időpontjaim mára</h1>
             </div>
         </div>
     </header>
@@ -38,27 +38,12 @@
                 {% endif %}
             </ul>
         </nav>
-        <section class="patient-detail">
-            <h2>{{ patient.name }} adatai</h2>
-            <div class="patient-info">
-                <p><strong>Név:</strong> {{ patient.name }}</p>
-                <p><strong>Nem:</strong> 
-                    {% if patient.gender == 'male' %}
-                        Férfi
-                    {% elif patient.gender == 'female' %}
-                        Nő
-                    {% endif %}
-                </p>
-                <p><strong>Születési dátum:</strong> {{ patient.birthDate }}</p>
-                <p><strong>Elérhetőség:</strong> {{ patient.telecom }}</p>
-            </div>
-            <button class="button-like" onclick="goToPatients()">Vissza a páciensekhez</button>
-            <h3>Időpontok</h3>
-            <form method="get" action="{% url 'patient_detail' patient.id %}">
-                <label for="month">Válassz egy hónapot:</label>
-                <input type="month" id="month" name="month" value="{{ request.GET.month }}">
+        <section class="appointments-today">
+            <h2>Időpontjaim mára</h2>
+            <form method="get" action="{% url 'appointments_today' %}">
+                <label for="date">Válassz egy dátumot:</label>
+                <input type="date" id="date" name="date" value="{{ selected_date }}">
                 <button type="submit">Szűrés</button>
-                <button type="button" onclick="showAllAppointments()">Összes időpont</button>
             </form>
             <div class="appointments">
                 {% for appointment in appointments %}
@@ -70,6 +55,7 @@
                     <p><strong>Kezelés:</strong> {{ appointment.treatment.name }}</p>
                     <p><strong>Orvos:</strong> {{ appointment.practitioner.name }}</p>
                     <p><strong>Leírás:</strong> {{ appointment.treatment.description }}</p>
+                    <button onclick="editAppointment('{{ appointment.id }}')">Szerkesztés</button>
                 </div>
                 {% endfor %}
             </div>
@@ -88,11 +74,8 @@
         <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
     </footer>
     <script>
-        function goToPatients() {
-            window.location.href = "{% url 'patients' %}";
-        }
-        function showAllAppointments() {
-            window.location.href = "{% url 'patient_detail' patient.id %}";
+        function editAppointment(appointmentId) {
+            window.location.href = "{% url 'edit_appointment' 'APPOINTMENT_ID' %}".replace('APPOINTMENT_ID', appointmentId);
         }
     </script>
 </body>

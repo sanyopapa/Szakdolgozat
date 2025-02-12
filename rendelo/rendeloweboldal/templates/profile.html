@@ -27,6 +27,8 @@
                 {% endif %}
                 {% if user.is_authenticated and user.is_staff and not user.is_superuser %}
                     <li><a href="{% url 'patients' %}">Páciensek</a></li>
+                    <li><a href="{% url 'appointments_today' %}">Időpontjaim mára</a></li>
+                    <li><a href="{% url 'working_hours' %}">Munkaidő</a></li>
                 {% endif %}
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'profile' %}">Profil</a></li>
