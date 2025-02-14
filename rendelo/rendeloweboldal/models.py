@@ -50,6 +50,16 @@ class Appointment(models.Model):
     start = models.DateTimeField()  # Kezdési időpont
     end = models.DateTimeField()  # Befejezési időpont
     status = models.CharField(max_length=64, null=True, blank=True)  # Időpont státusza (pl. foglalt, elérhető)
+    custom_description = models.TextField(null=True, blank=True)  # Egyéb információk
 
     def __str__(self):
         return f"Appointment for {self.patient} with {self.practitioner.name}"
+
+class WorkingHours(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    date = models.DateField()
+    start = models.TimeField()
+    end = models.TimeField()
+
+    def __str__(self):
+        return f"Working hours for {self.doctor.name} on {self.date} from {self.start} to {self.end}"

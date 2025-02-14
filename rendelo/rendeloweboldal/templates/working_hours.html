@@ -7,6 +7,89 @@
     <title>Munkaidő</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
+    <script>
+        function updateDate() {
+            const date = document.getElementById('date').value;
+            console.log(`Dátum frissítése: ${date}`);
+            window.location.href = `?date=${date}`;
+        }
+
+        function addInterval(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            console.log('Intervallum hozzáadása:', Object.fromEntries(formData.entries()));
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            }).then(response => response.json()).then(data => {
+                console.log('Válasz az intervallum hozzáadására:', data);
+                if (data.status === 'success') {
+                    updateIntervals(data.working_intervals);
+                } else {
+                    alert(data.message);
+                }
+            }).catch(error => console.error('Hiba az intervallum hozzáadásakor:', error));
+        }
+
+        function deleteInterval(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            console.log('Intervallum törlése:', Object.fromEntries(formData.entries()));
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            }).then(response => response.json()).then(data => {
+                console.log('Válasz az intervallum törlésére:', data);
+                if (data.status === 'success') {
+                    updateIntervals(data.working_intervals);
+                }
+            }).catch(error => console.error('Hiba az intervallum törlésekor:', error));
+        }
+
+        function updateIntervals(intervals) {
+            console.log('Intervallumok frissítése:', intervals);
+            const appointmentsDiv = document.querySelector('.appointments');
+            appointmentsDiv.innerHTML = '';
+            intervals.forEach(interval => {
+                const appointmentDiv = document.createElement('div');
+                appointmentDiv.classList.add('appointment');
+                appointmentDiv.innerHTML = `
+                    <div class="appointment-header">
+                        <span class="appointment-date">${interval.start}</span>
+                        <span class="appointment-time">${interval.start} - ${interval.end}</span>
+                    </div>
+                    <form method="post" action="{% url 'working_hours' %}" onsubmit="deleteInterval(event)">
+                        {% csrf_token %}
+                        <input type="hidden" name="start_time" value="${interval.start}">
+                        <input type="hidden" name="end_time" value="${interval.end}">
+                        <button type="submit" name="delete_interval">Törlés</button>
+                    </form>
+                `;
+                appointmentsDiv.appendChild(appointmentDiv);
+            });
+        }
+
+        // Scroll position handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollPos = localStorage.getItem('scrollPos');
+            if (scrollPos) {
+                window.scrollTo(0, scrollPos);
+                localStorage.removeItem('scrollPos');
+            }
+        });
+
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem('scrollPos', window.scrollY);
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -40,7 +123,41 @@
         </nav>
         <section class="working-hours">
             <h2>Munkaidő</h2>
-            <!-- Itt hozzáadhatod a munkaidő tartalmát -->
+            <form method="get" action="{% url 'working_hours' %}">
+                <label for="date">Válassz egy dátumot:</label>
+                <input type="date" id="date" name="date" value="{{ selected_date }}" onchange="updateDate()">
+            </form>
+            <form method="post" action="{% url 'working_hours' %}" onsubmit="addInterval(event)">
+                {% csrf_token %}
+                <input type="hidden" name="add_interval" value="true">
+                <label for="start_time">Mettől:</label>
+                <input type="time" id="start_time" name="start_time" step="900" required>
+                <label for="end_time">Meddig:</label>
+                <input type="time" id="end_time" name="end_time" step="900" required>
+                <button type="submit">Hozzáadás</button>
+            </form>
+            <div class="appointments">
+                {% for interval in working_intervals %}
+                <div class="appointment">
+                    <div class="appointment-header">
+                        <span class="appointment-date">{{ interval.start|date:"Y-m-d" }}</span>
+                        <span class="appointment-time">{{ interval.start|date:"H:i" }} - {{ interval.end|date:"H:i" }}</span>
+                    </div>
+                    <form method="post" action="{% url 'working_hours' %}" onsubmit="deleteInterval(event)">
+                        {% csrf_token %}
+                        <input type="hidden" name="start_time" value="{{ interval.start|date:"H:i" }}">
+                        <input type="hidden" name="end_time" value="{{ interval.end|date:"H:i" }}">
+                        <input type="hidden" name="delete_interval" value="true">
+                        <button type="submit">Törlés</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            <form method="post" action="{% url 'working_hours' %}">
+                {% csrf_token %}
+                <input type="hidden" name="save" value="true">
+                <button type="submit">Mentés</button>
+            </form>
         </section>
     </main>
     <footer>

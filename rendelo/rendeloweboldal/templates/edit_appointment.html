@@ -42,8 +42,8 @@
             <h2>Időpont szerkesztése</h2>
             <form method="post" action="{% url 'edit_appointment' appointment.id %}">
                 {% csrf_token %}
-                <label for="description">Leírás:</label>
-                <textarea id="description" name="description">{{ appointment.treatment.description }}</textarea>
+                <label for="custom_description">Leírás:</label>
+                <textarea id="custom_description" name="custom_description">{{ appointment.custom_description }}</textarea>
                 <button type="submit">Mentés</button>
             </form>
         </section>
