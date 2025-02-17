@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from .models import Appointment, Treatment, Doctor, Patient, RendeloUser, WorkingHours
 from django.contrib.auth import login as auth_login, authenticate, logout
-from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm, DoctorForm, CustomUserCreationForm
+from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm, DoctorForm, CustomUserCreationForm, WorkingHoursForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -11,6 +11,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm
 import logging
 from django.views.decorators.csrf import csrf_exempt
+from django.forms import modelformset_factory
 
 logger = logging.getLogger(__name__)
 
@@ -266,26 +267,27 @@ def get_available_slots(request):
     # Felfelé kerekítés 15 perces intervallumokra
     treatment_duration = ((treatment_duration + 14) // 15) * 15
 
-    start_time = timezone.make_aware(datetime.strptime(date, '%Y-%m-%d').replace(hour=8, minute=0, second=0))
-    end_time = start_time.replace(hour=20, minute=0, second=0)
-
+    working_hours = WorkingHours.objects.filter(doctor_id=doctor_id, date=date)
     slots = []
-    current_time = start_time
-    while current_time < end_time:
-        slot_end_time = current_time + timedelta(minutes=treatment_duration)
-        is_available = True
-        check_time = current_time
-        while check_time < slot_end_time:
-            if Appointment.objects.filter(practitioner_id=doctor_id, start__lte=check_time, end__gt=check_time, status='booked').exists() or check_time.time() == end_time.time():
-                is_available = False
-                break
-            check_time += timedelta(minutes=15)
-        
-        slots.append({
-            'time': current_time.strftime('%H:%M'),
-            'available': is_available
-        })
-        current_time += timedelta(minutes=15)
+
+    for wh in working_hours:
+        start_time = datetime.combine(wh.date, wh.start)
+        end_time = datetime.combine(wh.date, wh.end)
+        current_time = start_time
+
+        while current_time + timedelta(minutes=treatment_duration) <= end_time:
+            slot_end_time = current_time + timedelta(minutes=treatment_duration)
+            is_available = not Appointment.objects.filter(
+                practitioner_id=doctor_id,
+                start__lt=slot_end_time,
+                end__gt=current_time,
+                status='booked'
+            ).exists()
+            slots.append({
+                'time': current_time.strftime('%H:%M'),
+                'available': is_available
+            })
+            current_time += timedelta(minutes=15)
 
     return JsonResponse({'slots': slots})
 
@@ -394,114 +396,32 @@ def edit_appointment(request, appointment_id):
     return render(request, 'edit_appointment.html', {'appointment': appointment})
 
 @login_required
-@csrf_exempt
 def working_hours_view(request):
     if not (request.user.is_staff and not request.user.is_superuser):
         return redirect('home')
-    
     doctor = get_object_or_404(Doctor, id=request.user.id)
-    selected_date_str = request.GET.get('date')
+    selected_date_str = request.GET.get('date') or request.POST.get('date')
     if not selected_date_str:
-        return render(request, 'working_hours.html', {'working_intervals': [], 'selected_date': '', 'doctor': doctor})
-
-    selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
-    
-    # Munkaidő intervallumok betöltése az adatbázisból
-    working_hours = WorkingHours.objects.filter(doctor=doctor, date=selected_date).order_by('start')
-    working_intervals = []
-    current_interval = None
-
-    for wh in working_hours:
-        if current_interval and current_interval['end'] == wh.start:
-            current_interval['end'] = wh.end
-        else:
-            if current_interval:
-                working_intervals.append(current_interval)
-            current_interval = {'start': wh.start, 'end': wh.end}
-    if current_interval:
-        working_intervals.append(current_interval)
-
+        selected_date_str = datetime.now().strftime('%Y-%m-%d')
+    try:
+        selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return HttpResponse("Érvénytelen dátum formátum.", status=400)
+    try:
+        instance = WorkingHours.objects.get(doctor=doctor, date=selected_date)
+    except WorkingHours.DoesNotExist:
+        instance = None
     if request.method == 'POST':
-        if 'add_interval' in request.POST:
-            start_time = request.POST.get('start_time')
-            end_time = request.POST.get('end_time')
-            start_datetime = timezone.make_aware(datetime.combine(selected_date, datetime.strptime(start_time, '%H:%M').time()))
-            end_datetime = timezone.make_aware(datetime.combine(selected_date, datetime.strptime(end_time, '%H:%M').time()))
-
-            # Ellenőrizzük, hogy nincs-e átfedés a meglévő intervallumokkal
-            if WorkingHours.objects.filter(doctor=doctor, date=selected_date, start__lt=end_datetime.time(), end__gt=start_datetime.time()).exists():
-                return JsonResponse({'status': 'error', 'message': 'Az intervallum átfedésben van egy meglévő intervallummal.'})
-
-            WorkingHours.objects.create(doctor=doctor, date=selected_date, start=start_datetime.time(), end=end_datetime.time())
-
-            working_hours = WorkingHours.objects.filter(doctor=doctor, date=selected_date).order_by('start')
-            working_intervals = []
-            current_interval = None
-
-            for wh in working_hours:
-                if current_interval and current_interval['end'] == wh.start:
-                    current_interval['end'] = wh.end
-                else:
-                    if current_interval:
-                        working_intervals.append(current_interval)
-                    current_interval = {'start': wh.start, 'end': wh.end}
-            if current_interval:
-                working_intervals.append(current_interval)
-
-            if request.is_ajax():
-                return JsonResponse({'status': 'success', 'working_intervals': working_intervals})
-            else:
-                return redirect(f'/working_hours/?date={selected_date_str}')
-
-        elif 'save' in request.POST:
-            # Lefoglaljuk az időpontokat a munkaidőn kívüli időkre
-            working_hours = WorkingHours.objects.filter(doctor=doctor, date=selected_date).order_by('start')
-            for wh in working_hours:
-                start_datetime = timezone.make_aware(datetime.combine(selected_date, wh.start))
-                end_datetime = timezone.make_aware(datetime.combine(selected_date, wh.end))
-                current_time = start_datetime
-                while current_time < end_datetime:
-                    Appointment.objects.create(
-                        id=str(uuid4()),
-                        patient=None,
-                        practitioner=doctor,
-                        treatment=None,
-                        start=current_time,
-                        end=current_time + timedelta(minutes=15),
-                        status='unavailable'
-                    )
-                    current_time += timedelta(minutes=15)
-
+        form = WorkingHoursForm(request.POST, instance=instance)
+        if form.is_valid():
+            wh = form.save(commit=False)
+            wh.doctor = doctor
+            wh.date = selected_date
+            wh.save()
             return redirect(f'/working_hours/?date={selected_date_str}')
-
-        elif 'delete_interval' in request.POST:
-            start_time = request.POST.get('start_time')
-            end_time = request.POST.get('end_time')
-            start_datetime = timezone.make_aware(datetime.combine(selected_date, datetime.strptime(start_time, '%H:%M').time()))
-            end_datetime = timezone.make_aware(datetime.combine(selected_date, datetime.strptime(end_time, '%H:%M').time()))
-            WorkingHours.objects.filter(doctor=doctor, date=selected_date, start=start_datetime.time(), end=end_datetime.time()).delete()
-            Appointment.objects.filter(practitioner=doctor, start__gte=start_datetime, end__lte=end_datetime, patient=None).delete()
-
-            working_hours = WorkingHours.objects.filter(doctor=doctor, date=selected_date).order_by('start')
-            working_intervals = []
-            current_interval = None
-
-            for wh in working_hours:
-                if current_interval and current_interval['end'] == wh.start:
-                    current_interval['end'] = wh.end
-                else:
-                    if current_interval:
-                        working_intervals.append(current_interval)
-                    current_interval = {'start': wh.start, 'end': wh.end}
-            if current_interval:
-                working_intervals.append(current_interval)
-
-            if request.is_ajax():
-                return JsonResponse({'status': 'success', 'working_intervals': working_intervals})
-            else:
-                return redirect(f'/working_hours/?date={selected_date_str}')
-
-    return render(request, 'working_hours.html', {'working_intervals': working_intervals, 'selected_date': selected_date_str, 'doctor': doctor})
+    else:
+        form = WorkingHoursForm(instance=instance)
+    return render(request, 'working_hours.html', {'form': form, 'selected_date': selected_date_str, 'doctor': doctor})
 
 @login_required
 def delete_working_hours(request, appointment_id):

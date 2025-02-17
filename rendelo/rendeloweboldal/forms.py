@@ -1,7 +1,7 @@
 from uuid import uuid4
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from .models import RendeloUser, Patient, Treatment, Doctor
+from .models import RendeloUser, Patient, Treatment, Doctor, WorkingHours
 from datetime import timedelta
 from django.core.validators import RegexValidator
 
@@ -135,3 +135,13 @@ class DoctorForm(forms.ModelForm):
         self.fields['photo'].widget.attrs.update({'class': 'custom-file-input'})
         self.fields['photo'].label = 'Fénykép'
         self.fields['photo'].help_text = ''
+
+class WorkingHoursForm(forms.ModelForm):
+    class Meta:
+        model = WorkingHours
+        fields = ['date', 'start', 'end']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'start': forms.TimeInput(attrs={'type': 'time'}),
+            'end': forms.TimeInput(attrs={'type': 'time'}),
+        }
