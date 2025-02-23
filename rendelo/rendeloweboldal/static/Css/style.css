@@ -360,6 +360,52 @@ section.booking input[type="date"] {
     color: white;
 }
 
+.time-input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.time-input {
+    -moz-appearance: textfield;
+    appearance: none;
+    text-align: center;
+    width: 80px;
+    margin: 0 5px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.time-input::-webkit-inner-spin-button,
+.time-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.time-button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.time-button:hover {
+    background-color: #ddd;
+}
+
+.info-message {
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #333;
+    border-radius: 4px;
+}
+
 /* Regisztráció és bejelentkezés szekció stílusai */
 section.register, section.login {
     background-color: white;

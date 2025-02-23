@@ -38,6 +38,10 @@ def idopontfoglalas(request):
                     return render(request, 'idopontfoglalas.html', {'error_message': 'Az időpont foglalt.'})
                 current_time += timedelta(minutes=15)
 
+            working_hours = WorkingHours.objects.filter(doctor_id=request.POST['selected_doctor'], date=start_time.date())
+            if not working_hours.exists():
+                return render(request, 'idopontfoglalas.html', {'error_message': 'Az orvosnak nincs munkaideje ezen a napon.'})
+
             Appointment.objects.create(
                 id=str(uuid4()),
                 patient=request.user.id,
@@ -402,16 +406,19 @@ def working_hours_view(request):
     doctor = get_object_or_404(Doctor, id=request.user.id)
     selected_date_str = request.GET.get('date') or request.POST.get('date')
     if not selected_date_str:
-        selected_date_str = datetime.now().strftime('%Y-%m-%d')
+        return render(request, 'working_hours.html', {'selected_date': None, 'no_working_hours': False, 'readonly': True})
     try:
         selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
     except ValueError:
         return HttpResponse("Érvénytelen dátum formátum.", status=400)
     try:
         instance = WorkingHours.objects.get(doctor=doctor, date=selected_date)
+        no_working_hours = False
     except WorkingHours.DoesNotExist:
         instance = None
-    if request.method == 'POST':
+        no_working_hours = True
+    readonly = selected_date <= datetime.now().date()
+    if request.method == 'POST' and not readonly:
         form = WorkingHoursForm(request.POST, instance=instance)
         if form.is_valid():
             wh = form.save(commit=False)
@@ -421,7 +428,7 @@ def working_hours_view(request):
             return redirect(f'/working_hours/?date={selected_date_str}')
     else:
         form = WorkingHoursForm(instance=instance)
-    return render(request, 'working_hours.html', {'form': form, 'selected_date': selected_date_str, 'doctor': doctor})
+    return render(request, 'working_hours.html', {'form': form, 'selected_date': selected_date_str, 'no_working_hours': no_working_hours, 'readonly': readonly, 'doctor': doctor})
 
 @login_required
 def delete_working_hours(request, appointment_id):

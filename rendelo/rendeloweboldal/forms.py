@@ -142,6 +142,19 @@ class WorkingHoursForm(forms.ModelForm):
         fields = ['date', 'start', 'end']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
-            'start': forms.TimeInput(attrs={'type': 'time'}),
-            'end': forms.TimeInput(attrs={'type': 'time'}),
+            'start': forms.TimeInput(attrs={'type': 'time', 'step': 900, 'min': '08:00', 'max': '19:45', 'readonly': 'readonly'}),
+            'end': forms.TimeInput(attrs={'type': 'time', 'step': 900, 'min': '08:15', 'max': '20:00', 'readonly': 'readonly'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['start'].initial = '08:00'
+        self.fields['end'].initial = '20:00'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get('start')
+        end = cleaned_data.get('end')
+        if start and end and start >= end:
+            raise forms.ValidationError("A kezdési időpont nem lehet későbbi vagy egyenlő a befejezési időponttal.")
+        return cleaned_data
