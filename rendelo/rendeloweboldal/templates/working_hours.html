@@ -6,7 +6,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Munkaidő</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp">
+    <script src="{% static 'js/scroll.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startInput = document.querySelector('input[name="start"]');
+            const endInput = document.querySelector('input[name="end"]');
+            const startButtonUp = document.querySelector('#start-up');
+            const startButtonDown = document.querySelector('#start-down');
+            const endButtonUp = document.querySelector('#end-up');
+            const endButtonDown = document.querySelector('#end-down');
+
+            function adjustTime(input, step) {
+                let [hours, minutes] = input.value.split(':').map(Number);
+                minutes += step;
+                if (minutes >= 60) {
+                    minutes = 0;
+                    hours += 1;
+                } else if (minutes < 0) {
+                    minutes = 45;
+                    hours -= 1;
+                }
+                if (hours < 8) {
+                    hours = 8;
+                    minutes = step > 0 ? 0 : 15;
+                }
+                if (hours > 19 || (hours === 19 && minutes > 45)) {
+                    hours = 19;
+                    minutes = 45;
+                }
+                input.value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            }
+
+            if (startButtonUp) startButtonUp.addEventListener('click', () => adjustTime(startInput, 15));
+            if (startButtonDown) startButtonDown.addEventListener('click', () => adjustTime(startInput, -15));
+            if (endButtonUp) endButtonUp.addEventListener('click', () => adjustTime(endInput, 15));
+            if (endButtonDown) endButtonDown.addEventListener('click', () => adjustTime(endInput, -15));
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -38,10 +75,34 @@
                 {% endif %}
             </ul>
         </nav>
-        <section class="working-hours">
-            <h2>Munkaidő</h2>
-            <!-- Itt hozzáadhatod a munkaidő tartalmát -->
-        </section>
+        <h2>Munkaidő beállítása</h2>
+        <form method="get" action="{% url 'working_hours' %}">
+            <label for="date">Dátum kiválasztása:</label>
+            <input type="date" id="date" name="date" value="{{ selected_date }}">
+            <button type="submit">Kiválaszt</button>
+        </form>
+        {% if not selected_date %}
+            <p class="info-message">Kérjük, válasszon ki egy dátumot!</p>
+        {% elif no_working_hours %}
+            <p class="info-message">Nincs beállítva munkaidő az adott napra.</p>
+        {% endif %}
+        <form method="post" action="{% url 'working_hours' %}">
+            {% csrf_token %}
+            <input type="hidden" name="date" value="{{ selected_date }}">
+            <div class="time-input-container">
+                <button type="button" id="start-up" class="time-button">+</button>
+                {{ form.start }}
+                <button type="button" id="start-down" class="time-button">-</button>
+            </div>
+            <div class="time-input-container">
+                <button type="button" id="end-up" class="time-button">+</button>
+                {{ form.end }}
+                <button type="button" id="end-down" class="time-button">-</button>
+            </div>
+            {% if not readonly %}
+                <button type="submit">Mentés</button>
+            {% endif %}
+        </form>
     </main>
     <footer>
         <div class="contact-info">

@@ -1,15 +1,17 @@
 from uuid import uuid4
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
-from .models import Appointment, Treatment, Doctor, Patient, RendeloUser
+from .models import Appointment, Treatment, Doctor, Patient, RendeloUser, WorkingHours
 from django.contrib.auth import login as auth_login, authenticate, logout
-from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm, DoctorForm, CustomUserCreationForm
+from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm, DoctorForm, CustomUserCreationForm, WorkingHoursForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm
 import logging
+from django.views.decorators.csrf import csrf_exempt
+from django.forms import modelformset_factory
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +37,10 @@ def idopontfoglalas(request):
                 if Appointment.objects.filter(practitioner_id=request.POST['selected_doctor'], start__lte=current_time, end__gt=current_time, status='booked').exists():
                     return render(request, 'idopontfoglalas.html', {'error_message': 'Az időpont foglalt.'})
                 current_time += timedelta(minutes=15)
+
+            working_hours = WorkingHours.objects.filter(doctor_id=request.POST['selected_doctor'], date=start_time.date())
+            if not working_hours.exists():
+                return render(request, 'idopontfoglalas.html', {'error_message': 'Az orvosnak nincs munkaideje ezen a napon.'})
 
             Appointment.objects.create(
                 id=str(uuid4()),
@@ -251,10 +257,8 @@ def profile_view(request):
 
 @login_required
 def cancel_appointment(request, appointment_id):
-    appointments = Appointment.objects.filter(id=appointment_id, patient=request.user.id, status='booked')
-    for appointment in appointments:
-        appointment.status = 'available'
-        appointment.save()
+    appointment = get_object_or_404(Appointment, id=appointment_id, patient=request.user.id, status='booked')
+    appointment.delete()
     return redirect('profile')
 
 def get_available_slots(request):
@@ -267,26 +271,27 @@ def get_available_slots(request):
     # Felfelé kerekítés 15 perces intervallumokra
     treatment_duration = ((treatment_duration + 14) // 15) * 15
 
-    start_time = timezone.make_aware(datetime.strptime(date, '%Y-%m-%d').replace(hour=8, minute=0, second=0))
-    end_time = start_time.replace(hour=20, minute=0, second=0)
-
+    working_hours = WorkingHours.objects.filter(doctor_id=doctor_id, date=date)
     slots = []
-    current_time = start_time
-    while current_time < end_time:
-        slot_end_time = current_time + timedelta(minutes=treatment_duration)
-        is_available = True
-        check_time = current_time
-        while check_time < slot_end_time:
-            if Appointment.objects.filter(practitioner_id=doctor_id, start__lte=check_time, end__gt=check_time, status='booked').exists() or check_time.time() == end_time.time():
-                is_available = False
-                break
-            check_time += timedelta(minutes=15)
-        
-        slots.append({
-            'time': current_time.strftime('%H:%M'),
-            'available': is_available
-        })
-        current_time += timedelta(minutes=15)
+
+    for wh in working_hours:
+        start_time = datetime.combine(wh.date, wh.start)
+        end_time = datetime.combine(wh.date, wh.end)
+        current_time = start_time
+
+        while current_time + timedelta(minutes=treatment_duration) <= end_time:
+            slot_end_time = current_time + timedelta(minutes=treatment_duration)
+            is_available = not Appointment.objects.filter(
+                practitioner_id=doctor_id,
+                start__lt=slot_end_time,
+                end__gt=current_time,
+                status='booked'
+            ).exists()
+            slots.append({
+                'time': current_time.strftime('%H:%M'),
+                'available': is_available
+            })
+            current_time += timedelta(minutes=15)
 
     return JsonResponse({'slots': slots})
 
@@ -373,9 +378,9 @@ def appointments_today_view(request):
         return redirect('home')
     
     doctor = get_object_or_404(Doctor, id=request.user.id)
-    
+
     selected_date = request.GET.get('date', timezone.now().strftime('%Y-%m-%d'))
-    appointments = Appointment.objects.filter(practitioner=doctor, start__date=selected_date).order_by('start')
+    appointments = Appointment.objects.filter(practitioner=doctor, start__date=selected_date, patient__isnull=False).order_by('start')
     
     return render(request, 'appointments_today.html', {'appointments': appointments, 'selected_date': selected_date})
 
@@ -387,9 +392,9 @@ def edit_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     
     if request.method == 'POST':
-        description = request.POST.get('description')
-        appointment.treatment.description = description
-        appointment.treatment.save()
+        custom_description = request.POST.get('custom_description')
+        appointment.custom_description = custom_description
+        appointment.save()
         return redirect('appointments_today')
     
     return render(request, 'edit_appointment.html', {'appointment': appointment})
@@ -398,9 +403,38 @@ def edit_appointment(request, appointment_id):
 def working_hours_view(request):
     if not (request.user.is_staff and not request.user.is_superuser):
         return redirect('home')
-    
     doctor = get_object_or_404(Doctor, id=request.user.id)
-    
-    # Itt hozzáadhatod a munkaidő nézet logikáját
-    return render(request, 'working_hours.html')
+    selected_date_str = request.GET.get('date') or request.POST.get('date')
+    if not selected_date_str:
+        return render(request, 'working_hours.html', {'selected_date': None, 'no_working_hours': False, 'readonly': True})
+    try:
+        selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return HttpResponse("Érvénytelen dátum formátum.", status=400)
+    try:
+        instance = WorkingHours.objects.get(doctor=doctor, date=selected_date)
+        no_working_hours = False
+    except WorkingHours.DoesNotExist:
+        instance = None
+        no_working_hours = True
+    readonly = selected_date <= datetime.now().date()
+    if request.method == 'POST' and not readonly:
+        form = WorkingHoursForm(request.POST, instance=instance)
+        if form.is_valid():
+            wh = form.save(commit=False)
+            wh.doctor = doctor
+            wh.date = selected_date
+            wh.save()
+            return redirect(f'/working_hours/?date={selected_date_str}')
+    else:
+        form = WorkingHoursForm(instance=instance)
+    return render(request, 'working_hours.html', {'form': form, 'selected_date': selected_date_str, 'no_working_hours': no_working_hours, 'readonly': readonly, 'doctor': doctor})
+
+@login_required
+def delete_working_hours(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    if appointment.practitioner.id != request.user.id:
+        return redirect('home')
+    appointment.delete()
+    return redirect('working_hours')
 

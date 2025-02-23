@@ -1,7 +1,7 @@
 from uuid import uuid4
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from .models import RendeloUser, Patient, Treatment, Doctor
+from .models import RendeloUser, Patient, Treatment, Doctor, WorkingHours
 from datetime import timedelta
 from django.core.validators import RegexValidator
 
@@ -135,3 +135,26 @@ class DoctorForm(forms.ModelForm):
         self.fields['photo'].widget.attrs.update({'class': 'custom-file-input'})
         self.fields['photo'].label = 'Fénykép'
         self.fields['photo'].help_text = ''
+
+class WorkingHoursForm(forms.ModelForm):
+    class Meta:
+        model = WorkingHours
+        fields = ['date', 'start', 'end']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'start': forms.TimeInput(attrs={'type': 'time', 'step': 900, 'min': '08:00', 'max': '19:45', 'readonly': 'readonly'}),
+            'end': forms.TimeInput(attrs={'type': 'time', 'step': 900, 'min': '08:15', 'max': '20:00', 'readonly': 'readonly'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['start'].initial = '08:00'
+        self.fields['end'].initial = '20:00'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get('start')
+        end = cleaned_data.get('end')
+        if start and end and start >= end:
+            raise forms.ValidationError("A kezdési időpont nem lehet későbbi vagy egyenlő a befejezési időponttal.")
+        return cleaned_data
