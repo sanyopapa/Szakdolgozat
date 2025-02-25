@@ -46,32 +46,36 @@
                 <button type="submit">Keresés</button>
                 <button type="button" onclick="showAllPatients()">Összes páciens</button>
             </form>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Név</th>
-                        <th>Nem</th>
-                        <th>Születési dátum</th>
-                        <th>Elérhetőség</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for patient in patients %}
-                    <tr onclick="goToPatientDetail('{{ patient.id }}')" style="cursor: pointer;">
-                        <td>{{ patient.name }}</td>
-                        <td>
-                            {% if patient.gender == 'male' %}
-                                Férfi
-                            {% elif patient.gender == 'female' %}
-                                Nő
-                            {% endif %}
-                        </td>
-                        <td>{{ patient.birthDate }}</td>
-                        <td>{{ patient.telecom }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            {% if no_results_message %}
+                <p class="info-message">{{ no_results_message }}</p>
+            {% else %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Név</th>
+                            <th>Nem</th>
+                            <th>Születési dátum</th>
+                            <th>Elérhetőség</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                        <tr onclick="goToPatientDetail('{{ patient.id }}')" style="cursor: pointer;">
+                            <td>{{ patient.name }}</td>
+                            <td>
+                                {% if patient.gender == 'male' %}
+                                    Férfi
+                                {% elif patient.gender == 'female' %}
+                                    Nő
+                                {% endif %}
+                            </td>
+                            <td>{{ patient.birthDate }}</td>
+                            <td>{{ patient.telecom }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
         </section>
     </main>
     <footer>

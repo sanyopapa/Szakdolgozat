@@ -83,21 +83,19 @@ form button:hover {
 
 .button-like {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 5px 10px;
     margin-top: 10px;
-    border: none;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    background-color: #ccc;
-    color: black;
-    font-size: 1em;
+    background-color: #f2f2f2;
     cursor: pointer;
     text-decoration: none;
-    text-align: center;
+    color: #333;
     transition: background-color 0.3s;
 }
 
 .button-like:hover {
-    background-color: #aaa;
+    background-color: #ddd;
 }
 
 /* Jelszó megjelenítés gomb stílusok */
@@ -799,9 +797,27 @@ button[type="button"]:hover {
 }
 
 .appointment-time {
-    font-size: 1em;
+    font-size: 0.9em;
     color: #666;
 }
+
+.appointment-patient {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.appointment {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.appointment p {
+    margin: 5px 0;
+}
+
 .patient-detail {
     background-color: white;
     padding: 20px;

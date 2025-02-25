@@ -355,7 +355,12 @@ def patients_view(request):
     else:
         patients = Patient.objects.all()
     
-    return render(request, 'patients.html', {'patients': patients})
+    if not patients.exists():
+        no_results_message = f"Nincs találat a megadott névre: {search_query}"
+    else:
+        no_results_message = None
+    
+    return render(request, 'patients.html', {'patients': patients, 'no_results_message': no_results_message})
 
 @login_required
 def patient_detail_view(request, patient_id):
@@ -382,6 +387,10 @@ def appointments_today_view(request):
     selected_date = request.GET.get('date', timezone.now().strftime('%Y-%m-%d'))
     appointments = Appointment.objects.filter(practitioner=doctor, start__date=selected_date, patient__isnull=False).order_by('start')
     
+    for appointment in appointments:
+        patient = get_object_or_404(Patient, id=appointment.patient)
+        appointment.patient_name = patient.name
+    
     return render(request, 'appointments_today.html', {'appointments': appointments, 'selected_date': selected_date})
 
 @login_required
@@ -390,14 +399,21 @@ def edit_appointment(request, appointment_id):
         return redirect('home')
     
     appointment = get_object_or_404(Appointment, id=appointment_id)
+    patient = get_object_or_404(Patient, id=appointment.patient)
+    treatment = get_object_or_404(Treatment, id=appointment.treatment.id)
     
     if request.method == 'POST':
         custom_description = request.POST.get('custom_description')
         appointment.custom_description = custom_description
         appointment.save()
-        return redirect('appointments_today')
+        return redirect(f'/appointments_today/?date={appointment.start.date().strftime("%Y-%m-%d")}')
     
-    return render(request, 'edit_appointment.html', {'appointment': appointment})
+    return render(request, 'edit_appointment.html', {
+        'appointment': appointment,
+        'patient': patient,
+        'treatment': treatment,
+        'selected_date': appointment.start.date().strftime("%Y-%m-%d")
+    })
 
 @login_required
 def working_hours_view(request):

@@ -41,11 +41,15 @@
         </nav>
         <section class="edit-appointment">
             <h2>Időpont szerkesztése</h2>
+            <p><strong>Páciens:</strong> {{ patient.name }}</p>
+            <p><strong>Kezelés:</strong> {{ treatment.name }}</p>
+            <p><strong>Időpont:</strong> {{ appointment.start|date:"Y-m-d H:i" }} - {{ appointment.end|date:"H:i" }}</p>
             <form method="post" action="{% url 'edit_appointment' appointment.id %}">
                 {% csrf_token %}
                 <label for="custom_description">Leírás:</label>
                 <textarea id="custom_description" name="custom_description">{{ appointment.custom_description }}</textarea>
                 <button type="submit">Mentés</button>
+                <a href="{% url 'appointments_today' %}?date={{ selected_date }}" class="button-like">Mégse</a>
             </form>
         </section>
     </main>
