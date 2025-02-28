@@ -28,5 +28,5 @@ urlpatterns = [
     path('appointments_today/', views.appointments_today_view, name='appointments_today'),  
     path('working_hours/', views.working_hours_view, name='working_hours'),  
     path('edit_appointment/<str:appointment_id>/', views.edit_appointment, name='edit_appointment'),  
-    path('delete_working_hours/<str:appointment_id>/', views.delete_working_hours, name='delete_working_hours'),  
+    path('delete_working_hours/<str:date>/', views.delete_working_hours, name='delete_working_hours'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

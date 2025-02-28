@@ -139,9 +139,8 @@ class DoctorForm(forms.ModelForm):
 class WorkingHoursForm(forms.ModelForm):
     class Meta:
         model = WorkingHours
-        fields = ['date', 'start', 'end']
+        fields = [ 'start', 'end']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
             'start': forms.TimeInput(attrs={'type': 'time', 'step': 900, 'min': '08:00', 'max': '19:45', 'readonly': 'readonly'}),
             'end': forms.TimeInput(attrs={'type': 'time', 'step': 900, 'min': '08:15', 'max': '20:00', 'readonly': 'readonly'}),
         }

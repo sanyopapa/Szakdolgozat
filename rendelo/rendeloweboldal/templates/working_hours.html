@@ -16,6 +16,9 @@
             const startButtonDown = document.querySelector('#start-down');
             const endButtonUp = document.querySelector('#end-up');
             const endButtonDown = document.querySelector('#end-down');
+            const dateInput = document.querySelector('input[name="date"]');
+            const filterButton = document.querySelector('form button[type="submit"]');
+            const today = new Date().toISOString().split('T')[0];
 
             function adjustTime(input, step) {
                 let [hours, minutes] = input.value.split(':').map(Number);
@@ -42,6 +45,29 @@
             if (startButtonDown) startButtonDown.addEventListener('click', () => adjustTime(startInput, -15));
             if (endButtonUp) endButtonUp.addEventListener('click', () => adjustTime(endInput, 15));
             if (endButtonDown) endButtonDown.addEventListener('click', () => adjustTime(endInput, -15));
+
+            filterButton.addEventListener('click', function(event) {
+                if (!dateInput.value) {
+                    event.preventDefault();
+                    alert('Kérjük, válasszon ki egy dátumot!');
+                }
+            });
+
+            if (dateInput.value && dateInput.value > today) {
+                document.querySelectorAll('.time-input-container').forEach(container => {
+                    container.classList.remove('hidden');
+                });
+                document.querySelectorAll('.time-button').forEach(button => {
+                    button.classList.remove('hidden');
+                });
+            } else {
+                document.querySelectorAll('.time-input-container').forEach(container => {
+                    container.classList.add('hidden');
+                });
+                document.querySelectorAll('.time-button').forEach(button => {
+                    button.classList.add('hidden');
+                });
+            }
         });
     </script>
 </head>
@@ -75,34 +101,41 @@
                 {% endif %}
             </ul>
         </nav>
-        <h2>Munkaidő beállítása</h2>
-        <form method="get" action="{% url 'working_hours' %}">
+        <br>
+        <form method="get" action="{% url 'working_hours' %}" class="working-hours-form">
             <label for="date">Dátum kiválasztása:</label>
             <input type="date" id="date" name="date" value="{{ selected_date }}">
             <button type="submit">Kiválaszt</button>
         </form>
+        <br>
         {% if not selected_date %}
-            <p class="info-message">Kérjük, válasszon ki egy dátumot!</p>
+            <p class="info-message centered">Kérjük, válasszon ki egy dátumot!</p>
         {% elif no_working_hours %}
-            <p class="info-message">Nincs beállítva munkaidő az adott napra.</p>
+            <p class="info-message centered">Nincs beállítva munkaidő az adott napra.</p>
+            <br>
         {% endif %}
-        <form method="post" action="{% url 'working_hours' %}">
-            {% csrf_token %}
-            <input type="hidden" name="date" value="{{ selected_date }}">
-            <div class="time-input-container">
-                <button type="button" id="start-up" class="time-button">+</button>
-                {{ form.start }}
-                <button type="button" id="start-down" class="time-button">-</button>
-            </div>
-            <div class="time-input-container">
-                <button type="button" id="end-up" class="time-button">+</button>
-                {{ form.end }}
-                <button type="button" id="end-down" class="time-button">-</button>
-            </div>
-            {% if not readonly %}
-                <button type="submit">Mentés</button>
-            {% endif %}
-        </form>
+        {% if selected_date %}
+            <form method="post" action="{% url 'working_hours' %}" class="working-hours-form">
+                {% csrf_token %}
+                <input type="hidden" name="date" value="{{ selected_date }}">
+                <div class="time-input-container hidden">
+                    <button type="button" id="start-down" class="time-button hidden">-</button>
+                    {{ form.start }}
+                    <button type="button" id="start-up" class="time-button hidden">+</button>
+                </div>
+                <div class="time-input-container hidden">
+                    <button type="button" id="end-down" class="time-button hidden">-</button>
+                    {{ form.end }}
+                    <button type="button" id="end-up" class="time-button hidden">+</button>
+                </div>
+                {% if not readonly %}
+                    <button type="submit">Mentés</button>
+                    {% if not no_working_hours %}
+                        <a href="{% url 'delete_working_hours' selected_date %}" class="button-like">Munkaidő törlése</a>
+                    {% endif %}
+                {% endif %}
+            </form>
+        {% endif %}
     </main>
     <footer>
         <div class="contact-info">

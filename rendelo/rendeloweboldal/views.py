@@ -447,10 +447,14 @@ def working_hours_view(request):
     return render(request, 'working_hours.html', {'form': form, 'selected_date': selected_date_str, 'no_working_hours': no_working_hours, 'readonly': readonly, 'doctor': doctor})
 
 @login_required
-def delete_working_hours(request, appointment_id):
-    appointment = get_object_or_404(Appointment, id=appointment_id)
-    if appointment.practitioner.id != request.user.id:
+def delete_working_hours(request, date):
+    if not (request.user.is_staff and not request.user.is_superuser):
         return redirect('home')
-    appointment.delete()
-    return redirect('working_hours')
+    doctor = get_object_or_404(Doctor, id=request.user.id)
+    try:
+        working_hours = WorkingHours.objects.get(doctor=doctor, date=date)
+        working_hours.delete()
+        return redirect(f'/working_hours/?date={date}')
+    except WorkingHours.DoesNotExist:
+        return redirect('working_hours')
 

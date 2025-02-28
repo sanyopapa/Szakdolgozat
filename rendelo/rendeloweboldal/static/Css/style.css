@@ -388,6 +388,7 @@ section.booking input[type="date"] {
     background-color: #f2f2f2;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin: 0 5px;
 }
 
 .time-button:hover {
@@ -797,7 +798,7 @@ button[type="button"]:hover {
 }
 
 .appointment-time {
-    font-size: 0.9em;
+    font-size: 1em;
     color: #666;
 }
 
@@ -869,4 +870,100 @@ button[type="button"]:hover {
 .appointment-time {
     font-size: 1em;
     color: #666;
+}
+
+.hidden {
+    display: none;
+}
+
+.working-hours-form {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.working-hours-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.working-hours-form input[type="date"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+    margin-bottom: 10px;
+}
+
+.working-hours-form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.working-hours-form button:hover {
+    background-color: #555;
+}
+
+.time-input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.time-input {
+    -moz-appearance: textfield;
+    appearance: none;
+    text-align: center;
+    width: 80px;
+    margin: 0 5px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.time-input::-webkit-inner-spin-button,
+.time-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.time-button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 5px;
+}
+
+.time-button:hover {
+    background-color: #ddd;
+}
+
+.info-message {
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #333;
+    border-radius: 4px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.centered {
+    text-align: center;
 }
