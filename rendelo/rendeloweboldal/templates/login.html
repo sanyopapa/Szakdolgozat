@@ -1,68 +1,41 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bejelentkezés</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
-    <script src="{% static 'js/scroll.js' %}"></script>
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <img src="{% static 'Images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
-            <div class="overlay">
-                <h1 class="header-title">Bejelentkezés</h1>
+
+{% block title %}Bejelentkezés{% endblock %}
+
+{% block header_title %}Bejelentkezés{% endblock %}
+
+{% block content %}
+<section class="login">
+    <h2>Bejelentkezés</h2>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_username">Email cím:</label>
+            {{ form.email }}
+        </div>
+        <div class="form-group">
+            <label for="id_password">Jelszó:</label>
+            <div class="password-container">
+                {{ form.password }}
+                <button type="button" onclick="togglePasswordVisibility('id_password')">Mutat</button>
             </div>
         </div>
-    </header>
-    <main>
-        <nav>
-            <ul class="navbar">
-                <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
-                <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
-                {% if user.is_authenticated and user.is_superuser %}
-                    <li><a href="{% url 'admin_view' %}">Admin</a></li>
-                {% endif %}
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'profile' %}">Profil</a></li>
-                    <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        <section class="login">
-            <h2>Bejelentkezés</h2>
-            <form action="{% url 'login' %}" method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="id_username">Email cím:</label>
-                    {{ form.email }}
-                </div>
-                <div class="form-group">
-                    <label for="id_password">Jelszó:</label>
-                    <div class="password-container">
-                        {{ form.password }}
-                        <button type="button" onclick="togglePasswordVisibility('id_password')">Mutat</button>
-                    </div>
-                </div>
-                <button type="submit">Bejelentkezés</button>
-                <a href="{% url 'register' %}" class="button-like">Regisztrálok</a>
-            </form>
-        </section>
-    </main>
-    <script>
-        function togglePasswordVisibility(fieldId) {
-            var field = document.getElementById(fieldId);
-            if (field.type === "password") {
-                field.type = "text";
-            } else {
-                field.type = "password";
-            }
+        <button type="submit">Bejelentkezés</button>
+        <a href="{% url 'register' %}" class="button-like">Regisztrálok</a>
+    </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function togglePasswordVisibility(fieldId) {
+        var field = document.getElementById(fieldId);
+        if (field.type === "password") {
+            field.type = "text";
+        } else {
+            field.type = "password";
         }
-    </script>
-</body>
-</html>
+    }
+</script>
+{% endblock %}

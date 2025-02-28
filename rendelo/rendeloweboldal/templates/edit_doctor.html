@@ -1,108 +1,92 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orvos szerkesztése</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
-    <script src="{% static 'js/scroll.js' %}"></script>
-</head>
-<body>
-    <header>
-        <h1>Orvos szerkesztése</h1>
-    </header>
-    <main>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_username">Felhasználónév:</label>
-                {{ user_form.username }}
-            </div>
-            <div class="form-group">
-                <label for="id_email">Email cím:</label>
-                {{ user_form.email }}
-            </div>
-            <div class="form-group">
-                <label for="id_password1">Új jelszó:</label>
-                <div class="password-container">
-                    {{ user_form.password1 }}
-                    <button type="button" onclick="togglePasswordVisibility('id_password1')">Mutat</button>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="id_password2">Új jelszó megerősítése:</label>
-                <div class="password-container">
-                    {{ user_form.password2 }}
-                    <button type="button" onclick="togglePasswordVisibility('id_password2')">Mutat</button>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="id_name">Név:</label>
-                {{ doctor_form.name }}
-            </div>
-            <div class="form-group">
-                <label for="id_photo">Profilkép:</label>
-                <div class="photo-container">
-                    {{ doctor_form.photo }}
-                    {% if doctor_form.instance.photo %}
-                        <img id="current-photo" src="{{ doctor_form.instance.photo.url }}" alt="Profilkép" class="profile-image">
-                    {% endif %}
-                    <img id="new-photo-preview" class="profile-image" style="display:none;">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="id_qualification">Képesítés:</label>
-                {{ doctor_form.qualification }}
-            </div>
-            <button type="submit">Mentés</button>
-            <a href="{% url 'admin_view' %}" class="button">Mégsem</a>
-        </form>
-    </main>
-    <footer>
-        <div class="contact-info">
-            <h2>Elérhetőségek:</h2>
-            <p><strong>Cím:</strong> 1062 Budapest, Mosoly utca 12.</p>
-            <p><strong>Telefon:</strong> +36 1 789 4567</p>
-            <p><strong>E-mail:</strong> <a href="mailto:kapcsolat@mosolyfogaszat.hu">kapcsolat@mosolyfogaszat.hu</a></p>
-            <p><strong>Nyitvatartás:</strong> Hétfőtől péntekig 8:00-19:00, szombaton 9:00-13:00</p>
-            <p><strong>Parkolás:</strong> Ingyenes parkolási lehetőség a rendelő előtt.</p>
-            <p><strong>Tömegközlekedés:</strong> A 4-es és 6-os villamossal, valamint az M1-es metróval könnyen megközelíthető.</p>
+
+{% block title %}Orvos szerkesztése{% endblock %}
+
+{% block header_title %}Orvos szerkesztése{% endblock %}
+
+{% block content %}
+<section class="edit-doctor">
+    <h2>Orvos szerkesztése</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_username">Felhasználónév:</label>
+            {{ user_form.username }}
         </div>
-        <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
-    </footer>
-    <script>
-        function togglePasswordVisibility(fieldId) {
-            var field = document.getElementById(fieldId);
-            if (field.type === "password") {
-                field.type = "text";
-            } else {
-                field.type = "password";
-            }
+        <div class="form-group">
+            <label for="id_email">Email cím:</label>
+            {{ user_form.email }}
+        </div>
+        <div class="form-group">
+            <label for="id_password1">Új jelszó:</label>
+            <div class="password-container">
+                {{ user_form.password1 }}
+                <button type="button" onclick="togglePasswordVisibility('id_password1')">Mutat</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_password2">Új jelszó megerősítése:</label>
+            <div class="password-container">
+                {{ user_form.password2 }}
+                <button type="button" onclick="togglePasswordVisibility('id_password2')">Mutat</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name">Név:</label>
+            {{ doctor_form.name }}
+        </div>
+        <div class="form-group">
+            <label for="id_photo">Profilkép:</label>
+            <div class="photo-container">
+                {{ doctor_form.photo }}
+                {% if doctor_form.instance.photo %}
+                    <img id="current-photo" src="{{ doctor_form.instance.photo.url }}" alt="Profilkép" class="profile-image">
+                {% endif %}
+                <img id="new-photo-preview" class="profile-image" style="display:none;">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_qualification">Képesítés:</label>
+            {{ doctor_form.qualification }}
+        </div>
+        <button type="submit">Mentés</button>
+        <a href="{% url 'admin_view' %}" class="button">Mégse</a>
+    </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function togglePasswordVisibility(fieldId) {
+        var field = document.getElementById(fieldId);
+        if (field.type === "password") {
+            field.type = "text";
+        } else {
+            field.type = "password";
         }
+    }
 
-        document.getElementById('id_photo').addEventListener('change', function(event) {
-            var reader = new FileReader();
-            reader.onload = function() {
-                var preview = document.getElementById('new-photo-preview');
-                preview.src = reader.result;
-                preview.style.display = 'block';
-                var currentPhoto = document.getElementById('current-photo');
-                if (currentPhoto) {
-                    currentPhoto.style.display = 'none';
-                }
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        });
+    document.getElementById('id_photo').addEventListener('change', function(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var preview = document.getElementById('new-photo-preview');
+            preview.src = reader.result;
+            preview.style.display = 'block';
+            var currentPhoto = document.getElementById('current-photo');
+            if (currentPhoto) {
+                currentPhoto.style.display = 'none';
+            }
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    });
 
-        document.getElementById('current-photo').addEventListener('click', function() {
-            document.getElementById('id_photo').click();
-        });
+    document.getElementById('current-photo').addEventListener('click', function() {
+        document.getElementById('id_photo').click();
+    });
 
-        document.getElementById('new-photo-preview').addEventListener('click', function() {
-            document.getElementById('id_photo').click();
-        });
-    </script>
-</body>
-</html>
+    document.getElementById('new-photo-preview').addEventListener('click', function() {
+        document.getElementById('id_photo').click();
+    });
+</script>
+{% endblock %}

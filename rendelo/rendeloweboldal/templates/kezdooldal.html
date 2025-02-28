@@ -1,83 +1,35 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kezdőoldal</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
-    <script src="{% static 'js/scroll.js' %}"></script>
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <img src="{% static 'Images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
-            <div class="overlay">
-                <h1 class="header-title">Üdvözöljük a Kezdőoldalon</h1>
-            </div>
-        </div>
-    </header>
-    <main>
-        <nav>
-            <ul class="navbar">
-                <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
-                <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
-                {% if user.is_authenticated and user.is_superuser %}
-                    <li><a href="{% url 'admin_view' %}">Admin</a></li>
-                {% endif %}
-                {% if user.is_authenticated and user.is_staff and not user.is_superuser %}
-                    <li><a href="{% url 'patients' %}">Páciensek</a></li>
-                    <li><a href="{% url 'appointments_today' %}">Időpontjaim mára</a></li>
-                    <li><a href="{% url 'working_hours' %}">Munkaidő</a></li>
-                {% endif %}
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'profile' %}">Profil</a></li>
-                    <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        
-        <section class="intro">
-            <p>
-                Üdvözöljük az IldiDental magán fogorvosi rendelőben, ahol a legmodernebb technológiák és a szakképzett fogorvosi csapat várja Önt! Rendelőnk célja, hogy a fogászati ellátás ne csupán a kezelésekről, hanem az egészséges és szép mosoly élményéről szóljon. Tudjuk, hogy sokan tartanak a fogorvosi látogatástól, ezért mindent megteszünk azért, hogy barátságos, nyugodt környezetet biztosítsunk, ahol pácienseink bizalommal fordulhatnak hozzánk.
-                Szolgáltatásaink között megtalálható a fogtömés, gyökérkezelés, fogpótlás, fogfehérítés, valamint esztétikai és implantációs beavatkozások is. Rendelőnk minden életkorú páciens számára nyitva áll, legyen szó gyermekekről, fiatal felnőttekről, vagy idősebbekről. Fogorvosaink folyamatosan továbbképzik magukat, hogy naprakészek legyenek a legújabb technikák és kezelési módszerek terén, ezáltal Ön a legmagasabb színvonalú ellátást kaphatja.
-                Minden esetben személyre szabott kezelési tervet készítünk, amely a páciens igényeire, fogainak állapotára és az egészségügyi szempontokra épül. Fontos számunkra a hosszú távú eredmények biztosítása, így nemcsak a jelenlegi problémákat oldjuk meg, hanem segítünk az egészséges szájhigiénia fenntartásában is.
-                Várjuk Önt rendelőnkben, ahol szakértői csapatunk szeretettel és odafigyeléssel áll rendelkezésére!
-            </p>
-        </section>
-        <section class="pricing">
-            <h2>Áraink:</h2>
-            <table>
-                <tr>
-                    <th>Szolgáltatás</th>
-                    <th>Ár</th>
-                </tr>
-                {% for treatment in treatments %}
-                <tr>
-                    <td>{{ treatment.name }}</td>
-                    <td>{{ treatment.price }} Ft</td>
-                </tr>
-                {% endfor %}
-            </table>
-            <p>
-                Az árak változhatnak a beavatkozások egyedi igényei alapján. A végleges kezelési költségeket az állapotfelmérés során határozzuk meg, és részletes tájékoztatást nyújtunk pácienseinknek.
-            </p>
-        </section>
-    </main>
-    <footer>
-        <div class="contact-info">
-            <h2>Elérhetőségek:</h2>
-            <p><strong>Cím:</strong> 1062 Budapest, Mosoly utca 12.</p>
-            <p><strong>Telefon:</strong> +36 1 789 4567</p>
-            <p><strong>E-mail:</strong> <a href="mailto:kapcsolat@mosolyfogaszat.hu">kapcsolat@mosolyfogaszat.hu</a></p>
-            <p><strong>Nyitvatartás:</strong> Hétfőtől péntekig 8:00-19:00, szombaton 9:00-13:00</p>
-            <p><strong>Parkolás:</strong> Ingyenes parkolási lehetőség a rendelő előtt.</p>
-            <p><strong>Tömegközlekedés:</strong> A 4-es és 6-os villamossal, valamint az M1-es metróval könnyen megközelíthető.</p>
-        </div>
-        <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
-    </footer>
-</body>
-</html>
+
+{% block title %}Kezdőoldal{% endblock %}
+
+{% block header_title %}Üdvözöljük a Kezdőoldalon{% endblock %}
+
+{% block content %}
+<section class="intro">
+    <p>
+        Üdvözöljük az IldiDental magán fogorvosi rendelőben, ahol a legmodernebb technológiák és a szakképzett fogorvosi csapat várja Önt! Rendelőnk célja, hogy a fogászati ellátás ne csupán a kezelésekről, hanem az egészséges és szép mosoly élményéről szóljon. Tudjuk, hogy sokan tartanak a fogorvosi látogatástól, ezért mindent megteszünk azért, hogy barátságos, nyugodt környezetet biztosítsunk, ahol pácienseink bizalommal fordulhatnak hozzánk.
+        Szolgáltatásaink között megtalálható a fogtömés, gyökérkezelés, fogpótlás, fogfehérítés, valamint esztétikai és implantációs beavatkozások is. Rendelőnk minden életkorú páciens számára nyitva áll, legyen szó gyermekekről, fiatal felnőttekről, vagy idősebbekről. Fogorvosaink folyamatosan továbbképzik magukat, hogy naprakészek legyenek a legújabb technikák és kezelési módszerek terén, ezáltal Ön a legmagasabb színvonalú ellátást kaphatja.
+        Minden esetben személyre szabott kezelési tervet készítünk, amely a páciens igényeire, fogainak állapotára és az egészségügyi szempontokra épül. Fontos számunkra a hosszú távú eredmények biztosítása, így nemcsak a jelenlegi problémákat oldjuk meg, hanem segítünk az egészséges szájhigiénia fenntartásában is.
+        Várjuk Önt rendelőnkben, ahol szakértői csapatunk szeretettel és odafigyeléssel áll rendelkezésére!
+    </p>
+</section>
+<section class="pricing">
+    <h2>Áraink:</h2>
+    <table>
+        <tr>
+            <th>Szolgáltatás</th>
+            <th>Ár</th>
+        </tr>
+        {% for treatment in treatments %}
+        <tr>
+            <td>{{ treatment.name }}</td>
+            <td>{{ treatment.price }} Ft</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p>
+        Az árak változhatnak a beavatkozások egyedi igényei alapján. A végleges kezelési költségeket az állapotfelmérés során határozzuk meg, és részletes tájékoztatást nyújtunk pácienseinknek.
+    </p>
+</section>
+{% endblock %}

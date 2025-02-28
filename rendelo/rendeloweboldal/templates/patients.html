@@ -1,102 +1,58 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Páciensek</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
-    <script src="{% static 'js/scroll.js' %}"></script>
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
-            <div class="overlay">
-                <h1 class="header-title">Páciensek</h1>
-            </div>
-        </div>
-    </header>
-    <main>
-        <nav>
-            <ul class="navbar">
-                <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
-                <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
-                {% if user.is_authenticated and user.is_superuser %}
-                    <li><a href="{% url 'admin_view' %}">Admin</a></li>
-                {% endif %}
-                {% if user.is_authenticated and user.is_staff and not user.is_superuser %}
-                    <li><a href="{% url 'patients' %}">Páciensek</a></li>
-                    <li><a href="{% url 'appointments_today' %}">Időpontjaim mára</a></li>
-                    <li><a href="{% url 'working_hours' %}">Munkaidő</a></li>
-                {% endif %}
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'profile' %}">Profil</a></li>
-                    <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        <section class="patients">
-            <h2>Páciensek listája</h2>
-            <form method="get" action="{% url 'patients' %}">
-                <input type="text" name="search" placeholder="Keresés név alapján" value="{{ request.GET.search }}">
-                <button type="submit">Keresés</button>
-                <button type="button" onclick="showAllPatients()">Összes páciens</button>
-            </form>
-            {% if no_results_message %}
-                <p class="info-message">{{ no_results_message }}</p>
-            {% else %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Név</th>
-                            <th>Nem</th>
-                            <th>Születési dátum</th>
-                            <th>Elérhetőség</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for patient in patients %}
-                        <tr onclick="goToPatientDetail('{{ patient.id }}')" style="cursor: pointer;">
-                            <td>{{ patient.name }}</td>
-                            <td>
-                                {% if patient.gender == 'male' %}
-                                    Férfi
-                                {% elif patient.gender == 'female' %}
-                                    Nő
-                                {% endif %}
-                            </td>
-                            <td>{{ patient.birthDate }}</td>
-                            <td>{{ patient.telecom }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% endif %}
-        </section>
-    </main>
-    <footer>
-        <div class="contact-info">
-            <h2>Elérhetőségek:</h2>
-            <p><strong>Cím:</strong> 1062 Budapest, Mosoly utca 12.</p>
-            <p><strong>Telefon:</strong> +36 1 789 4567</p>
-            <p><strong>E-mail:</strong> <a href="mailto:kapcsolat@mosolyfogaszat.hu">kapcsolat@mosolyfogaszat.hu</a></p>
-            <p><strong>Nyitvatartás:</strong> Hétfőtől péntekig 8:00-19:00, szombaton 9:00-13:00</p>
-            <p><strong>Parkolás:</strong> Ingyenes parkolási lehetőség a rendelő előtt.</p>
-            <p><strong>Tömegközlekedés:</strong> A 4-es és 6-os villamossal, valamint az M1-es metróval könnyen megközelíthető.</p>
-        </div>
-        <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
-    </footer>
-    <script>
-        function goToPatientDetail(patientId) {
-            window.location.href = "{% url 'patient_detail' 'PATIENT_ID' %}".replace('PATIENT_ID', patientId);
-        }
-        function showAllPatients() {
-            window.location.href = "{% url 'patients' %}";
-        }
-    </script>
-</body>
-</html>
+
+{% block title %}Páciensek{% endblock %}
+
+{% block header_title %}Páciensek{% endblock %}
+
+{% block content %}
+<section class="patients">
+    <h2>Páciensek listája</h2>
+    <form method="get" action="{% url 'patients' %}">
+        <input type="text" name="search" placeholder="Keresés név alapján" value="{{ request.GET.search }}">
+        <button type="submit">Keresés</button>
+        <button type="button" onclick="showAllPatients()">Összes páciens</button>
+    </form>
+    {% if no_results_message %}
+        <p class="info-message">{{ no_results_message }}</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Név</th>
+                    <th>Nem</th>
+                    <th>Születési dátum</th>
+                    <th>Elérhetőség</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr onclick="goToPatientDetail('{{ patient.id }}')" style="cursor: pointer;">
+                    <td>{{ patient.name }}</td>
+                    <td>
+                        {% if patient.gender == 'male' %}
+                            Férfi
+                        {% elif patient.gender == 'female' %}
+                            Nő
+                        {% endif %}
+                    </td>
+                    <td>{{ patient.birthDate }}</td>
+                    <td>{{ patient.telecom }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function goToPatientDetail(patientId) {
+        window.location.href = "{% url 'patient_detail' 'PATIENT_ID' %}".replace('PATIENT_ID', patientId);
+    }
+    function showAllPatients() {
+        window.location.href = "{% url 'patients' %}";
+    }
+</script>
+{% endblock %}

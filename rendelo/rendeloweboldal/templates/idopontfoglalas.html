@@ -1,295 +1,228 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Időpontfoglalás</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
-    <script src="{% static 'js/scroll.js' %}"></script>
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
-            <div class="overlay">
-                <h1 class="header-title">Időpontfoglalás</h1>
-            </div>
+
+{% block title %}Időpontfoglalás{% endblock %}
+
+{% block header_title %}Időpontfoglalás{% endblock %}
+
+{% block content %}
+{% if error_message %}
+    <h2>{{ error_message }}</h2>
+{% elif user.is_superuser or user.is_staff %}
+    <h2>Admin vagy orvos fiókkal nem kérhetsz időpontot!</h2>
+{% elif user.is_authenticated %}
+    <section class="doctors">
+        <h2>Válasszon orvost</h2>
+        <div class="doctor-list">
+            {% for doctor in doctors %}
+            <a href="#" class="doctor" data-doctor="{{ doctor.id }}">
+                <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}" class="doctor-photo">
+                <span>{{ doctor.name }}</span>
+            </a>
+            {% endfor %}
         </div>
-    </header>
-    <main>
-        <nav>
-            <ul class="navbar">
-                <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
-                <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
-                {% if user.is_authenticated and user.is_superuser %}
-                    <li><a href="{% url 'admin_view' %}">Admin</a></li>
-                {% endif %}
-                {% if user.is_authenticated and user.is_staff and not user.is_superuser %}
-                    <li><a href="{% url 'patients' %}">Páciensek</a></li>
-                    <li><a href="{% url 'appointments_today' %}">Időpontjaim mára</a></li>
-                    <li><a href="{% url 'working_hours' %}">Munkaidő</a></li>
-                {% endif %}
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'profile' %}">Profil</a></li>
-                    <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% if error_message %}
-            <h2>{{ error_message }}</h2>
-        {% elif user.is_superuser or user.is_staff%}
-            <h2>Admin vagy orvos fiókkal nem kérhetsz időpontot!</h2>
-        {% elif user.is_authenticated %}
-            <section class="doctors">
-                <h2>Válasszon orvost</h2>
-                <div class="doctor-list">
-                    {% for doctor in doctors %}
-                    <a href="#" class="doctor" data-doctor="{{ doctor.id }}">
-                        <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}" class="doctor-photo">
-                        <span>{{ doctor.name }}</span>
-                    </a>
-                    {% endfor %}
-                </div>
-            </section>
-            <section class="booking">
-                <h2>Időpontfoglalás</h2>
-                <form id="booking-form" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" id="selected_doctor" name="selected_doctor" required>
-                    
-                    <label for="treatment">Válasszon kezelést:</label>
-                    <select id="treatment" name="treatment" required>
-                        <option value="" disabled selected>Kérem válasszon kezelést!</option>
-                        {% for treatment in treatments %}
-                        <option value="{{ treatment.id }}" data-duration="{{ treatment.duration.total_seconds }}">{{ treatment.name }}</option>
-                        {% endfor %}
-                    </select>
-
-                    <button type="button" id="earliest-appointment-button">Leghamarabbi időpont kiválasztása</button>
-
-                    <label for="appointment_date">Dátum:</label>
-                    <input type="date" id="appointment_date" name="appointment_date" required style="cursor: pointer;">
-
-                    <div id="time_slots">
-                        <div id="morning_section" style="display: none;">
-                            <h3>Délelőtt</h3>
-                            <div id="morning_slots" class="time-slots"></div>
-                        </div>
-                        <div id="afternoon_section" style="display: none;">
-                            <h3>Délután</h3>
-                            <div id="afternoon_slots" class="time-slots"></div>
-                        </div>
-                    </div>
-
-                    <input type="hidden" id="appointment_datetime" name="appointment_datetime">
-                    <button type="submit" id="submit_button" disabled>Foglalás</button>
-                </form>
-            </section>
-        {% else %}
-            <h2>Időpont foglaláshoz kérem, jelentkezzen be, vagy hozzon létre egy új fiókot!</h2>
-        {% endif %}
-    </main>
-
-    <!-- Egyedi párbeszédablak -->
-    <div id="confirmation-dialog" class="dialog-overlay" style="display: none;">
-        <div class="dialog-box">
-            <h3>Biztosan lefoglalja az időpontot?</h3>
-            <p id="confirmation-details"></p>
-            <div class="dialog-buttons">
-                <button id="confirm-button">OK</button>
-                <button id="cancel-button">Mégse</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sikeres foglalás üzenet -->
-    <div id="success-message" class="dialog-overlay" style="display: none;">
-        <div class="dialog-box">
-            <h3>Időpont sikeresen lefoglalva.</h3>
-        </div>
-    </div>
-
-    <footer>
-        <div class="contact-info">
-            <h2>Elérhetőségek:</h2>
-            <p><strong>Cím:</strong> 1062 Budapest, Mosoly utca 12.</p>
-            <p><strong>Telefon:</strong> +36 1 789 4567</p>
-            <p><strong>E-mail:</strong> <a href="mailto:kapcsolat@mosolyfogaszat.hu">kapcsolat@mosolyfogaszat.hu</a></p>
-            <p><strong>Nyitvatartás:</strong> Hétfőtől péntekig 8:00-19:00, szombaton 9:00-13:00</p>
-            <p><strong>Parkolás:</strong> Ingyenes parkolási lehetőség a rendelő előtt.</p>
-            <p><strong>Tömegközlekedés:</strong> A 4-es és 6-os villamossal, valamint az M1-es metróval könnyen megközelíthető.</p>
-        </div>
-        <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const doctorLinks = document.querySelectorAll('.doctor');
-            const selectedDoctorInput = document.getElementById('selected_doctor');
-            const earliestAppointmentButton = document.getElementById('earliest-appointment-button');
+    </section>
+    <section class="booking">
+        <h2>Időpontfoglalás</h2>
+        <form id="booking-form" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="selected_doctor" name="selected_doctor" required>
             
-            doctorLinks.forEach(link => {
-                link.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const doctorId = this.getAttribute('data-doctor');
-                    selectedDoctorInput.value = doctorId;
-                    doctorLinks.forEach(link => link.classList.remove('selected'));
-                    this.classList.add('selected');
-                    updateAvailableSlots();
-                });
-            });
+            <label for="treatment">Válasszon kezelést:</label>
+            <select id="treatment" name="treatment" required>
+                <option value="" disabled selected>Kérem válasszon kezelést!</option>
+                {% for treatment in treatments %}
+                <option value="{{ treatment.id }}" data-duration="{{ treatment.duration.total_seconds }}">{{ treatment.name }}</option>
+                {% endfor %}
+            </select>
 
-            document.getElementById('treatment').addEventListener('change', function() {
-                updateAvailableSlots();
-            });
+            <button type="button" id="earliest-appointment-button">Leghamarabbi időpont kiválasztása</button>
 
-            document.getElementById('appointment_date').addEventListener('change', function() {
-                updateAvailableSlots();
-            });
+            <label for="appointment_date">Dátum:</label>
+            <input type="date" id="appointment_date" name="appointment_date" required style="cursor: pointer;">
 
-            earliestAppointmentButton.addEventListener('click', function() {
-                const selectedDoctor = selectedDoctorInput.value;
-                const selectedTreatment = document.getElementById('treatment').value;
-                if (selectedDoctor && selectedTreatment) {
-                    fetch(`/get_earliest_slot/?doctor=${selectedDoctor}&treatment=${selectedTreatment}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.earliest_slot) {
-                                document.getElementById('appointment_date').value = data.earliest_slot.date;
-                                updateAvailableSlots();
-                                setTimeout(() => {
-                                    const timeSlotButton = document.querySelector(`.time-slots button[data-time="${data.earliest_slot.time}"]`);
-                                    if (timeSlotButton) {
-                                        timeSlotButton.click();
-                                    }
-                                }, 500);
-                            } else {
-                                alert('Nincs elérhető időpont.');
-                            }
-                        });
-                } else {
-                    alert('Kérem válasszon orvost és kezelést.');
-                }
-            });
+            <div id="time_slots">
+                <div id="morning_section" style="display: none;">
+                    <h3>Délelőtt</h3>
+                    <div id="morning_slots" class="time-slots"></div>
+                </div>
+                <div id="afternoon_section" style="display: none;">
+                    <h3>Délután</h3>
+                    <div id="afternoon_slots" class="time-slots"></div>
+                </div>
+            </div>
 
-            function updateAvailableSlots() {
-                const selectedDoctor = selectedDoctorInput.value;
-                const selectedDate = document.getElementById('appointment_date').value;
-                const selectedTreatment = document.getElementById('treatment').value;
-                if (selectedDoctor && selectedDate && selectedTreatment) {
-                    fetch(`/get_available_slots/?doctor=${selectedDoctor}&date=${selectedDate}&treatment=${selectedTreatment}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const morningSection = document.getElementById('morning_section');
-                            const afternoonSection = document.getElementById('afternoon_section');
-                            const morningSlotsDiv = document.getElementById('morning_slots');
-                            const afternoonSlotsDiv = document.getElementById('afternoon_slots');
-                            morningSlotsDiv.innerHTML = '';
-                            afternoonSlotsDiv.innerHTML = '';
-                            let morningSlotsExist = false;
-                            let afternoonSlotsExist = false;
-                            data.slots.forEach(slot => {
-                                const button = document.createElement('button');
-                                button.type = 'button';
-                                button.textContent = slot.time;
-                                button.disabled = !slot.available;
-                                button.classList.remove('selected'); 
-                                button.setAttribute('data-time', slot.time);
-                                button.addEventListener('click', function() {
-                                    document.getElementById('appointment_datetime').value = `${selectedDate} ${slot.time}`;
-                                    document.getElementById('submit_button').disabled = false;
-                                    document.querySelectorAll('.time-slots button').forEach(btn => btn.classList.remove('selected'));
-                                    this.classList.add('selected');
-                                });
-                                if (parseInt(slot.time.split(':')[0]) < 12) {
-                                    morningSlotsDiv.appendChild(button);
-                                    morningSlotsExist = true;
-                                } else {
-                                    afternoonSlotsDiv.appendChild(button);
-                                    afternoonSlotsExist = true;
-                                }
-                            });
-                            morningSection.style.display = morningSlotsExist ? 'block' : 'none';
-                            afternoonSection.style.display = afternoonSlotsExist ? 'block' : 'none';
-                        });
-                }
-            }
+            <input type="hidden" id="appointment_datetime" name="appointment_datetime">
+            <button type="submit" id="submit_button" disabled>Foglalás</button>
+        </form>
+    </section>
+{% else %}
+    <h2>Időpont foglaláshoz kérem, jelentkezzen be, vagy hozzon létre egy új fiókot!</h2>
+{% endif %}
+{% endblock %}
 
-            const appointmentDateInput = document.getElementById('appointment_date');
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const yyyy = tomorrow.getFullYear();
-            const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-            const dd = String(tomorrow.getDate()).padStart(2, '0');
-            const minDate = `${yyyy}-${mm}-${dd}`;
-            appointmentDateInput.setAttribute('min', minDate);
-
-            appointmentDateInput.addEventListener('blur', function() {
-                const selectedDate = new Date(this.value);
-                if (selectedDate < tomorrow) {
-                    this.value = minDate;
-                }
-            });
-
-            const bookingForm = document.getElementById('booking-form');
-            const confirmationDialog = document.getElementById('confirmation-dialog');
-            const confirmationDetails = document.getElementById('confirmation-details');
-            const confirmButton = document.getElementById('confirm-button');
-            const cancelButton = document.getElementById('cancel-button');
-            const submitButton = document.getElementById('submit_button');
-            const timeSlotButtons = document.querySelectorAll('.time-slots button');
-            const timeSlotsDiv = document.getElementById('time_slots');
-            const successMessage = document.getElementById('success-message');
-
-            bookingForm.addEventListener('submit', function(event) {
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const doctorLinks = document.querySelectorAll('.doctor');
+        const selectedDoctorInput = document.getElementById('selected_doctor');
+        const earliestAppointmentButton = document.getElementById('earliest-appointment-button');
+        
+        doctorLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
                 event.preventDefault();
-                const selectedDoctor = document.querySelector('.doctor.selected').textContent;
-                const selectedTreatment = document.getElementById('treatment').selectedOptions[0].textContent;
-                const selectedDate = document.getElementById('appointment_date').value;
-                const selectedTime = document.getElementById('appointment_datetime').value.split(' ')[1];
-                confirmationDetails.textContent = `Orvos: ${selectedDoctor}\nKezelés: ${selectedTreatment}\nIdőpont: ${selectedDate} ${selectedTime}`;
-                confirmationDialog.style.display = 'flex';
-                submitButton.style.display = 'none';
-                timeSlotButtons.forEach(button => button.style.display = 'none');
-                timeSlotsDiv.style.display = 'none';
-            });
-
-            confirmButton.addEventListener('click', function() {
-                confirmationDialog.style.display = 'none';
-                // AJAX kérés a foglalás elküldéséhez
-                const formData = new FormData(bookingForm);
-                fetch(bookingForm.action, {
-                    method: 'POST',
-                    body: formData
-                }).then(response => {
-                    if (response.ok) {
-                        successMessage.style.display = 'flex';
-                        setTimeout(() => {
-                            successMessage.style.display = 'none';
-                            // Alaphelyzetbe állítás
-                            bookingForm.reset();
-                            document.getElementById('selected_doctor').value = '';
-                            doctorLinks.forEach(link => link.classList.remove('selected'));
-                            submitButton.style.display = 'block';
-                        }, 3000);
-                    } else {
-                        alert('Hiba történt a foglalás során.');
-                    }
-                });
-            });
-
-            cancelButton.addEventListener('click', function() {
-                confirmationDialog.style.display = 'none';
-                submitButton.style.display = 'block';
-                timeSlotButtons.forEach(button => button.style.display = 'inline-block');
-                timeSlotsDiv.style.display = 'block';
+                const doctorId = this.getAttribute('data-doctor');
+                selectedDoctorInput.value = doctorId;
+                doctorLinks.forEach(link => link.classList.remove('selected'));
+                this.classList.add('selected');
+                updateAvailableSlots();
             });
         });
-    </script>
-</body>
-</html>
+
+        document.getElementById('treatment').addEventListener('change', function() {
+            updateAvailableSlots();
+        });
+
+        document.getElementById('appointment_date').addEventListener('change', function() {
+            updateAvailableSlots();
+        });
+
+        earliestAppointmentButton.addEventListener('click', function() {
+            const selectedDoctor = selectedDoctorInput.value;
+            const selectedTreatment = document.getElementById('treatment').value;
+            if (selectedDoctor && selectedTreatment) {
+                fetch(`/get_earliest_slot/?doctor=${selectedDoctor}&treatment=${selectedTreatment}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.earliest_slot) {
+                            document.getElementById('appointment_date').value = data.earliest_slot.date;
+                            updateAvailableSlots();
+                            setTimeout(() => {
+                                const timeSlotButton = document.querySelector(`.time-slots button[data-time="${data.earliest_slot.time}"]`);
+                                if (timeSlotButton) {
+                                    timeSlotButton.click();
+                                }
+                            }, 500);
+                        } else {
+                            alert('Nincs elérhető időpont.');
+                        }
+                    });
+            } else {
+                alert('Kérem válasszon orvost és kezelést.');
+            }
+        });
+
+        function updateAvailableSlots() {
+            const selectedDoctor = selectedDoctorInput.value;
+            const selectedDate = document.getElementById('appointment_date').value;
+            const selectedTreatment = document.getElementById('treatment').value;
+            if (selectedDoctor && selectedDate && selectedTreatment) {
+                fetch(`/get_available_slots/?doctor=${selectedDoctor}&date=${selectedDate}&treatment=${selectedTreatment}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const morningSection = document.getElementById('morning_section');
+                        const afternoonSection = document.getElementById('afternoon_section');
+                        const morningSlotsDiv = document.getElementById('morning_slots');
+                        const afternoonSlotsDiv = document.getElementById('afternoon_slots');
+                        morningSlotsDiv.innerHTML = '';
+                        afternoonSlotsDiv.innerHTML = '';
+                        let morningSlotsExist = false;
+                        let afternoonSlotsExist = false;
+                        data.slots.forEach(slot => {
+                            const button = document.createElement('button');
+                            button.type = 'button';
+                            button.textContent = slot.time;
+                            button.disabled = !slot.available;
+                            button.classList.remove('selected'); 
+                            button.setAttribute('data-time', slot.time);
+                            button.addEventListener('click', function() {
+                                document.getElementById('appointment_datetime').value = `${selectedDate} ${slot.time}`;
+                                document.getElementById('submit_button').disabled = false;
+                                document.querySelectorAll('.time-slots button').forEach(btn => btn.classList.remove('selected'));
+                                this.classList.add('selected');
+                            });
+                            if (parseInt(slot.time.split(':')[0]) < 12) {
+                                morningSlotsDiv.appendChild(button);
+                                morningSlotsExist = true;
+                            } else {
+                                afternoonSlotsDiv.appendChild(button);
+                                afternoonSlotsExist = true;
+                            }
+                        });
+                        morningSection.style.display = morningSlotsExist ? 'block' : 'none';
+                        afternoonSection.style.display = afternoonSlotsExist ? 'block' : 'none';
+                    });
+            }
+        }
+
+        const appointmentDateInput = document.getElementById('appointment_date');
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const yyyy = tomorrow.getFullYear();
+        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const dd = String(tomorrow.getDate()).padStart(2, '0');
+        const minDate = `${yyyy}-${mm}-${dd}`;
+        appointmentDateInput.setAttribute('min', minDate);
+
+        appointmentDateInput.addEventListener('blur', function() {
+            const selectedDate = new Date(this.value);
+            if (selectedDate < tomorrow) {
+                this.value = minDate;
+            }
+        });
+
+        const bookingForm = document.getElementById('booking-form');
+        const confirmationDialog = document.getElementById('confirmation-dialog');
+        const confirmationDetails = document.getElementById('confirmation-details');
+        const confirmButton = document.getElementById('confirm-button');
+        const cancelButton = document.getElementById('cancel-button');
+        const submitButton = document.getElementById('submit_button');
+        const timeSlotButtons = document.querySelectorAll('.time-slots button');
+        const timeSlotsDiv = document.getElementById('time_slots');
+        const successMessage = document.getElementById('success-message');
+
+        bookingForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const selectedDoctor = document.querySelector('.doctor.selected').textContent;
+            const selectedTreatment = document.getElementById('treatment').selectedOptions[0].textContent;
+            const selectedDate = document.getElementById('appointment_date').value;
+            const selectedTime = document.getElementById('appointment_datetime').value.split(' ')[1];
+            confirmationDetails.textContent = `Orvos: ${selectedDoctor}\nKezelés: ${selectedTreatment}\nIdőpont: ${selectedDate} ${selectedTime}`;
+            confirmationDialog.style.display = 'flex';
+            submitButton.style.display = 'none';
+            timeSlotButtons.forEach(button => button.style.display = 'none');
+            timeSlotsDiv.style.display = 'none';
+        });
+
+        confirmButton.addEventListener('click', function() {
+            confirmationDialog.style.display = 'none';
+            const formData = new FormData(bookingForm);
+            fetch(bookingForm.action, {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    successMessage.style.display = 'flex';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                        bookingForm.reset();
+                        document.getElementById('selected_doctor').value = '';
+                        doctorLinks.forEach(link => link.classList.remove('selected'));
+                        submitButton.style.display = 'block';
+                    }, 3000);
+                } else {
+                    alert('Hiba történt a foglalás során.');
+                }
+            });
+        });
+
+        cancelButton.addEventListener('click', function() {
+            confirmationDialog.style.display = 'none';
+            submitButton.style.display = 'block';
+            timeSlotButtons.forEach(button => button.style.display = 'inline-block');
+            timeSlotsDiv.style.display = 'block';
+        });
+    });
+</script>
+{% endblock %}

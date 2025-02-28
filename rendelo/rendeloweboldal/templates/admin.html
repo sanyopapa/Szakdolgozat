@@ -1,140 +1,100 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
-    <link rel="stylesheet" href="{% static 'css/admin_style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
-    <script src="{% static 'js/scroll.js' %}"></script>
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
-            <div class="overlay">
-                <h1 class="header-title">Admin</h1>
-            </div>
-        </div>
-    </header>
-    <main>
-        <nav>
-            <ul class="navbar">
-                <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
-                <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
-                {% if user.is_authenticated and user.is_superuser %}
-                    <li><a href="{% url 'admin_view' %}">Admin</a></li>  
-                {% endif %}
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'profile' %}">Profil</a></li>
-                    <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        <section class="admin">
-            <h2>Adminisztráció</h2>
-            <button class="accordion-button">Kezelések</button>
-            <div class="accordion-content">
-                <a href="{% url 'add_treatment' %}" class="add-button">Új kezelés hozzáadása</a>
-                <ul class="treatment-list">
-                    {% for treatment in treatments %}
-                    <li class="treatment-item">
-                        <div class="treatment-info">
-                            <span class="treatment-name">{{ treatment.name }}</span>
-                            <span class="treatment-duration">{{ treatment.duration }}</span>
-                        </div>
-                        <div class="treatment-actions">
-                            <a href="{% url 'edit_treatment' treatment.id %}" class="edit-button">Szerkesztés</a>
-                            <a href="{% url 'delete_treatment' treatment.id %}" class="delete-button">Törlés</a>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <button class="accordion-button">Orvosok</button>
-            <div class="accordion-content">
-                <a href="{% url 'add_doctor' %}" class="add-button">Új orvos hozzáadása</a>
-                <ul class="doctor-list">
-                    {% for doctor in doctors %}
-                    <li class="doctor-item">
-                        <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}" class="doctor-thumbnail">
-                        <div class="doctor-info">
-                            <span class="doctor-name">{{ doctor.name }}</span>
-                            <span class="doctor-qualification">{{ doctor.qualification }}</span>
-                        </div>
-                        <div class="doctor-actions">
-                            <a href="{% url 'edit_doctor' doctor.id %}" class="edit-button">Szerkesztés</a>
-                            <a href="{% url 'delete_doctor' doctor.id %}" class="delete-button">Törlés</a>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <button class="accordion-button">Felhasználói fiókok</button>
-            <div class="accordion-content">
-                <a href="{% url 'add_admin_user' %}" class="add-button">Új admin felhasználó hozzáadása</a>
-                <ul class="user-list">
-                    {% for user in users %}
-                    <li class="user-item">
-                        <div class="user-info">
-                            <span class="user-name">{{ user.username }}</span>
-                            <span class="user-email">{{ user.email }}</span>
-                            {% if user.is_superuser %}
-                            <span class="user-role">Superuser</span>
-                            {% else %}
-                                {% if user.patient %}
-                                    <span class="user-gender">{{ user.patient.gender }}</span>
-                                    <span class="user-birthdate">{{ user.patient.birthDate }}</span>
-                                    <span class="user-telecom">{{ user.patient.telecom }}</span>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                        <div class="user-actions">
-                            {% if user.id %}
-                                {% if not user.is_superuser and user.is_staff%}
-                                    Orvos, szerkeszthető az Orvosok menüben!
-                                {% else %}
-                                    <a href="{% url 'edit_user' user.id %}" class="edit-button">Szerkesztés</a>
-                                    <a href="{% url 'delete_user' user.id %}" class="delete-button">Törlés</a>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </section>
-    </main>
-    <footer>
-        <div class="contact-info">
-            <h2>Elérhetőségek:</h2>
-            <p><strong>Cím:</strong> 1062 Budapest, Mosoly utca 12.</p>
-            <p><strong>Telefon:</strong> +36 1 789 4567</p>
-            <p><strong>E-mail:</strong> <a href="mailto:kapcsolat@mosolyfogaszat.hu">kapcsolat@mosolyfogaszat.hu</a></p>
-            <p><strong>Nyitvatartás:</strong> Hétfőtől péntekig 8:00-19:00, szombaton 9:00-13:00</p>
-            <p><strong>Parkolás:</strong> Ingyenes parkolási lehetőség a rendelő előtt.</p>
-            <p><strong>Tömegközlekedés:</strong> A 4-es és 6-os villamossal, valamint az M1-es metróval könnyen megközelíthető.</p>
-        </div>
-        <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
-    </footer>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var accButtons = document.querySelectorAll('.accordion-button');
-            accButtons.forEach(function(button) {
-                button.addEventListener('click', function() {
-                    var content = this.nextElementSibling;
-                    if (content.style.maxHeight) {
-                        content.style.maxHeight = null;
-                    } else {
-                        content.style.maxHeight = content.scrollHeight + "px";
-                    }
-                });
+
+{% block title %}Admin{% endblock %}
+
+{% block header_title %}Admin{% endblock %}
+
+{% block content %}
+<section class="admin">
+    <h2>Adminisztráció</h2>
+    <button class="accordion-button">Kezelések</button>
+    <div class="accordion-content">
+        <a href="{% url 'add_treatment' %}" class="add-button">Új kezelés hozzáadása</a>
+        <ul class="treatment-list">
+            {% for treatment in treatments %}
+            <li class="treatment-item">
+                <div class="treatment-info">
+                    <span class="treatment-name">{{ treatment.name }}</span>
+                    <span class="treatment-duration">{{ treatment.duration }}</span>
+                </div>
+                <div class="treatment-actions">
+                    <a href="{% url 'edit_treatment' treatment.id %}" class="edit-button">Szerkesztés</a>
+                    <a href="{% url 'delete_treatment' treatment.id %}" class="delete-button">Törlés</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <button class="accordion-button">Orvosok</button>
+    <div class="accordion-content">
+        <a href="{% url 'add_doctor' %}" class="add-button">Új orvos hozzáadása</a>
+        <ul class="doctor-list">
+            {% for doctor in doctors %}
+            <li class="doctor-item">
+                <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}" class="doctor-thumbnail">
+                <div class="doctor-info">
+                    <span class="doctor-name">{{ doctor.name }}</span>
+                    <span class="doctor-qualification">{{ doctor.qualification }}</span>
+                </div>
+                <div class="doctor-actions">
+                    <a href="{% url 'edit_doctor' doctor.id %}" class="edit-button">Szerkesztés</a>
+                    <a href="{% url 'delete_doctor' doctor.id %}" class="delete-button">Törlés</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <button class="accordion-button">Felhasználói fiókok</button>
+    <div class="accordion-content">
+        <a href="{% url 'add_admin_user' %}" class="add-button">Új admin felhasználó hozzáadása</a>
+        <ul class="user-list">
+            {% for user in users %}
+            <li class="user-item">
+                <div class="user-info">
+                    <span class="user-name">{{ user.username }}</span>
+                    <span class="user-email">{{ user.email }}</span>
+                    {% if user.is_superuser %}
+                    <span class="user-role">Superuser</span>
+                    {% else %}
+                        {% if user.patient %}
+                            <span class="user-gender">{{ user.patient.gender }}</span>
+                            <span class="user-birthdate">{{ user.patient.birthDate }}</span>
+                            <span class="user-telecom">{{ user.patient.telecom }}</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="user-actions">
+                    {% if user.id %}
+                        {% if not user.is_superuser and user.is_staff %}
+                            Orvos, szerkeszthető az Orvosok menüben!
+                        {% else %}
+                            <a href="{% url 'edit_user' user.id %}" class="edit-button">Szerkesztés</a>
+                            <a href="{% url 'delete_user' user.id %}" class="delete-button">Törlés</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var accButtons = document.querySelectorAll('.accordion-button');
+        accButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
             });
         });
-    </script>
-</body>
-</html>
+    });
+</script>
+{% endblock %}

@@ -1,48 +1,23 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orvos törlése</title>
-    <link rel="stylesheet" href="{% static 'css/admin_style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
-    <script src="{% static 'js/scroll.js' %}"></script>
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
-            <div class="overlay">
-                <h1 class="header-title">Orvos törlése</h1>
-            </div>
-        </div>
-    </header>
-    <main>
-        <p>Biztosan törölni szeretné a következő orvost?</p>
-        <p>{{ doctor.name }} - {{ doctor.qualification }}</p>
-        {% if doctor.photo %}
-        <div class="doctor-photo">
-            <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}" class="doctor-image">
-        </div>
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit">Törlés</button>
-            <a href="{% url 'admin_view' %}" class="button">Mégsem</a>
-        </form>
-    </main>
-    <footer>
-        <div class="contact-info">
-            <h2>Elérhetőségek:</h2>
-            <p><strong>Cím:</strong> 1062 Budapest, Mosoly utca 12.</p>
-            <p><strong>Telefon:</strong> +36 1 789 4567</p>
-            <p><strong>E-mail:</strong> <a href="mailto:kapcsolat@mosolyfogaszat.hu">kapcsolat@mosolyfogaszat.hu</a></p>
-            <p><strong>Nyitvatartás:</strong> Hétfőtől péntekig 8:00-19:00, szombaton 9:00-13:00</p>
-            <p><strong>Parkolás:</strong> Ingyenes parkolási lehetőség a rendelő előtt.</p>
-            <p><strong>Tömegközlekedés:</strong> A 4-es és 6-os villamossal, valamint az M1-es metróval könnyen megközelíthető.</p>
-        </div>
-        <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
-    </footer>
-</body>
-</html>
+
+{% block title %}Orvos törlése{% endblock %}
+
+{% block header_title %}Orvos törlése{% endblock %}
+
+{% block content %}
+<section class="delete-doctor">
+    <h2>Biztosan törölni szeretné a következő orvost?</h2>
+    <p>{{ doctor.name }} - {{ doctor.qualification }}</p>
+    {% if doctor.photo %}
+    <div class="doctor-photo">
+        <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}" class="doctor-image">
+    </div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Törlés</button>
+        <a href="{% url 'admin_view' %}" class="button">Mégse</a>
+    </form>
+</section>
+{% endblock %}

@@ -113,8 +113,8 @@ button[type="button"] {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
-    height: 38px; /* Magasság beállítása a beviteli mezőhöz igazítva */
-    align-self: flex-start; /* Igazítás a beviteli mezőhöz */
+    height: 38px; 
+    align-self: flex-start; 
 }
 
 button[type="button"]:hover {
@@ -150,6 +150,30 @@ button[type="button"]:hover {
 }
 
 .navbar li a:hover {
+    background-color: #111;
+}
+
+ul.navbar {
+    list-style-type: none;
+    margin: 15px;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+ul.navbar li {
+    float: left;
+}
+
+ul.navbar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+ul.navbar li a:hover {
     background-color: #111;
 }
 

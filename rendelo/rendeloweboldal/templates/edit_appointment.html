@@ -1,69 +1,22 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Időpont szerkesztése</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
-    <script src="{% static 'js/scroll.js' %}"></script>
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
-            <div class="overlay">
-                <h1 class="header-title">Időpont szerkesztése</h1>
-            </div>
-        </div>
-    </header>
-    <main>
-        <nav>
-            <ul class="navbar">
-                <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
-                <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
-                {% if user.is_authenticated and user.is_superuser %}
-                    <li><a href="{% url 'admin_view' %}">Admin</a></li>
-                {% endif %}
-                {% if user.is_authenticated and user.is_staff and not user.is_superuser %}
-                    <li><a href="{% url 'patients' %}">Páciensek</a></li>
-                    <li><a href="{% url 'appointments_today' %}">Időpontjaim mára</a></li>
-                    <li><a href="{% url 'working_hours' %}">Munkaidő</a></li>
-                {% endif %}
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'profile' %}">Profil</a></li>
-                    <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        <section class="edit-appointment">
-            <h2>Időpont szerkesztése</h2>
-            <p><strong>Páciens:</strong> {{ patient.name }}</p>
-            <p><strong>Kezelés:</strong> {{ treatment.name }}</p>
-            <p><strong>Időpont:</strong> {{ appointment.start|date:"Y-m-d H:i" }} - {{ appointment.end|date:"H:i" }}</p>
-            <form method="post" action="{% url 'edit_appointment' appointment.id %}">
-                {% csrf_token %}
-                <label for="custom_description">Leírás:</label>
-                <textarea id="custom_description" name="custom_description">{{ appointment.custom_description }}</textarea>
-                <button type="submit">Mentés</button>
-                <a href="{% url 'appointments_today' %}?date={{ selected_date }}" class="button-like">Mégse</a>
-            </form>
-        </section>
-    </main>
-    <footer>
-        <div class="contact-info">
-            <h2>Elérhetőségek:</h2>
-            <p><strong>Cím:</strong> 1062 Budapest, Mosoly utca 12.</p>
-            <p><strong>Telefon:</strong> +36 1 789 4567</p>
-            <p><strong>E-mail:</strong> <a href="mailto:kapcsolat@mosolyfogaszat.hu">kapcsolat@mosolyfogaszat.hu</a></p>
-            <p><strong>Nyitvatartás:</strong> Hétfőtől péntekig 8:00-19:00, szombaton 9:00-13:00</p>
-            <p><strong>Parkolás:</strong> Ingyenes parkolási lehetőség a rendelő előtt.</p>
-            <p><strong>Tömegközlekedés:</strong> A 4-es és 6-os villamossal, valamint az M1-es metróval könnyen megközelíthető.</p>
-        </div>
-        <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
-    </footer>
-</body>
-</html>
+
+{% block title %}Időpont szerkesztése{% endblock %}
+
+{% block header_title %}Időpont szerkesztése{% endblock %}
+
+{% block content %}
+<section class="edit-appointment">
+    <h2>Időpont szerkesztése</h2>
+    <p><strong>Páciens:</strong> {{ patient.name }}</p>
+    <p><strong>Kezelés:</strong> {{ treatment.name }}</p>
+    <p><strong>Időpont:</strong> {{ appointment.start|date:"Y-m-d H:i" }} - {{ appointment.end|date:"H:i" }}</p>
+    <form method="post" action="{% url 'edit_appointment' appointment.id %}">
+        {% csrf_token %}
+        <label for="custom_description">Leírás:</label>
+        <textarea id="custom_description" name="custom_description">{{ appointment.custom_description }}</textarea>
+        <button type="submit">Mentés</button>
+        <a href="{% url 'appointments_today' %}?date={{ selected_date }}" class="button-like">Mégse</a>
+    </form>
+</section>
+{% endblock %}

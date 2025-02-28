@@ -1,163 +1,119 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp"> 
-    <script src="{% static 'js/scroll.js' %}"></script>
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <img src="{% static 'images/fooldal_kep.png' %}" alt="Főoldal fotó" class="header-image">
-            <div class="overlay">
-                <h1 class="header-title">Profil</h1>
+
+{% block title %}Profil{% endblock %}
+
+{% block header_title %}Profil{% endblock %}
+
+{% block content %}
+<section class="profile">
+    <h2>Profil adatok</h2>
+    <form method="post" enctype="multipart/form-data" onsubmit="return validatePasswords()">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_username">Felhasználónév:</label>
+            {{ form.username }}
+        </div>
+        <div class="form-group">
+            <label for="id_email">Email cím:</label>
+            {{ form.email }}
+        </div>
+        <div class="form-group">
+            <label for="id_password1">Új jelszó:</label>
+            {{ form.password1 }}
+            <button type="button" onclick="togglePasswordVisibility('id_password1')">Mutat</button>
+        </div>
+        <div class="form-group">
+            <label for="id_password2">Új jelszó megerősítése:</label>
+            {{ form.password2 }}
+            <button type="button" onclick="togglePasswordVisibility('id_password2')">Mutat</button>
+        </div>
+        <div id="password-error" style="color: red;"></div>
+        {% if patient_form %}
+            {{ patient_form.as_p }}
+        {% endif %}
+        {% if doctor_form %}
+            <div class="form-group">
+                <label for="id_name">Név:</label>
+                {{ doctor_form.name }}
             </div>
-        </div>
-    </header>
-    <main>
-        <nav>
-            <ul class="navbar">
-                <li><a href="{% url 'home' %}">Kezdőoldal</a></li>
-                <li><a href="{% url 'book' %}">Időpontfoglalás</a></li>
-                {% if user.is_authenticated and user.is_superuser %}
-                    <li><a href="{% url 'admin_view' %}">Admin</a></li>
-                {% endif %}
-                {% if user.is_authenticated and user.is_staff and not user.is_superuser %}
-                    <li><a href="{% url 'patients' %}">Páciensek</a></li>
-                    <li><a href="{% url 'appointments_today' %}">Időpontjaim mára</a></li>
-                    <li><a href="{% url 'working_hours' %}">Munkaidő</a></li>
-                {% endif %}
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'profile' %}">Profil</a></li>
-                    <li><a href="{% url 'logout' %}">Kijelentkezés</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        <section class="profile">
-            <h2>Profil adatok</h2>
-            <form method="post" enctype="multipart/form-data" onsubmit="return validatePasswords()">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="id_username">Felhasználónév:</label>
-                    {{ form.username }}
+            <div class="form-group">
+                <label for="id_photo">Profilkép:</label>
+                <div class="photo-container">
+                    <input type="file" name="photo" id="id_photo" class="custom-file-input">
+                    {% if doctor_form.instance.photo %}
+                        <img id="current-photo" src="{{ doctor_form.instance.photo.url }}" alt="Profilkép" class="profile-image">
+                    {% endif %}
+                    <img id="new-photo-preview" class="profile-image" style="display:none;">
                 </div>
-                <div class="form-group">
-                    <label for="id_email">Email cím:</label>
-                    {{ form.email }}
-                </div>
-                <div class="form-group">
-                    <label for="id_password1">Új jelszó:</label>
-                    {{ form.password1 }}
-                    <button type="button" onclick="togglePasswordVisibility('id_password1')">Mutat</button>
-                </div>
-                <div class="form-group">
-                    <label for="id_password2">Új jelszó megerősítése:</label>
-                    {{ form.password2 }}
-                    <button type="button" onclick="togglePasswordVisibility('id_password2')">Mutat</button>
-                </div>
-                <div id="password-error" style="color: red;"></div>
-                {% if patient_form %}
-                    {{ patient_form.as_p }}
-                {% endif %}
-                {% if doctor_form %}
-                    <div class="form-group">
-                        <label for="id_name">Név:</label>
-                        {{ doctor_form.name }}
-                    </div>
-                    <div class="form-group">
-                        <label for="id_photo">Profilkép:</label>
-                        <div class="photo-container">
-                            <input type="file" name="photo" id="id_photo" class="custom-file-input">
-                            {% if doctor_form.instance.photo %}
-                                <img id="current-photo" src="{{ doctor_form.instance.photo.url }}" alt="Profilkép" class="profile-image">
-                            {% endif %}
-                            <img id="new-photo-preview" class="profile-image" style="display:none;">
+            </div>
+            <div class="form-group">
+                <label for="id_qualification">Képesítés:</label>
+                {{ doctor_form.qualification }}
+            </div>
+        {% endif %}
+        <button type="submit">Mentés</button>
+    </form>
+    {% if not user.is_superuser and not user.is_staff %}
+        <h2>Időpontok</h2>
+        {% if appointments %}
+            <ul class="appointments-list">
+                {% for appointment in appointments %}
+                    <li class="appointment-item">
+                        <div class="appointment-details">
+                            <span class="appointment-time">{{ appointment.start }}</span>
+                            <span class="appointment-practitioner">{{ appointment.practitioner.name }}</span>
+                            <span class="appointment-treatment">{{ appointment.treatment.name }}</span>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="id_qualification">Képesítés:</label>
-                        {{ doctor_form.qualification }}
-                    </div>
-                {% endif %}
-                <button type="submit">Mentés</button>
-            </form>
-            {% if not user.is_superuser and not user.is_staff %}
-                <h2>Időpontok</h2>
-                {% if appointments %}
-                    <ul class="appointments-list">
-                        {% for appointment in appointments %}
-                            <li class="appointment-item">
-                                <div class="appointment-details">
-                                    <span class="appointment-time">{{ appointment.start }}</span>
-                                    <span class="appointment-practitioner">{{ appointment.practitioner.name }}</span>
-                                    <span class="appointment-treatment">{{ appointment.treatment.name }}</span>
-                                </div>
-                                {% if appointment.start|date:"Y-m-d" > now|date:"Y-m-d" %}
-                                    <form method="post" action="{% url 'cancel_appointment' appointment.id %}" style="display:inline;" onsubmit="return confirm('Biztosan le akarja mondani az időpontot?');">
-                                        {% csrf_token %}
-                                        <button type="submit" class="cancel-button">Lemondás</button>
-                                    </form>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>Nincsenek lefoglalt időpontjai.</p>
-                {% endif %}
-            {% endif %}
-        </section>
-    </main>
-    <footer>
-        <div class="contact-info">
-            <h2>Elérhetőségek:</h2>
-            <p><strong>Cím:</strong> 1062 Budapest, Mosoly utca 12.</p>
-            <p><strong>Telefon:</strong> +36 1 789 4567</p>
-            <p><strong>E-mail:</strong> <a href="mailto:kapcsolat@mosolyfogaszat.hu">kapcsolat@mosolyfogaszat.hu</a></p>
-            <p><strong>Nyitvatartás:</strong> Hétfőtől péntekig 8:00-19:00, szombaton 9:00-13:00</p>
-            <p><strong>Parkolás:</strong> Ingyenes parkolási lehetőség a rendelő előtt.</p>
-            <p><strong>Tömegközlekedés:</strong> A 4-es és 6-os villamossal, valamint az M1-es metróval könnyen megközelíthető.</p>
-        </div>
-        <p class="copy">&copy; 2024 Minden jog fenntartva.</p>
-    </footer>
-    <script>
-        function togglePasswordVisibility(fieldId) {
-            var field = document.getElementById(fieldId);
-            if (field.type === "password") {
-                field.type = "text";
-            } else {
-                field.type = "password";
-            }
-        }
+                        {% if appointment.start|date:"Y-m-d" > now|date:"Y-m-d" %}
+                            <form method="post" action="{% url 'cancel_appointment' appointment.id %}" style="display:inline;" onsubmit="return confirm('Biztosan le akarja mondani az időpontot?');">
+                                {% csrf_token %}
+                                <button type="submit" class="cancel-button">Lemondás</button>
+                            </form>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nincsenek lefoglalt időpontjai.</p>
+        {% endif %}
+    {% endif %}
+</section>
+{% endblock %}
 
-        function validatePasswords() {
-            var password1 = document.getElementById('id_password1').value;
-            var password2 = document.getElementById('id_password2').value;
-            if (password1 !== password2) {
-                document.getElementById('password-error').innerText = "A két jelszó nem egyezik meg.";
-                return false;
-            }
-            return true;
+{% block scripts %}
+<script>
+    function togglePasswordVisibility(fieldId) {
+        var field = document.getElementById(fieldId);
+        if (field.type === "password") {
+            field.type = "text";
+        } else {
+            field.type = "password";
         }
+    }
 
-        document.getElementById('id_photo').addEventListener('change', function(event) {
-            var reader = new FileReader();
-            reader.onload = function() {
-                var preview = document.getElementById('new-photo-preview');
-                preview.src = reader.result;
-                preview.style.display = 'block';
-                var currentPhoto = document.getElementById('current-photo');
-                if (currentPhoto) {
-                    currentPhoto.style.display = 'none';
-                }
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        });
-    </script>
-</body>
-</html>
+    function validatePasswords() {
+        var password1 = document.getElementById('id_password1').value;
+        var password2 = document.getElementById('id_password2').value;
+        if (password1 !== password2) {
+            document.getElementById('password-error').innerText = "A két jelszó nem egyezik meg.";
+            return false;
+        }
+        return true;
+    }
+
+    document.getElementById('id_photo').addEventListener('change', function(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var preview = document.getElementById('new-photo-preview');
+            preview.src = reader.result;
+            preview.style.display = 'block';
+            var currentPhoto = document.getElementById('current-photo');
+            if (currentPhoto) {
+                currentPhoto.style.display = 'none';
+            }
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    });
+</script>
+{% endblock %}
