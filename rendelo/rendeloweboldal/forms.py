@@ -59,7 +59,7 @@ class PatientForm(forms.ModelForm):
         model = Patient
         fields = ['name', 'gender', 'birthDate', 'telecom']
     
-    name = forms.CharField(max_length=255, label='Név')
+    name = forms.CharField(max_length=255, label='Teljes név')
     gender = forms.ChoiceField(choices=[('male', 'Férfi'), ('female', 'Nő')], label='Nem')
     birthDate = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Születési dátum')
     telecom = forms.CharField(max_length=255, label='Telefonszám', required=False)

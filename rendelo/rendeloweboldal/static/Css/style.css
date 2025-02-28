@@ -113,6 +113,8 @@ button[type="button"] {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
+    height: 38px; /* Magasság beállítása a beviteli mezőhöz igazítva */
+    align-self: flex-start; /* Igazítás a beviteli mezőhöz */
 }
 
 button[type="button"]:hover {
@@ -403,20 +405,29 @@ section.booking input[type="date"] {
     background-color: #f9f9f9;
     border-left: 4px solid #333;
     border-radius: 4px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.centered {
+    text-align: center;
 }
 
 /* Regisztráció és bejelentkezés szekció stílusai */
 section.register, section.login {
     background-color: white;
-    padding: 20px;
+    padding: 30px;
     margin: 20px auto;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    max-width: 500px; /* Szélesebb konténer */
 }
 
 section.register h2, section.login h2 {
     text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
 }
 
 section.register form, section.login form {
@@ -427,6 +438,8 @@ section.register form, section.login form {
 
 section.register label, section.login label {
     font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
 }
 
 section.register input, section.login input {
@@ -434,6 +447,8 @@ section.register input, section.login input {
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1em;
+    width: calc(100% - 22px); 
+    margin-bottom: 10px;
 }
 
 section.register button, section.login button {
@@ -451,38 +466,30 @@ section.register button:hover, section.login button:hover {
     background-color: #555;
 }
 
-section.login button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    background-color: #333;
-    color: white;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-section.login button:hover {
-    background-color: #555;
-}
-
-section.login a.button-like {
+section.register .button-like, section.login .button-like {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 10px 20px; 
     border: none;
     border-radius: 4px;
-    background-color: #333;
+    background-color: #969090; 
     color: white;
     font-size: 1em;
     text-align: center;
     text-decoration: none;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-left: 10px; 
+    margin-top: 10px;
 }
 
-section.login a.button-like:hover {
-    background-color: #555;
+section.register .button-like:hover, section.login .button-like:hover {
+    background-color: #b9bcbe;
+}
+
+#password-error {
+    color: red;
+    font-size: 0.9em;
+    margin-top: -10px;
+    margin-bottom: 10px;
 }
 
 /* Profil kép stílusok */

@@ -44,8 +44,10 @@
                 </div>
                 <div class="form-group">
                     <label for="id_password">Jelszó:</label>
+                    <div class="password-container">
                         {{ form.password }}
                         <button type="button" onclick="togglePasswordVisibility('id_password')">Mutat</button>
+                    </div>
                 </div>
                 <button type="submit">Bejelentkezés</button>
                 <a href="{% url 'register' %}" class="button-like">Regisztrálok</a>
