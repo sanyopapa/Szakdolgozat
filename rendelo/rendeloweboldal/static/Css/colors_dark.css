@@ -1,0 +1,222 @@
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+header, .navbar, footer {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+.header-title, .navbar a, footer {
+    color: #e0e0e0;
+}
+
+form, .intro, .pricing, .appointments, .appointment, .patient-detail, .working-hours-form, .info-message, .profile, .admin {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+form input, form select, form textarea,
+section.booking input, section.booking select,
+section.profile input, section.profile select, section.profile textarea {
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+}
+
+.button, .button-like, button, .add-button, .edit-button, .delete-button, .cancel-button, .dialog-box button {
+    background-color: #333;
+    color: #e0e0e0;
+}
+
+.button:hover, .button-like:hover, button:hover, .add-button:hover, .edit-button:hover, .delete-button:hover, .cancel-button:hover, .dialog-box button:hover {
+    background-color: #555;
+}
+
+.delete-button {
+    background-color: #e74c3c;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+}
+
+.add-button {
+    background-color: #2ecc71;
+}
+
+.add-button:hover {
+    background-color: #27ae60;
+}
+
+.info-message {
+    background-color: #333;
+    border-left: 4px solid #e0e0e0;
+}
+
+.navbar a:hover {
+    background-color: #555;
+}
+
+.contact-info a {
+    color: #ffcc00;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+.contact-info a[href^="mailto:"] {
+    color: yellow;
+}
+
+.contact-info a[href^="mailto:"]:hover {
+    text-decoration: underline;
+}
+
+.copy {
+    color: cornsilk;
+}
+
+a[href^="mailto:"] {
+    color: yellow;
+}
+
+a[href^="mailto:"]:hover {
+    text-decoration: underline;
+}
+
+table {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+th {
+    background-color: #333;
+    color: #e0e0e0;
+}
+
+/* Profil szekció stílusai */
+section.profile {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+section.profile .form-group input,
+section.profile .form-group select,
+section.profile .form-group textarea {
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+}
+
+/* Párbeszédablak stílusai */
+.dialog-box {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+.dialog-box button {
+    background-color: #333;
+    color: #e0e0e0;
+}
+
+.dialog-box button:hover {
+    background-color: #555;
+}
+
+/* Admin oldal stílusai */
+section.admin {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+section.admin a {
+    background-color: #333;
+    color: #e0e0e0;
+}
+
+section.admin a:hover {
+    background-color: #555;
+}
+
+.accordion-content {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+/* Regisztráció és bejelentkezés szekció stílusai */
+section.register, section.login {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+section.register h2, section.login h2 {
+    color: #e0e0e0;
+}
+
+section.register label, section.login label {
+    color: #e0e0e0;
+}
+
+section.register input, section.login input {
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+}
+
+section.register button, section.login button {
+    background-color: #333;
+    color: #e0e0e0;
+}
+
+section.register button:hover, section.login button:hover {
+    background-color: #555;
+}
+
+section.register .button-like, section.login .button-like {
+    background-color: #969090; 
+    color: #e0e0e0;
+}
+
+section.register .button-like:hover, section.login .button-like:hover {
+    background-color: #b9bcbe;
+}
+
+#password-error {
+    color: red;
+}
+
+/* Orvosok szekció stílusai */
+section.doctors {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+section.doctors .doctor {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+section.doctors .doctor p {
+    background-color: #333;
+}
+
+/* Időpontfoglalás szekció stílusai */
+section.booking {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+section.booking input[type="date"] {
+    background-color: #333;
+}
+
+.time-slots button {
+    background-color: #333;
+}
+
+.time-slots button:disabled {
+    background-color: #555;
+}

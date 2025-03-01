@@ -6,8 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Alap oldal{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/admin_style.css' %}">
+    <link rel="stylesheet" id="color-scheme" href="{% static 'css/colors_light.css' %}">
     <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/webp">
+    <script>
+        function toggleColorScheme() {
+            const currentScheme = document.getElementById('color-scheme').getAttribute('href');
+            const newScheme = currentScheme.includes('colors_light.css') ? 'colors_dark.css' : 'colors_light.css';
+            document.getElementById('color-scheme').setAttribute('href', `{% static 'css/' %}` + newScheme);
+            localStorage.setItem('color-scheme', newScheme);
+            updateIcon(newScheme);
+        }
+
+        function updateIcon(scheme) {
+            const icon = document.getElementById('color-scheme-icon');
+            if (scheme.includes('colors_light.css')) {
+                icon.src = '{% static "images/moon_icon.png" %}';
+                icon.alt = 'Sötét mód';
+            } else {
+                icon.src = '{% static "images/sun_icon.png" %}';
+                icon.alt = 'Világos mód';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedScheme = localStorage.getItem('color-scheme') || 'colors_light.css';
+            document.getElementById('color-scheme').setAttribute('href', `{% static 'css/' %}` + savedScheme);
+            updateIcon(savedScheme);
+        });
+    </script>
     <script src="{% static 'js/scroll.js' %}"></script>
 </head>
 <body>
@@ -37,6 +63,11 @@
             {% else %}
                 <li><a href="{% url 'login' %}">Bejelentkezés</a></li>
             {% endif %}
+            <li class="icon" style="float: right;">
+                <button onclick="toggleColorScheme()" style="background: none; border: none; cursor: pointer;">
+                    <img id="color-scheme-icon" src="{% static 'images/moon_icon.png' %}" alt="Sötét mód" style="width: 24px; height: 24px;">
+                </button>
+            </li>
         </ul>
     </nav>
     <main>

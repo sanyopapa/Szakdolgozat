@@ -1,3 +1,5 @@
+@import url('colors_light.css'); /* Alapértelmezett világos mód */
+
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
@@ -255,7 +257,6 @@ a[href^="mailto:"]:hover {
 
 /* Orvosok szekció stílusai */
 section.doctors {
-    background-color: white;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
@@ -272,7 +273,6 @@ section.doctors .doctor-list {
 section.doctors .doctor {
     text-align: center;
     text-decoration: none;
-    color: black;
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
@@ -289,7 +289,6 @@ section.doctors .doctor img {
 section.doctors .doctor p {
     margin: 0;
     padding: 10px;
-    background-color: #f2f2f2;
 }
 
 section.doctors .doctor:hover {
@@ -298,13 +297,12 @@ section.doctors .doctor:hover {
 }
 
 section.doctors .doctor.selected {
-    border-color: #333;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border: 3px solid #4CAF50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
 }
 
 /* Időpontfoglalás szekció stílusai */
 section.booking {
-    background-color: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -332,15 +330,9 @@ section.booking button {
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
-    background-color: #333;
-    color: white;
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-section.booking button:hover {
-    background-color: #555;
 }
 
 section.booking input[type="date"] {
@@ -348,7 +340,6 @@ section.booking input[type="date"] {
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1em;
-    background-color: white;
     cursor: pointer;
 }
 
@@ -365,13 +356,11 @@ section.booking input[type="date"] {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    background-color: #f2f2f2;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 .time-slots button:disabled {
-    background-color: #ccc;
     cursor: not-allowed;
 }
 
@@ -439,7 +428,6 @@ section.booking input[type="date"] {
 
 /* Regisztráció és bejelentkezés szekció stílusai */
 section.register, section.login {
-    background-color: white;
     padding: 30px;
     margin: 20px auto;
     border-radius: 10px;
@@ -451,7 +439,6 @@ section.register h2, section.login h2 {
     text-align: center;
     font-size: 2em;
     margin-bottom: 20px;
-    color: #333;
 }
 
 section.register form, section.login form {
@@ -463,7 +450,6 @@ section.register form, section.login form {
 section.register label, section.login label {
     font-weight: bold;
     margin-bottom: 5px;
-    color: #555;
 }
 
 section.register input, section.login input {
@@ -479,15 +465,9 @@ section.register button, section.login button {
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
-    background-color: #333;
-    color: white;
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-section.register button:hover, section.login button:hover {
-    background-color: #555;
 }
 
 section.register .button-like, section.login .button-like {
@@ -495,8 +475,6 @@ section.register .button-like, section.login .button-like {
     padding: 10px 20px; 
     border: none;
     border-radius: 4px;
-    background-color: #969090; 
-    color: white;
     font-size: 1em;
     text-align: center;
     text-decoration: none;
@@ -505,12 +483,7 @@ section.register .button-like, section.login .button-like {
     margin-top: 10px;
 }
 
-section.register .button-like:hover, section.login .button-like:hover {
-    background-color: #b9bcbe;
-}
-
 #password-error {
-    color: red;
     font-size: 0.9em;
     margin-top: -10px;
     margin-bottom: 10px;
@@ -527,7 +500,6 @@ section.register .button-like:hover, section.login .button-like:hover {
 
 /* Profil szekció stílusai */
 section.profile {
-    background-color: white;
     padding: 20px;
     margin: 20px auto;
     border-radius: 8px;
@@ -718,7 +690,6 @@ section.profile .form-group textarea {
 
 /* Admin oldal stílusai */
 section.admin {
-    background-color: white;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
@@ -735,16 +706,10 @@ section.admin a {
     margin-bottom: 10px;
     border: none;
     border-radius: 4px;
-    background-color: #333;
-    color: white;
     text-decoration: none;
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-section.admin a:hover {
-    background-color: #555;
 }
 
 section.admin ul {
@@ -997,4 +962,151 @@ button[type="button"]:hover {
 
 .centered {
     text-align: center;
+}
+
+.accordion {
+    margin-top: 20px;
+}
+
+.accordion-item {
+    margin-bottom: 10px;
+}
+
+.accordion-button {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    font-size: 1.2em;
+    transition: background-color 0.3s;
+    margin-bottom: 10px;
+}
+
+.accordion-button:hover {
+    background-color: #555;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.user-list,
+.treatment-list,
+.doctor-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.user-item,
+.treatment-item,
+.doctor-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-info,
+.treatment-info,
+.doctor-info {
+    flex: 1;
+}
+
+.user-actions,
+.treatment-actions,
+.doctor-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.user-name,
+.treatment-name,
+.doctor-name {
+    font-weight: bold;
+}
+
+.user-email,
+.user-gender,
+.user-birthdate,
+.user-telecom,
+.treatment-duration,
+.doctor-qualification {
+    margin-left: 10px;
+    color: #999;
+}
+
+.user-info span {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.doctor-thumbnail {
+    max-width: 50px;
+    max-height: 50px;
+    margin-right: 10px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.custom-file-input {
+    display: none;
+}
+
+.photo-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.doctor-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Kiválasztott orvos stílusa */
+section.doctors .doctor.selected {
+    border: 3px solid #4CAF50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+}
+
+/* Navbar ikon középre igazítása */
+.navbar li.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%; 
 }

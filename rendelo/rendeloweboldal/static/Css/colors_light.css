@@ -1,0 +1,204 @@
+body {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header, .navbar, footer {
+    background-color: #333;
+    color: white;
+}
+
+.header-title, .navbar a, footer {
+    color: white;
+}
+
+form, .intro, .pricing, .appointments, .appointment, .patient-detail, .working-hours-form, .info-message, .profile, .admin {
+    background-color: white;
+    color: #333;
+}
+
+.button, .button-like, button, .add-button, .edit-button, .delete-button, .cancel-button, .dialog-box button {
+    background-color: #333;
+    color: white;
+}
+
+.button:hover, .button-like:hover, button:hover, .add-button:hover, .edit-button:hover, .delete-button:hover, .cancel-button:hover, .dialog-box button:hover {
+    background-color: #555;
+}
+
+.delete-button {
+    background-color: #e74c3c;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+}
+
+.add-button {
+    background-color: #2ecc71;
+}
+
+.add-button:hover {
+    background-color: #27ae60;
+}
+
+.info-message {
+    background-color: #f9f9f9;
+    border-left: 4px solid #333;
+}
+
+.navbar a:hover {
+    background-color: #111;
+}
+
+.contact-info a {
+    color: #ffcc00;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+.contact-info a[href^="mailto:"] {
+    color: yellow;
+}
+
+contact-info a[href^="mailto:"]:hover {
+    text-decoration: underline;
+}
+
+.copy {
+    color: cornsilk;
+}
+
+a[href^="mailto:"] {
+    color: yellow;
+}
+
+a[href^="mailto:"]:hover {
+    text-decoration: underline;
+}
+
+/* Profil szekció stílusai */
+section.profile {
+    background-color: white;
+    color: #333;
+}
+
+section.profile .form-group input,
+section.profile .form-group select,
+section.profile .form-group textarea {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+/* Párbeszédablak stílusai */
+.dialog-box {
+    background-color: white;
+    color: #333;
+}
+
+.dialog-box button {
+    background-color: #333;
+    color: white;
+}
+
+.dialog-box button:hover {
+    background-color: #555;
+}
+
+/* Admin oldal stílusai */
+section.admin {
+    background-color: white;
+    color: #333;
+}
+
+section.admin a {
+    background-color: #333;
+    color: white;
+}
+
+section.admin a:hover {
+    background-color: #555;
+}
+
+.accordion-content {
+    background-color: white;
+    color: #333;
+}
+
+/* Regisztráció és bejelentkezés szekció stílusai */
+section.register, section.login {
+    background-color: white;
+    color: #333;
+}
+
+section.register h2, section.login h2 {
+    color: #333;
+}
+
+section.register label, section.login label {
+    color: #555;
+}
+
+section.register input, section.login input {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+section.register button, section.login button {
+    background-color: #333;
+    color: white;
+}
+
+section.register button:hover, section.login button:hover {
+    background-color: #555;
+}
+
+section.register .button-like, section.login .button-like {
+    background-color: #969090; 
+    color: white;
+}
+
+section.register .button-like:hover, section.login .button-like:hover {
+    background-color: #b9bcbe;
+}
+
+#password-error {
+    color: red;
+}
+
+/* Orvosok szekció stílusai */
+section.doctors {
+    background-color: white;
+    color: #333;
+}
+
+section.doctors .doctor {
+    background-color: white;
+    color: black;
+}
+
+section.doctors .doctor p {
+    background-color: #f2f2f2;
+}
+
+/* Időpontfoglalás szekció stílusai */
+section.booking {
+    background-color: white;
+    color: #333;
+}
+
+section.booking input[type="date"] {
+    background-color: white;
+}
+
+.time-slots button {
+    background-color: #f2f2f2;
+}
+
+.time-slots button:disabled {
+    background-color: #ccc;
+}
