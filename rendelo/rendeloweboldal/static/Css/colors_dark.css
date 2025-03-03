@@ -1,9 +1,9 @@
-body {
+body, header {
     background-color: #121212;
     color: #e0e0e0;
 }
 
-header, .navbar, footer {
+.navbar, footer {
     background-color: #1f1f1f;
     color: #e0e0e0;
 }

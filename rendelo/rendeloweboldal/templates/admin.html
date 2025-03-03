@@ -67,13 +67,15 @@
                     {% endif %}
                 </div>
                 <div class="user-actions">
-                    {% if user.id %}
+                    {% if user.id != request.user.id %}
                         {% if not user.is_superuser and user.is_staff %}
-                            Orvos, szerkeszthető az Orvosok menüben!
+                            Orvos, szerkeszthető az "Orvosok" menüben!
                         {% else %}
                             <a href="{% url 'edit_user' user.id %}" class="edit-button">Szerkesztés</a>
                             <a href="{% url 'delete_user' user.id %}" class="delete-button">Törlés</a>
                         {% endif %}
+                    {% else %}
+                        Saját profil, szerkeszthető a "Profil" oldalon.
                     {% endif %}
                 </div>
             </li>

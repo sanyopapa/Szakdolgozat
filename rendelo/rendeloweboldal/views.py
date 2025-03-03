@@ -59,6 +59,9 @@ def idopontfoglalas(request):
     return render(request, 'idopontfoglalas.html', {'doctors': Doctor.objects.all(), 'treatments': Treatment.objects.all()})
 
 def admin_view(request):
+    if not (request.user.is_superuser):
+        return redirect('home')
+    
     treatments = Treatment.objects.all()
     doctors = Doctor.objects.all()
     users = RendeloUser.objects.all()
@@ -66,6 +69,9 @@ def admin_view(request):
 
 @login_required
 def add_treatment(request):
+    if not (request.user.is_superuser):
+        return redirect('home')
+    
     if request.method == 'POST':
         form = TreatmentForm(request.POST)
         if form.is_valid():
@@ -79,6 +85,9 @@ def add_treatment(request):
 
 @login_required
 def edit_treatment(request, treatment_id):
+    if not (request.user.is_superuser):
+        return redirect('home')
+    
     treatment = get_object_or_404(Treatment, id=treatment_id)
     if request.method == 'POST':
         form = TreatmentForm(request.POST, instance=treatment)
@@ -93,6 +102,9 @@ def edit_treatment(request, treatment_id):
 
 @login_required
 def delete_treatment(request, treatment_id):
+    if not (request.user.is_superuser):
+        return redirect('home')
+    
     treatment = get_object_or_404(Treatment, id=treatment_id)
     if request.method == 'POST':
         treatment.delete()
@@ -101,6 +113,9 @@ def delete_treatment(request, treatment_id):
 
 @login_required
 def add_doctor(request):
+    if not (request.user.is_superuser):
+        return redirect('home')
+    
     if request.method == 'POST':
         user_form = CustomUserCreationForm(request.POST)
         doctor_form = DoctorForm(request.POST, request.FILES)
@@ -121,6 +136,9 @@ def add_doctor(request):
 
 @login_required
 def edit_doctor(request, doctor_id):
+    if not (request.user.is_superuser):
+        return redirect('home')
+    
     doctor = get_object_or_404(Doctor, id=doctor_id)
     user = get_object_or_404(RendeloUser, id=doctor_id)
     if request.method == 'POST':
@@ -140,6 +158,9 @@ def edit_doctor(request, doctor_id):
 
 @login_required
 def delete_doctor(request, doctor_id):
+    if not (request.user.is_superuser):
+        return redirect('home')
+    
     doctor = get_object_or_404(Doctor, id=doctor_id)
     user = get_object_or_404(RendeloUser, id=doctor_id)
     if request.method == 'POST':
@@ -150,6 +171,9 @@ def delete_doctor(request, doctor_id):
 
 @login_required
 def edit_user(request, user_id):
+    if not (request.user.is_superuser):
+        return redirect('home')
+
     user = get_object_or_404(RendeloUser, id=user_id)
     patient = None
     if not user.is_superuser:
@@ -172,6 +196,9 @@ def edit_user(request, user_id):
 
 @login_required
 def delete_user(request, user_id):
+    if not (request.user.is_superuser):
+        return redirect('home')
+
     user = get_object_or_404(RendeloUser, id=user_id)
     if request.method == 'POST':
         user.delete()
@@ -332,6 +359,9 @@ def get_earliest_slot(request):
 
 @login_required
 def add_admin_user(request):
+    if not (request.user.is_superuser):
+        return redirect('home')
+    
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
