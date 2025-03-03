@@ -96,13 +96,17 @@
                     .then(data => {
                         if (data.earliest_slot) {
                             document.getElementById('appointment_date').value = data.earliest_slot.date;
-                            updateAvailableSlots();
-                            setTimeout(() => {
+                            updateAvailableSlots(() => {
                                 const timeSlotButton = document.querySelector(`.time-slots button[data-time="${data.earliest_slot.time}"]`);
                                 if (timeSlotButton) {
                                     timeSlotButton.click();
+                                } else {
+                                    const firstAvailableButton = document.querySelector('.time-slots button:not([disabled])');
+                                    if (firstAvailableButton) {
+                                        firstAvailableButton.click();
+                                    }
                                 }
-                            }, 500);
+                            });
                         } else {
                             alert('Nincs elérhető időpont.');
                         }
@@ -112,7 +116,7 @@
             }
         });
 
-        function updateAvailableSlots() {
+        function updateAvailableSlots(callback) {
             const selectedDoctor = selectedDoctorInput.value;
             const selectedDate = document.getElementById('appointment_date').value;
             const selectedTreatment = document.getElementById('treatment').value;
@@ -151,6 +155,7 @@
                         });
                         morningSection.style.display = morningSlotsExist ? 'block' : 'none';
                         afternoonSection.style.display = afternoonSlotsExist ? 'block' : 'none';
+                        if (callback) callback();
                     });
             }
         }
@@ -173,55 +178,15 @@
         });
 
         const bookingForm = document.getElementById('booking-form');
-        const confirmationDialog = document.getElementById('confirmation-dialog');
-        const confirmationDetails = document.getElementById('confirmation-details');
-        const confirmButton = document.getElementById('confirm-button');
-        const cancelButton = document.getElementById('cancel-button');
-        const submitButton = document.getElementById('submit_button');
-        const timeSlotButtons = document.querySelectorAll('.time-slots button');
-        const timeSlotsDiv = document.getElementById('time_slots');
-        const successMessage = document.getElementById('success-message');
-
         bookingForm.addEventListener('submit', function(event) {
-            event.preventDefault();
             const selectedDoctor = document.querySelector('.doctor.selected').textContent;
             const selectedTreatment = document.getElementById('treatment').selectedOptions[0].textContent;
             const selectedDate = document.getElementById('appointment_date').value;
             const selectedTime = document.getElementById('appointment_datetime').value.split(' ')[1];
-            confirmationDetails.textContent = `Orvos: ${selectedDoctor}\nKezelés: ${selectedTreatment}\nIdőpont: ${selectedDate} ${selectedTime}`;
-            confirmationDialog.style.display = 'flex';
-            submitButton.style.display = 'none';
-            timeSlotButtons.forEach(button => button.style.display = 'none');
-            timeSlotsDiv.style.display = 'none';
-        });
-
-        confirmButton.addEventListener('click', function() {
-            confirmationDialog.style.display = 'none';
-            const formData = new FormData(bookingForm);
-            fetch(bookingForm.action, {
-                method: 'POST',
-                body: formData
-            }).then(response => {
-                if (response.ok) {
-                    successMessage.style.display = 'flex';
-                    setTimeout(() => {
-                        successMessage.style.display = 'none';
-                        bookingForm.reset();
-                        document.getElementById('selected_doctor').value = '';
-                        doctorLinks.forEach(link => link.classList.remove('selected'));
-                        submitButton.style.display = 'block';
-                    }, 3000);
-                } else {
-                    alert('Hiba történt a foglalás során.');
-                }
-            });
-        });
-
-        cancelButton.addEventListener('click', function() {
-            confirmationDialog.style.display = 'none';
-            submitButton.style.display = 'block';
-            timeSlotButtons.forEach(button => button.style.display = 'inline-block');
-            timeSlotsDiv.style.display = 'block';
+            const confirmationMessage = `Orvos: ${selectedDoctor}\nKezelés: ${selectedTreatment}\nIdőpont: ${selectedDate} ${selectedTime}`;
+            if (!confirm(confirmationMessage)) {
+                event.preventDefault();
+            }
         });
     });
 </script>

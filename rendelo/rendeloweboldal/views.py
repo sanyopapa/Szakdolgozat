@@ -12,6 +12,7 @@ from django.contrib.auth.forms import UserCreationForm
 import logging
 from django.views.decorators.csrf import csrf_exempt
 from django.forms import modelformset_factory
+from django.contrib import messages
 
 logger = logging.getLogger(__name__)
 
@@ -270,7 +271,8 @@ def profile_view(request):
                 patient_form.save()
             if doctor_form and doctor_form.is_valid():
                 doctor_form.save()
-            update_session_auth_hash(request, user)  
+            update_session_auth_hash(request, user)
+            messages.success(request, "A profilja sikeresen frissítve lett.")
             logger.info("Profile updated successfully")
             return redirect('profile')
         else:
@@ -278,7 +280,7 @@ def profile_view(request):
     else:
         form = ProfileForm(instance=user)
 
-    appointments = Appointment.objects.filter(patient=user.id, status='booked') if not user.is_superuser and not hasattr(user, 'doctor') else None
+    appointments = Appointment.objects.filter(patient=user.id, status='booked').order_by('-start') if not user.is_superuser and not hasattr(user, 'doctor') else None
     now = timezone.now()
     return render(request, 'profile.html', {'form': form, 'patient_form': patient_form, 'doctor_form': doctor_form, 'appointments': appointments, 'now': now})
 

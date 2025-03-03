@@ -53,6 +53,13 @@
             </div>
         {% endif %}
         <button type="submit">Mentés</button>
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li class="alert {{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </form>
     {% if not user.is_superuser and not user.is_staff %}
         <h2>Időpontok</h2>
