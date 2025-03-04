@@ -13,6 +13,8 @@ import logging
 from django.views.decorators.csrf import csrf_exempt
 from django.forms import modelformset_factory
 from django.contrib import messages
+import os
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -148,6 +150,8 @@ def edit_doctor(request, doctor_id):
     
     doctor = get_object_or_404(Doctor, id=doctor_id)
     user = get_object_or_404(RendeloUser, id=doctor_id)
+    old_photo_path = doctor.photo.path if doctor.photo else None
+
     if request.method == 'POST':
         user_form = ProfileForm(request.POST, instance=user)
         doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
@@ -156,7 +160,11 @@ def edit_doctor(request, doctor_id):
             if user_form.cleaned_data['password1']:
                 user.set_password(user_form.cleaned_data['password1'])
             user.save()
-            doctor_form.save()
+            doctor = doctor_form.save(commit=False)
+            if 'photo' in request.FILES and old_photo_path:
+                if os.path.exists(old_photo_path):
+                    os.remove(old_photo_path)
+            doctor.save()
             return redirect('admin_view')
     else:
         user_form = ProfileForm(instance=user)
@@ -170,7 +178,11 @@ def delete_doctor(request, doctor_id):
     
     doctor = get_object_or_404(Doctor, id=doctor_id)
     user = get_object_or_404(RendeloUser, id=doctor_id)
+    photo_path = doctor.photo.path if doctor.photo else None
+
     if request.method == 'POST':
+        if photo_path and os.path.exists(photo_path):
+            os.remove(photo_path)
         user.delete()
         doctor.delete()
         return redirect('admin_view')

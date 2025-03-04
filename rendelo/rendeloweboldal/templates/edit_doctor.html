@@ -61,7 +61,12 @@
         }
     }
 
+    let previousFile = null;
     document.getElementById('id_photo').addEventListener('change', function(event) {
+        if (previousFile) {
+            URL.revokeObjectURL(previousFile);
+            previousFile = null;
+        }
         var reader = new FileReader();
         reader.onload = function() {
             var preview = document.getElementById('current-photo');
@@ -71,6 +76,7 @@
             preview.style.maxHeight = '200px';
         };
         reader.readAsDataURL(event.target.files[0]);
+        previousFile = URL.createObjectURL(event.target.files[0]);
     });
 
     document.getElementById('current-photo').addEventListener('click', function() {
