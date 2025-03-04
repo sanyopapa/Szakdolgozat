@@ -15,6 +15,7 @@ from django.forms import modelformset_factory
 from django.contrib import messages
 import os
 from django.conf import settings
+from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,10 @@ def idopontfoglalas(request):
             if not working_hours.exists():
                 return render(request, 'idopontfoglalas.html', {'error_message': 'Az orvosnak nincs munkaideje ezen a napon.'})
 
-            Appointment.objects.create(
+            doctor = Doctor.objects.get(id=request.POST['selected_doctor'])
+            doctoruser = RendeloUser.objects.get(id=request.POST['selected_doctor'])
+
+            appointment = Appointment.objects.create(
                 id=str(uuid4()),
                 patient=request.user.id,
                 practitioner_id=request.POST['selected_doctor'],
@@ -53,6 +57,23 @@ def idopontfoglalas(request):
                 start=start_time,
                 end=end_time,
                 status='booked'
+            )
+            patient = Patient.objects.get(id=request.user.id)
+
+            send_mail(
+                'Időpontfoglalás visszaigazolása',
+                f'Kedves {request.user.username},\n\nSikeresen lefoglalta az időpontot a következő kezelésre: {treatment.name}.\n\nIdőpont: {start_time.strftime("%Y-%m-%d %H:%M")}\nOrvos: {doctor.name}\n\nÜdvözlettel,\nMosolyfogaszat.hu',
+                'your_email@example.com',
+                [request.user.email],
+                fail_silently=False,
+            )
+
+            send_mail(
+                'Új időpontfoglalás',
+                f'Kedves {doctor.name},\n\nÚj időpontfoglalás érkezett Önhöz.\n\nPáciens: {patient.name}\nIdőpont: {start_time.strftime("%Y-%m-%d %H:%M")}\nKezelés: {treatment.name}\nTelefonszám: {patient.telecom}\nEmail cím: {request.user.email}\n\nÜdvözlettel,\nMosolyfogaszat.hu',
+                'your_email@example.com',
+                [doctoruser.email],
+                fail_silently=False,
             )
 
             return redirect('profile')
@@ -135,6 +156,15 @@ def add_doctor(request):
             doctor = doctor_form.save(commit=False)
             doctor.id = user.id
             doctor.save()
+
+            send_mail(
+                'Orvosi fiók létrehozása',
+                f'Kedves {user.username},\n\nAz orvosi fiókja sikeresen létrehozásra került.\n\nFelhasználónév: {user.username}\nEmail cím: {user.email}\nJelszó: {request.POST["password1"]}\n\nKérjük, hogy a biztonság érdekében változtassa meg a jelszavát a bejelentkezést követően.\n\nÜdvözlettel,\nMosolyfogaszat.hu',
+                'your_email@example.com',
+                [user.email],
+                fail_silently=False,
+            )
+
             return redirect('admin_view')
         else:
             logger.error("User form or doctor form is not valid: %s, %s", user_form.errors, doctor_form.errors)
@@ -234,6 +264,13 @@ def register_view(request):
             patient.id = user.id
             patient.save()
             auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            send_mail(
+                'Sikeres regisztráció!',
+                'Kedves {},\n\nSikeresen regisztrált a rendszerünkbe, köszönjük, hogy klinikánkat választotta!\n\nMostantól minden időpontot a fiókjában le tud foglalni, és orvosaink is látni fogják a kezelési előzményeit.\n\nÜdvözlettel,\nMosolyfogaszat.hu'.format(user.username),
+                'your_email@example.com',
+                [user.email],
+                fail_silently=False,
+                )
             return redirect('/')
     else:
         user_form = RegistrationForm()
@@ -305,8 +342,23 @@ def profile_view(request):
 @login_required
 def cancel_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, patient=request.user.id, status='booked')
-    appointment.delete()
-    return redirect('profile')
+    doctor = get_object_or_404(Doctor, id=appointment.practitioner_id)
+    treatment = get_object_or_404(Treatment, id=appointment.treatment_id)
+
+    if request.method == 'POST':
+        appointment.delete()
+
+        send_mail(
+            'Időpont törlése',
+            f'Kedves {request.user.username},\n\nAz alábbi időpontot töröltük:\n\nKezelés: {treatment.name}\nIdőpont: {appointment.start.strftime("%Y-%m-%d %H:%M")}\nOrvos: {doctor.name}\n\nÜdvözlettel,\nMosolyfogaszat.hu',
+            'your_email@example.com',
+            [request.user.email],
+            fail_silently=False,
+        )
+
+        return redirect('profile')
+    
+    return render(request, 'cancel_appointment.html', {'appointment': appointment})
 
 def get_available_slots(request):
     doctor_id = request.GET.get('doctor')
@@ -389,6 +441,15 @@ def add_admin_user(request):
             user.is_superuser = True
             user.is_staff = True
             user.save()
+
+            send_mail(
+                'Admin fiók létrehozása',
+                f'Kedves {user.username},\n\nAz admin fiókja sikeresen létrehozásra került.\n\nFelhasználónév: {user.username}\nEmail cím: {user.email}\nJelszó: {request.POST["password1"]}\n\nKérjük, hogy a biztonság érdekében változtassa meg a jelszavát a bejelentkezést követően.\n\nÜdvözlettel,\nMosolyfogaszat.hu',
+                'your_email@example.com',
+                [user.email],
+                fail_silently=False,
+            )
+
             return redirect('admin_view')
     else:
         form = CustomUserCreationForm()
