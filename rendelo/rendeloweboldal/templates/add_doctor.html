@@ -40,8 +40,6 @@
             <label for="id_photo">Fénykép:</label>
             <div class="photo-container">
                 {{ doctor_form.photo }}
-                <button type="button" onclick="document.getElementById('id_photo').click()">Feltöltés</button>
-                <img id="new-photo-preview" class="doctor-image" style="display:none;">
             </div>
         </div>
         <div class="form-group">
@@ -49,7 +47,7 @@
             {{ doctor_form.qualification }}
         </div>
         <button type="submit">Mentés</button>
-        <a href="{% url 'admin_view' %}" class="button">Mégsem</a>
+        <a href="{% url 'admin_view' %}" class="button-like">Mégsem</a>
     </form>
 </section>
 {% endblock %}

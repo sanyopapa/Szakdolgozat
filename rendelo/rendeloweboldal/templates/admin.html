@@ -50,6 +50,11 @@
     <button class="accordion-button">Felhasználói fiókok</button>
     <div class="accordion-content">
         <a href="{% url 'add_admin_user' %}" class="add-button">Új admin felhasználó hozzáadása</a>
+        <form method="get" action="{% url 'admin_view' %}">
+            <input type="text" name="search" placeholder="Keresés felhasználónév alapján" value="{{ request.GET.search }}">
+            <button type="submit">Keresés</button>
+            <button type="button" onclick="showAllUsers()">Összes felhasználó</button>
+        </form>
         <ul class="user-list">
             {% for user in users %}
             <li class="user-item">
@@ -89,16 +94,26 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var accButtons = document.querySelectorAll('.accordion-button');
-        accButtons.forEach(function(button) {
+        accButtons.forEach(function(button, index) {
             button.addEventListener('click', function() {
                 var content = this.nextElementSibling;
                 if (content.style.maxHeight) {
                     content.style.maxHeight = null;
+                    localStorage.removeItem('accordion-' + index);
                 } else {
                     content.style.maxHeight = content.scrollHeight + "px";
+                    localStorage.setItem('accordion-' + index, 'open');
                 }
             });
+
+            if (localStorage.getItem('accordion-' + index) === 'open') {
+                button.nextElementSibling.style.maxHeight = button.nextElementSibling.scrollHeight + "px";
+            }
         });
     });
+
+    function showAllUsers() {
+        window.location.href = "{% url 'admin_view' %}";
+    }
 </script>
 {% endblock %}

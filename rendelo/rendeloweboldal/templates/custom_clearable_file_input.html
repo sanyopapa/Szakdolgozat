@@ -1,0 +1,8 @@
+<div class="photo-container">
+    <input type="file" name="{{ widget.name }}" class="custom-file-input" accept="image/*" id="{{ widget.attrs.id }}">
+    {% if widget.value %}
+        <img id="current-photo" src="{{ widget.value.url }}" alt="Profilkép" class="doctor-image">
+    {% endif %}
+    <img id="new-photo-preview" class="doctor-image" style="display:none;">
+    <button type="button" onclick="document.getElementById('{{ widget.attrs.id }}').click()">Feltöltés</button>
+</div>

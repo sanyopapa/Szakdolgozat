@@ -121,13 +121,16 @@ class TreatmentForm(forms.ModelForm):
         if self.instance and self.instance.pk and self.instance.duration:
             self.initial['duration'] = int(self.instance.duration.total_seconds() // 60)
 
+class CustomClearableFileInput(forms.ClearableFileInput):
+    template_name = 'custom_clearable_file_input.html'
+
 class DoctorForm(forms.ModelForm):
     class Meta:
         model = Doctor
         fields = ['name', 'photo', 'qualification']
 
     name = forms.CharField(max_length=255, label='Név')
-    photo = forms.ImageField(label='Fénykép', required=False, widget=forms.ClearableFileInput(attrs={'class': 'custom-file-input'}))
+    photo = forms.ImageField(label='Fénykép', required=False, widget=CustomClearableFileInput)
     qualification = forms.CharField(max_length=255, label='Képesítés')
 
     def __init__(self, *args, **kwargs):

@@ -59,13 +59,19 @@ def idopontfoglalas(request):
         
     return render(request, 'idopontfoglalas.html', {'doctors': Doctor.objects.all(), 'treatments': Treatment.objects.all()})
 
+@login_required
 def admin_view(request):
     if not (request.user.is_superuser):
         return redirect('home')
     
+    search_query = request.GET.get('search', '')
+    if search_query:
+        users = RendeloUser.objects.filter(username__icontains=search_query)
+    else:
+        users = RendeloUser.objects.all()
+    
     treatments = Treatment.objects.all()
     doctors = Doctor.objects.all()
-    users = RendeloUser.objects.all()
     return render(request, 'admin.html', {'treatments': treatments, 'doctors': doctors, 'users': users})
 
 @login_required

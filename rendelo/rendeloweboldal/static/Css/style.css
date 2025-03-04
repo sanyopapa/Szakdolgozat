@@ -511,15 +511,6 @@ section.register .button-like, section.login .button-like {
     margin-bottom: 10px;
 }
 
-/* Profil kép stílusok */
-.profile-image {
-    max-width: 150px;
-    max-height: 150px;
-    border-radius: 50%;
-    display: block;
-    margin-bottom: 10px;
-}
-
 /* Profil szekció stílusai */
 section.profile {
     padding: 20px;
@@ -1131,6 +1122,13 @@ section.doctors .doctor.selected {
     align-items: center;
     justify-content: center;
     height: 100%; 
+}
+
+/*Currently link és Clear checkbox elrejtése*/
+.photo-container a,
+.photo-container input[type="checkbox"],
+.photo-container label[for^="photo-clear_id"] {
+    display: none;
 }
 
 /* Reszponzív stílusok */

@@ -38,20 +38,14 @@
         </div>
         <div class="form-group">
             <label for="id_photo">Profilkép:</label>
-            <div class="photo-container">
-                {{ doctor_form.photo }}
-                {% if doctor_form.instance.photo %}
-                    <img id="current-photo" src="{{ doctor_form.instance.photo.url }}" alt="Profilkép" class="profile-image">
-                {% endif %}
-                <img id="new-photo-preview" class="profile-image" style="display:none;">
-            </div>
+            {{ doctor_form.photo }}
         </div>
         <div class="form-group">
             <label for="id_qualification">Képesítés:</label>
             {{ doctor_form.qualification }}
         </div>
         <button type="submit">Mentés</button>
-        <a href="{% url 'admin_view' %}" class="button">Mégse</a>
+        <a href="{% url 'admin_view' %}" class="button-like">Mégse</a>
     </form>
 </section>
 {% endblock %}
@@ -70,22 +64,16 @@
     document.getElementById('id_photo').addEventListener('change', function(event) {
         var reader = new FileReader();
         reader.onload = function() {
-            var preview = document.getElementById('new-photo-preview');
+            var preview = document.getElementById('current-photo');
             preview.src = reader.result;
             preview.style.display = 'block';
-            var currentPhoto = document.getElementById('current-photo');
-            if (currentPhoto) {
-                currentPhoto.style.display = 'none';
-            }
+            preview.style.maxWidth = '200px';  
+            preview.style.maxHeight = '200px';
         };
         reader.readAsDataURL(event.target.files[0]);
     });
 
     document.getElementById('current-photo').addEventListener('click', function() {
-        document.getElementById('id_photo').click();
-    });
-
-    document.getElementById('new-photo-preview').addEventListener('click', function() {
         document.getElementById('id_photo').click();
     });
 </script>
