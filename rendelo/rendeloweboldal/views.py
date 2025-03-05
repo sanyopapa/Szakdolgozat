@@ -343,6 +343,7 @@ def profile_view(request):
 def cancel_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, patient=request.user.id, status='booked')
     doctor = get_object_or_404(Doctor, id=appointment.practitioner_id)
+    doctoruser = get_object_or_404(RendeloUser, id=appointment.practitioner_id)
     treatment = get_object_or_404(Treatment, id=appointment.treatment_id)
     patient = get_object_or_404(Patient, id=request.user.id)
 
@@ -361,7 +362,7 @@ def cancel_appointment(request, appointment_id):
             'Időpont törlése',
             f'Kedves {doctor.name},\n\nAz alábbi időpontot töröltük:\n\nPáciens: {patient.name}\nKezelés: {treatment.name}\nIdőpont: {appointment.start.strftime("%Y-%m-%d %H:%M")}\nTelefonszám: {patient.telecom}\nEmail cím: {request.user.email}\n\nÜdvözlettel,\nMosolyfogaszat.hu',
             'your_email@example.com',
-            [doctor.email],
+            [doctoruser.email],
             fail_silently=False,
         )
 
