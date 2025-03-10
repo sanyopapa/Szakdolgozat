@@ -63,3 +63,10 @@ class WorkingHours(models.Model):
 
     def __str__(self):
         return f"Working hours for {self.doctor.name} on {self.date} from {self.start} to {self.end}"
+
+class PaymentStatus(models.Model):
+    appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE, primary_key=True)
+    is_paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Payment status for appointment {self.appointment.id}: {'Paid' if self.is_paid else 'Not Paid'}"

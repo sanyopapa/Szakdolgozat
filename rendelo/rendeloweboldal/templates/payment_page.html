@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Fizetés{% endblock %}
+
+{% block header_title %}Fizetés{% endblock %}
+
+{% block content %}
+<h2>Fizetés az időpontért</h2>
+<p>Kérjük, fizessen az alábbi időpontért:</p>
+<p>Orvos: {{ appointment.practitioner.name }}</p>
+<p>Kezelés: {{ appointment.treatment.name }}</p>
+<p>Időpont: {{ appointment.start }}</p>
+<div id="paypal-button-container"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID"></script>
+<script>
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: '0.01' // Teszt összeg, amit a tranzakcióban használni fogsz
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                // Itt végezheted el a tranzakció sikerességének feldolgozását
+                alert('A tranzakció sikeresen megtörtént: ' + details.payer.name.given_name);
+                document.querySelector('form').submit();
+            });
+        },
+        onError: function(err) {
+            console.error(err);
+            alert('Hiba történt a fizetés során.');
+        }
+    }).render('#paypal-button-container'); // Renderelje a gombokat ebben az elemben.
+</script>
+{% endblock %}

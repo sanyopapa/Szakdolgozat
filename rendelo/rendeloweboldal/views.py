@@ -1,7 +1,8 @@
+import json
 from uuid import uuid4
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
-from .models import Appointment, Treatment, Doctor, Patient, RendeloUser, WorkingHours
+from .models import Appointment, Treatment, Doctor, Patient, RendeloUser, WorkingHours, PaymentStatus
 from django.contrib.auth import login as auth_login, authenticate, logout
 from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm, DoctorForm, CustomUserCreationForm, WorkingHoursForm
 from django.contrib.auth.decorators import login_required
@@ -16,6 +17,7 @@ from django.contrib import messages
 import os
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils.timezone import make_aware
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +32,7 @@ def idopontfoglalas(request):
     if request.method == 'POST':
         try:
             treatment = Treatment.objects.get(id=request.POST['treatment'])
-            start_time = timezone.make_aware(datetime.strptime(request.POST['appointment_datetime'], '%Y-%m-%d %H:%M'))
+            start_time = make_aware(datetime.strptime(request.POST['appointment_datetime'], '%Y-%m-%d %H:%M'))
             treatment_duration = treatment.duration.total_seconds() // 60
 
             treatment_duration = ((treatment_duration + 14) // 15) * 15
@@ -58,6 +60,12 @@ def idopontfoglalas(request):
                 end=end_time,
                 status='booked'
             )
+
+            payment_status = PaymentStatus.objects.create(
+                appointment=appointment,
+                is_paid=False
+            )
+
             patient = Patient.objects.get(id=request.user.id)
 
             send_mail(
@@ -76,11 +84,26 @@ def idopontfoglalas(request):
                 fail_silently=False,
             )
 
-            return redirect('profile')
+            if request.POST['payment_method'] == 'pay_now':
+                return redirect('payment_page', appointment_id=appointment.id)
+            else:
+                payment_status.is_paid = False
+                payment_status.save()
+                return redirect('profile')
         except Exception as e:
             return render(request, 'idopontfoglalas.html', {'error_message': 'Hiba történt az időpont foglalása során.'})
         
     return render(request, 'idopontfoglalas.html', {'doctors': Doctor.objects.all(), 'treatments': Treatment.objects.all()})
+
+@login_required
+def payment_page(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    if request.method == 'POST':
+        payment_status = get_object_or_404(PaymentStatus, appointment=appointment)
+        payment_status.is_paid = True
+        payment_status.save()
+        return redirect('profile')
+    return render(request, 'payment_page.html', {'appointment': appointment})
 
 @login_required
 def admin_view(request):
@@ -578,4 +601,24 @@ def delete_working_hours(request, date):
         return redirect(f'/working_hours/?date={date}')
     except WorkingHours.DoesNotExist:
         return redirect('working_hours')
+
+
+@csrf_exempt
+def payment_callback(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # Ellenőrizd a tranzakció státuszát, például ha data['status'] "COMPLETED"
+            if data.get("status") in ["COMPLETED", "APPROVED"]:
+                appointment = get_object_or_404(Appointment, id=data.get("orderRef"))
+                payment_status, _ = PaymentStatus.objects.get_or_create(appointment=appointment)
+                payment_status.is_paid = True
+                payment_status.save()
+                return JsonResponse({"message": "Fizetés sikeres"}, status=200)
+            else:
+                return JsonResponse({"message": "Fizetés sikertelen"}, status=400)
+        except Exception as e:
+            return HttpResponse("Hiba történt a fizetés feldolgozása során", status=500)
+    return HttpResponse("Érvénytelen kérés", status=400)
+
 

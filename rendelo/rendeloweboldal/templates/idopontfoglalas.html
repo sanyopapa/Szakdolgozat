@@ -52,8 +52,18 @@
                 </div>
             </div>
 
+            <label for="payment_method">Fizetési mód:</label>
+            <div>
+                <input type="radio" id="pay_now" name="payment_method" value="pay_now" required>
+                <label for="pay_now">Fizetés most (PayPal vagy bankkártya)</label>
+            </div>
+            <div>
+                <input type="radio" id="pay_later" name="payment_method" value="pay_later" required>
+                <label for="pay_later">Fizetés helyszínen</label>
+            </div>
+
             <input type="hidden" id="appointment_datetime" name="appointment_datetime">
-            <button type="submit" id="submit_button" disabled>Foglalás</button>
+            <button type="submit" id="submit_button">Foglalás</button>
         </form>
     </section>
 {% else %}
@@ -179,13 +189,14 @@
 
         const bookingForm = document.getElementById('booking-form');
         bookingForm.addEventListener('submit', function(event) {
+            event.preventDefault();
             const selectedDoctor = document.querySelector('.doctor.selected').textContent;
             const selectedTreatment = document.getElementById('treatment').selectedOptions[0].textContent;
             const selectedDate = document.getElementById('appointment_date').value;
             const selectedTime = document.getElementById('appointment_datetime').value.split(' ')[1];
-            const confirmationMessage = `Orvos: ${selectedDoctor}\nKezelés: ${selectedTreatment}\nIdőpont: ${selectedDate} ${selectedTime}`;
-            if (!confirm(confirmationMessage)) {
-                event.preventDefault();
+            const confirmationMessage = `Orvos: ${selectedDoctor}\nKezelés: ${selectedTreatment}\nIdőpont: ${selectedDate} ${selectedTime}\nBiztosan lefoglalja az időpontot?`;
+            if (confirm(confirmationMessage)) {
+                bookingForm.submit();
             }
         });
     });
