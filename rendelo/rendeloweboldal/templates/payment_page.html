@@ -5,12 +5,14 @@
 {% block header_title %}Fizetés{% endblock %}
 
 {% block content %}
-<h2>Fizetés az időpontért</h2>
-<p>Kérjük, fizessen az alábbi időpontért:</p>
-<p>Orvos: {{ appointment.practitioner.name }}</p>
-<p>Kezelés: {{ appointment.treatment.name }}</p>
-<p>Időpont: {{ appointment.start }}</p>
-<div id="paypal-button-container"></div>
+<section class="payment">
+    <h2>Fizetés az időpontért</h2>
+    <p>Kérjük, fizessen az alábbi időpontért:</p>
+    <p>Orvos: {{ appointment.practitioner.name }}</p>
+    <p>Kezelés: {{ appointment.treatment.name }}</p>
+    <p>Időpont: {{ appointment.start }}</p>
+    <div id="paypal-button-container"></div>
+</section>
 {% endblock %}
 
 {% block scripts %}

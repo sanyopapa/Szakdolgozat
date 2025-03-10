@@ -1220,3 +1220,27 @@ section.doctors .doctor.selected {
     font-size: 1em;
 }
 
+.payment {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.payment h2 {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.payment p {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+#paypal-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}

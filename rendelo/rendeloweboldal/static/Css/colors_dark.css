@@ -239,3 +239,21 @@ section.booking input[type="date"] {
 .payment-method label {
     color: #e0e0e0;
 }
+
+.payment {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+.payment h2 {
+    color: #e0e0e0;
+}
+
+.payment p {
+    color: #e0e0e0;
+}
+
+#paypal-button-container {
+    background-color: #e0e0e0;
+    color: #e0e0e0;
+}
