@@ -53,14 +53,17 @@
             </div>
 
             <label for="payment_method">Fizetési mód:</label>
-            <div>
-                <input type="radio" id="pay_now" name="payment_method" value="pay_now" required>
-                <label for="pay_now">Fizetés most (PayPal vagy bankkártya)</label>
+            <div class="payment-methods">
+                <div class="payment-method" data-value="pay_now">
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-text">Fizetés most (PayPal vagy bankkártya)</span>
+                </div>
+                <div class="payment-method" data-value="pay_later">
+                    <span class="payment-icon">💵</span>
+                    <span class="payment-text">Fizetés helyszínen</span>
+                </div>
             </div>
-            <div>
-                <input type="radio" id="pay_later" name="payment_method" value="pay_later" required>
-                <label for="pay_later">Fizetés helyszínen</label>
-            </div>
+            <input type="hidden" id="payment_method" name="payment_method" required>
 
             <input type="hidden" id="appointment_datetime" name="appointment_datetime">
             <button type="submit" id="submit_button">Foglalás</button>
@@ -198,6 +201,17 @@
             if (confirm(confirmationMessage)) {
                 bookingForm.submit();
             }
+        });
+
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        const paymentMethodInput = document.getElementById('payment_method');
+
+        paymentMethods.forEach(method => {
+            method.addEventListener('click', function() {
+                paymentMethods.forEach(m => m.classList.remove('selected'));
+                this.classList.add('selected');
+                paymentMethodInput.value = this.getAttribute('data-value');
+            });
         });
     });
 </script>

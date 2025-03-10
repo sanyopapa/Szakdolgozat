@@ -358,7 +358,7 @@ def profile_view(request):
     else:
         form = ProfileForm(instance=user)
 
-    appointments = Appointment.objects.filter(patient=user.id, status='booked').order_by('-start') if not user.is_superuser and not hasattr(user, 'doctor') else None
+    appointments = Appointment.objects.filter(patient=user.id, status='booked').select_related('paymentstatus').order_by('-start') if not user.is_superuser and not hasattr(user, 'doctor') else None
     now = timezone.now()
     return render(request, 'profile.html', {'form': form, 'patient_form': patient_form, 'doctor_form': doctor_form, 'appointments': appointments, 'now': now})
 
@@ -545,6 +545,7 @@ def edit_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     patient = get_object_or_404(Patient, id=appointment.patient)
     treatment = get_object_or_404(Treatment, id=appointment.treatment.id)
+    payment_status = get_object_or_404(PaymentStatus, appointment=appointment)
     
     if request.method == 'POST':
         custom_description = request.POST.get('custom_description')
@@ -556,7 +557,8 @@ def edit_appointment(request, appointment_id):
         'appointment': appointment,
         'patient': patient,
         'treatment': treatment,
-        'selected_date': appointment.start.date().strftime("%Y-%m-%d")
+        'selected_date': appointment.start.date().strftime("%Y-%m-%d"),
+        'payment_status': payment_status
     })
 
 @login_required

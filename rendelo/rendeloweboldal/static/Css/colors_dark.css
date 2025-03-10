@@ -71,7 +71,7 @@ section.profile input, section.profile select, section.profile textarea {
     color: yellow;
 }
 
-.contact-info a[href^="mailto:"]:hover {
+contact-info a[href^="mailto:"]:hover {
     text-decoration: underline;
 }
 
@@ -219,4 +219,23 @@ section.booking input[type="date"] {
 
 .time-slots button:disabled {
     background-color: #555;
+}
+
+.payment-method {
+    background-color: #333;
+    border-color: #555;
+}
+
+.payment-method:hover {
+    background-color: #444;
+    border-color: #666;
+}
+
+.payment-method.selected {
+    background-color: #555;
+    border-color: #777;
+}
+
+.payment-method label {
+    color: #e0e0e0;
 }

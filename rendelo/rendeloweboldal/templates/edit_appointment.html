@@ -11,6 +11,13 @@
     <p><strong>Páciens:</strong> {{ patient.name }}</p>
     <p><strong>Kezelés:</strong> {{ treatment.name }}</p>
     <p><strong>Időpont:</strong> {{ appointment.start|date:"Y-m-d H:i" }} - {{ appointment.end|date:"H:i" }}</p>
+    <p><strong>Fizetési státusz:</strong> 
+        {% if appointment.paymentstatus.is_paid %}
+            Fizetve
+        {% else %}
+            Fizetés a helyszínen
+        {% endif %}
+    </p>
     <form method="post" action="{% url 'edit_appointment' appointment.id %}">
         {% csrf_token %}
         <label for="custom_description">Leírás:</label>
