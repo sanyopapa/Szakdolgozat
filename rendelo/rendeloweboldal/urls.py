@@ -30,5 +30,6 @@ urlpatterns = [
     path('edit_appointment/<str:appointment_id>/', views.edit_appointment, name='edit_appointment'),  
     path('delete_working_hours/<str:date>/', views.delete_working_hours, name='delete_working_hours'),
     path('payment/<uuid:appointment_id>/', views.payment_page, name='payment_page'),
+    path('payment_callback/', views.payment_callback, name='payment_callback'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
