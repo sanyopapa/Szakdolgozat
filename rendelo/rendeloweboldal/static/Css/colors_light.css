@@ -202,3 +202,40 @@ section.booking input[type="date"] {
 .time-slots button:disabled {
     background-color: #ccc;
 }
+
+.payment-method {
+    background-color: #f9f9f9;
+    border-color: #ddd;
+}
+
+.payment-method:hover {
+    background-color: #f1f1f1;
+    border-color: #bbb;
+}
+
+.payment-method.selected {
+    background-color: #e0e0e0;
+    border-color: #aaa;
+}
+
+.payment-method label {
+    color: #333;
+}
+
+.payment {
+    background-color: white;
+    color: #333;
+}
+
+.payment h2 {
+    color: #333;
+}
+
+.payment p {
+    color: #333;
+}
+
+#paypal-button-container {
+    background-color: white;
+    color: #333;
+}

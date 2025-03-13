@@ -52,8 +52,21 @@
                 </div>
             </div>
 
+            <label for="payment_method">Fizetési mód:</label>
+            <div class="payment-methods">
+                <div class="payment-method" data-value="pay_now">
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-text">Fizetés most (PayPal vagy bankkártya)</span>
+                </div>
+                <div class="payment-method" data-value="pay_later">
+                    <span class="payment-icon">💵</span>
+                    <span class="payment-text">Fizetés helyszínen</span>
+                </div>
+            </div>
+            <input type="hidden" id="payment_method" name="payment_method" required>
+
             <input type="hidden" id="appointment_datetime" name="appointment_datetime">
-            <button type="submit" id="submit_button" disabled>Foglalás</button>
+            <button type="submit" id="submit_button">Foglalás</button>
         </form>
     </section>
 {% else %}
@@ -179,14 +192,26 @@
 
         const bookingForm = document.getElementById('booking-form');
         bookingForm.addEventListener('submit', function(event) {
+            event.preventDefault();
             const selectedDoctor = document.querySelector('.doctor.selected').textContent;
             const selectedTreatment = document.getElementById('treatment').selectedOptions[0].textContent;
             const selectedDate = document.getElementById('appointment_date').value;
             const selectedTime = document.getElementById('appointment_datetime').value.split(' ')[1];
-            const confirmationMessage = `Orvos: ${selectedDoctor}\nKezelés: ${selectedTreatment}\nIdőpont: ${selectedDate} ${selectedTime}`;
-            if (!confirm(confirmationMessage)) {
-                event.preventDefault();
+            const confirmationMessage = `Orvos: ${selectedDoctor}\nKezelés: ${selectedTreatment}\nIdőpont: ${selectedDate} ${selectedTime}\nBiztosan lefoglalja az időpontot?`;
+            if (confirm(confirmationMessage)) {
+                bookingForm.submit();
             }
+        });
+
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        const paymentMethodInput = document.getElementById('payment_method');
+
+        paymentMethods.forEach(method => {
+            method.addEventListener('click', function() {
+                paymentMethods.forEach(m => m.classList.remove('selected'));
+                this.classList.add('selected');
+                paymentMethodInput.value = this.getAttribute('data-value');
+            });
         });
     });
 </script>
