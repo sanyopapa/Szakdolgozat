@@ -18,12 +18,16 @@
             Fizetés a helyszínen
         {% endif %}
     </p>
-    <form method="post" action="{% url 'edit_appointment' appointment.id %}">
-        {% csrf_token %}
-        <label for="custom_description">Leírás:</label>
-        <textarea id="custom_description" name="custom_description">{{ appointment.custom_description }}</textarea>
-        <button type="submit">Mentés</button>
-        <a href="{% url 'appointments_today' %}?date={{ selected_date }}" class="button-like">Mégse</a>
-    </form>
+    {% if user.is_authenticated and request.user.is_staff and not request.user.is_superuser %}
+        <form method="post" action="{% url 'edit_appointment' appointment.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Mentés</button>
+            <a href="{% url 'appointments_today' %}?date={{ selected_date }}" class="button-like">Mégse</a>
+        </form>
+    {% else %}
+        <p><strong>Leírás:</strong> {{ appointment.custom_description }}</p>
+        <a href="{% url 'profile' %}" class="button-like">Vissza</a>
+    {% endif %}
 </section>
 {% endblock %}

@@ -1,7 +1,7 @@
 from uuid import uuid4
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from .models import RendeloUser, Patient, Treatment, Doctor, WorkingHours
+from .models import RendeloUser, Patient, Treatment, Doctor, WorkingHours, Appointment
 from datetime import timedelta
 from django.core.validators import RegexValidator
 
@@ -160,3 +160,10 @@ class WorkingHoursForm(forms.ModelForm):
         if start and end and start >= end:
             raise forms.ValidationError("A kezdési időpont nem lehet későbbi vagy egyenlő a befejezési időponttal.")
         return cleaned_data
+    
+class AppointmentForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ['custom_description']
+    
+    custom_description = forms.CharField(widget=forms.Textarea, label='Leírás', required=False)

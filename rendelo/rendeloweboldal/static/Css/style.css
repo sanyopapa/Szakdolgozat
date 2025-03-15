@@ -167,10 +167,11 @@ justify-content: flex-start; /* Balra zárás */
     background: none;
     border: none;
     cursor: pointer;
-    padding: 10px 12px; /* Kisebb padding a gombok között */
+    padding: 10px 12px;
     color: white;
     text-align: center;
     width: 100%;
+    height: 100%;
 }
 
 .navbar button:hover {
@@ -618,6 +619,17 @@ section.profile .form-group textarea {
     padding: 10px;
     border-bottom: 1px solid #ddd;
     flex-wrap: nowrap; 
+}
+
+.appointment-item:hover{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    flex-wrap: nowrap; 
+    cursor: pointer;
+    transition-duration: 500ms;
 }
 
 .appointment-details {
@@ -1243,4 +1255,9 @@ section.doctors .doctor.selected {
     display: flex;
     justify-content: center;
     margin-top: 20px;
+}
+
+.patient-item:hover{
+    cursor: pointer;
+    transition-duration: 500ms;
 }

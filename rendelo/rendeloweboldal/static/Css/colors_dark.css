@@ -257,3 +257,11 @@ section.booking input[type="date"] {
     background-color: #e0e0e0;
     color: #e0e0e0;
 }
+
+.appointment-item:hover {
+    background-color: #333;
+}
+
+.patient-item:hover{
+    background-color: #333;
+}

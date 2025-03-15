@@ -62,7 +62,7 @@
         {% if appointments %}
             <ul class="appointments-list">
                 {% for appointment in appointments %}
-                    <li class="appointment-item">
+                    <li class="appointment-item" onclick="goToEdit_appointment('{{ appointment.id }}')">
                         <div class="appointment-details">
                             <span class="appointment-time">{{ appointment.start }}</span>
                             <span class="appointment-practitioner">{{ appointment.practitioner.name }}</span>
@@ -135,5 +135,8 @@
     document.getElementById('new-photo-preview').addEventListener('click', function() {
         document.getElementById('id_photo').click();
     });
+    function goToEdit_appointment(appointmentId) {
+        window.location.href = "{% url 'edit_appointment' 'APPOINTMENT_ID' %}".replace('APPOINTMENT_ID', appointmentId);
+    }
 </script>
 {% endblock %}

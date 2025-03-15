@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from .models import Appointment, Treatment, Doctor, Patient, RendeloUser, WorkingHours, PaymentStatus
 from django.contrib.auth import login as auth_login, authenticate, logout
-from .forms import RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm, DoctorForm, CustomUserCreationForm, WorkingHoursForm
+from .forms import AppointmentForm, RegistrationForm, LoginForm, ProfileForm, PatientForm, TreatmentForm, DoctorForm, CustomUserCreationForm, WorkingHoursForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -539,26 +539,26 @@ def appointments_today_view(request):
 
 @login_required
 def edit_appointment(request, appointment_id):
-    if not (request.user.is_staff and not request.user.is_superuser):
-        return redirect('home')
-    
     appointment = get_object_or_404(Appointment, id=appointment_id)
     patient = get_object_or_404(Patient, id=appointment.patient)
     treatment = get_object_or_404(Treatment, id=appointment.treatment.id)
     payment_status = get_object_or_404(PaymentStatus, appointment=appointment)
     
-    if request.method == 'POST':
-        custom_description = request.POST.get('custom_description')
-        appointment.custom_description = custom_description
-        appointment.save()
-        return redirect(f'/appointments_today/?date={appointment.start.date().strftime("%Y-%m-%d")}')
+    if request.method == 'POST' and request.user.is_staff and not request.user.is_superuser:
+        form = AppointmentForm(request.POST, instance=appointment)
+        if form.is_valid():
+            form.save()
+            return redirect(f'/appointments_today/?date={appointment.start.date().strftime("%Y-%m-%d")}')
+    else:
+        form = AppointmentForm(instance=appointment)
     
     return render(request, 'edit_appointment.html', {
         'appointment': appointment,
         'patient': patient,
         'treatment': treatment,
         'selected_date': appointment.start.date().strftime("%Y-%m-%d"),
-        'payment_status': payment_status
+        'payment_status': payment_status,
+        'form': form
     })
 
 @login_required

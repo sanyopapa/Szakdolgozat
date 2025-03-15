@@ -27,7 +27,7 @@
             </thead>
             <tbody>
                 {% for patient in patients %}
-                <tr onclick="goToPatientDetail('{{ patient.id }}')" style="cursor: pointer;">
+                <tr onclick="goToPatientDetail('{{ patient.id }}')" class="patient-item">
                     <td>{{ patient.name }}</td>
                     <td>
                         {% if patient.gender == 'male' %}
