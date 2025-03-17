@@ -50,23 +50,28 @@
                     <h3>Délután</h3>
                     <div id="afternoon_slots" class="time-slots"></div>
                 </div>
+                <div id="no_slots_message" style="display: none;" class="info-message centered">
+                    <p>Nincs megjeleníthető időpont</p>
+                </div>
             </div>
 
-            <label for="payment_method">Fizetési mód:</label>
-            <div class="payment-methods">
-                <div class="payment-method" data-value="pay_now">
-                    <span class="payment-icon">💳</span>
-                    <span class="payment-text">Fizetés most (PayPal vagy bankkártya)</span>
+            <div id="payment_section" style="display: none;">
+                <label for="payment_method">Fizetési mód:</label>
+                <div class="payment-methods">
+                    <div class="payment-method" data-value="pay_now">
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-text">Fizetés most (PayPal vagy bankkártya)</span>
+                    </div>
+                    <div class="payment-method" data-value="pay_later">
+                        <span class="payment-icon">💵</span>
+                        <span class="payment-text">Fizetés helyszínen</span>
+                    </div>
                 </div>
-                <div class="payment-method" data-value="pay_later">
-                    <span class="payment-icon">💵</span>
-                    <span class="payment-text">Fizetés helyszínen</span>
-                </div>
+                <input type="hidden" id="payment_method" name="payment_method" required>
             </div>
-            <input type="hidden" id="payment_method" name="payment_method" required>
 
             <input type="hidden" id="appointment_datetime" name="appointment_datetime">
-            <button type="submit" id="submit_button">Foglalás</button>
+            <button type="submit" id="submit_button" disabled>Foglalás</button>
         </form>
     </section>
 {% else %}
@@ -80,6 +85,9 @@
         const doctorLinks = document.querySelectorAll('.doctor');
         const selectedDoctorInput = document.getElementById('selected_doctor');
         const earliestAppointmentButton = document.getElementById('earliest-appointment-button');
+        const paymentSection = document.getElementById('payment_section');
+        const submitButton = document.getElementById('submit_button');
+        const paymentMethodInput = document.getElementById('payment_method');
         
         doctorLinks.forEach(link => {
             link.addEventListener('click', function(event) {
@@ -141,31 +149,40 @@
                         const afternoonSection = document.getElementById('afternoon_section');
                         const morningSlotsDiv = document.getElementById('morning_slots');
                         const afternoonSlotsDiv = document.getElementById('afternoon_slots');
+                        const noSlotsMessage = document.getElementById('no_slots_message');
                         morningSlotsDiv.innerHTML = '';
                         afternoonSlotsDiv.innerHTML = '';
                         let morningSlotsExist = false;
                         let afternoonSlotsExist = false;
-                        data.slots.forEach(slot => {
-                            const button = document.createElement('button');
-                            button.type = 'button';
-                            button.textContent = slot.time;
-                            button.disabled = !slot.available;
-                            button.classList.remove('selected'); 
-                            button.setAttribute('data-time', slot.time);
-                            button.addEventListener('click', function() {
-                                document.getElementById('appointment_datetime').value = `${selectedDate} ${slot.time}`;
-                                document.getElementById('submit_button').disabled = false;
-                                document.querySelectorAll('.time-slots button').forEach(btn => btn.classList.remove('selected'));
-                                this.classList.add('selected');
+                        if (data.slots.length === 0) {
+                            noSlotsMessage.style.display = 'block';
+                            paymentSection.style.display = 'none';
+                            submitButton.disabled = true;
+                        } else {
+                            noSlotsMessage.style.display = 'none';
+                            paymentSection.style.display = 'block';
+                            data.slots.forEach(slot => {
+                                const button = document.createElement('button');
+                                button.type = 'button';
+                                button.textContent = slot.time;
+                                button.disabled = !slot.available;
+                                button.classList.remove('selected'); 
+                                button.setAttribute('data-time', slot.time);
+                                button.addEventListener('click', function() {
+                                    document.getElementById('appointment_datetime').value = `${selectedDate} ${slot.time}`;
+                                    submitButton.disabled = false;
+                                    document.querySelectorAll('.time-slots button').forEach(btn => btn.classList.remove('selected'));
+                                    this.classList.add('selected');
+                                });
+                                if (parseInt(slot.time.split(':')[0]) < 12) {
+                                    morningSlotsDiv.appendChild(button);
+                                    morningSlotsExist = true;
+                                } else {
+                                    afternoonSlotsDiv.appendChild(button);
+                                    afternoonSlotsExist = true;
+                                }
                             });
-                            if (parseInt(slot.time.split(':')[0]) < 12) {
-                                morningSlotsDiv.appendChild(button);
-                                morningSlotsExist = true;
-                            } else {
-                                afternoonSlotsDiv.appendChild(button);
-                                afternoonSlotsExist = true;
-                            }
-                        });
+                        }
                         morningSection.style.display = morningSlotsExist ? 'block' : 'none';
                         afternoonSection.style.display = afternoonSlotsExist ? 'block' : 'none';
                         if (callback) callback();
@@ -193,6 +210,10 @@
         const bookingForm = document.getElementById('booking-form');
         bookingForm.addEventListener('submit', function(event) {
             event.preventDefault();
+            if (!paymentMethodInput.value) {
+                alert('Kérem válasszon fizetési módot.');
+                return;
+            }
             const selectedDoctor = document.querySelector('.doctor.selected').textContent;
             const selectedTreatment = document.getElementById('treatment').selectedOptions[0].textContent;
             const selectedDate = document.getElementById('appointment_date').value;
@@ -204,7 +225,6 @@
         });
 
         const paymentMethods = document.querySelectorAll('.payment-method');
-        const paymentMethodInput = document.getElementById('payment_method');
 
         paymentMethods.forEach(method => {
             method.addEventListener('click', function() {

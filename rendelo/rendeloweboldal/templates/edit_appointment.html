@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Időpont szerkesztése{% endblock %}
+{% block title %}Időpont adatai{% endblock %}
 
-{% block header_title %}Időpont szerkesztése{% endblock %}
+{% block header_title %}Időpont adatai{% endblock %}
 
 {% block content %}
 <section class="edit-appointment">
-    <h2>Időpont szerkesztése</h2>
+    <h2>Időpont adatai</h2>
     <p><strong>Páciens:</strong> {{ patient.name }}</p>
     <p><strong>Kezelés:</strong> {{ treatment.name }}</p>
     <p><strong>Időpont:</strong> {{ appointment.start|date:"Y-m-d H:i" }} - {{ appointment.end|date:"H:i" }}</p>
