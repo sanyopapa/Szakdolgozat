@@ -1,0 +1,1 @@
+#Fogászati rendelő webalkalmazás implementálása Django keretrendszerben
