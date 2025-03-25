@@ -1,1 +1,1 @@
-#Fogászati rendelő webalkalmazás implementálása Django keretrendszerben
+# Fogászati rendelő webalkalmazás implementálása Django keretrendszerben
