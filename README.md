@@ -42,3 +42,8 @@ a *Python* nyelvet, az *FHIR* szabványt, és a webfejlesztést. Sikeresen műk�
 
 ## Kulcsszavak: 
 *Django, SQLite, HTML, JavaScript, CSS, Python*
+
+# A Django keretrendszer
+A Django egy magas szintű *Python* webkeretrendszer, amely támogatja a gyors fejlesztést és az egyszerű, jól átgondolt megoldásokat. Tapasztalt fejlesztők által készített, így számos webfejlesztési nehézséget megold, és lehetővé teszi, hogy a fejlesztő alkalmazás írására koncentráljon, anélkül, hogy újra fel kellene találnia a kereket. További pozitívuma, hogy ingyenes, és nyílt forráskódú.
+
+
