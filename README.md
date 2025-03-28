@@ -6,8 +6,10 @@
 
 ## SZAKDOLGOZAT  
 
+
 **Készítette:**  
 Sándor Márton 
+
 *Programtervező informatikus BSc szakos hallgató*
 
 **Témavezető:**  
