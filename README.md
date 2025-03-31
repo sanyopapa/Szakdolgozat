@@ -47,5 +47,19 @@ a *Python* nyelvet, az *FHIR* szabványt, és a webfejlesztést. Sikeresen műk�
 
 # A Django keretrendszer
 A Django egy magas szintű *Python* webkeretrendszer, amely támogatja a gyors fejlesztést és az egyszerű, jól átgondolt megoldásokat. Tapasztalt fejlesztők által készített, így számos webfejlesztési nehézséget megold, és lehetővé teszi, hogy a fejlesztő alkalmazás írására koncentráljon, anélkül, hogy újra fel kellene találnia a kereket. További pozitívuma, hogy ingyenes, és nyílt forráskódú.
+[1]
+
+# Az MVT programszervezési minta
+Django projekt lévén az alkalmazás az MVT (Model View Template) design pattern alapelveit kell, hogy kövesse. Ez áll a model-ből, ahol az adatbázis struktúrájáját építjük fel, a view-ból, ami lényegében a projekt azon része, ahol a háttérfolyamatok futnak, és a template-ből, ami a felhasználói felületet tartalmazza. Ez a kapcsolata a felhasználónak az alkalmazással. 
+
+## Model
+
+## View
+
+## Template
+
+# Irodalomjegyzék
+- [1] *Django: The web framework for perfectionists with deadlines https://www.djangoproject.com*
+
 
 
