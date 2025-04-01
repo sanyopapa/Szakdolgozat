@@ -80,9 +80,8 @@ A Django sablonnyelv template tageket (`{% %}`) és template változókat (`{{ }
 
 A sablonok továbbá formázhatók CSS-sel, illetve bármely kedvelt CSS keretrendszerrel, hogy a felhasználói felület mégszebb legyen. Emellett animálhatók is JS segítségével.[2]
 
-# Alkalmazás struktúra
+# Alkalmazás struktúrája
 
-1.3. Alkalmazás struktúrája  
 Egy Django projekt esetében a projekt felépítése modulárisan, egy vagy több alkalmazásból (app) áll, melyek mindegyike egy adott funkcionális területért felel. A szakdolgozatom esetében a "rendelo" mappa tartalmazza a teljes webalkalmazás forráskódját.
 
 A "rendelo" mappa a következő részekből áll:  
