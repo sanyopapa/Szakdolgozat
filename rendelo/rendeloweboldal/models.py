@@ -4,7 +4,7 @@ from django.utils import timezone
 from uuid import uuid4
 
 class RendeloUser(AbstractUser):
-    id = models.CharField(max_length=64, primary_key=True, default=str(uuid4()))  # FHIR resource identifier
+    id = models.CharField(max_length=64, primary_key=True, default=str(uuid4()))  
     email = models.EmailField(unique=True)
 
     USERNAME_FIELD = 'email'
@@ -14,43 +14,43 @@ class RendeloUser(AbstractUser):
         return self.email
 
 class Patient(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)  # same as RendeloUser.id
-    name = models.CharField(max_length=255)  # FHIR 'name' field
+    id = models.CharField(max_length=64, primary_key=True)  
+    name = models.CharField(max_length=255)  
     gender = models.CharField(max_length=10, choices=[('male', 'Male'), ('female', 'Female')])
-    birthDate = models.DateField(null=True, blank=True)  # FHIR 'birthDate' field
-    telecom = models.CharField(max_length=255, null=True, blank=True)  # FHIR 'telecom' field for contact details
+    birthDate = models.DateField(null=True, blank=True)  
+    telecom = models.CharField(max_length=255, null=True, blank=True)  
 
     def __str__(self):
         return self.name
 
 class Doctor(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)  # FHIR resource identifier
+    id = models.CharField(max_length=64, primary_key=True)  
     name = models.CharField(max_length=255)
-    photo = models.ImageField(upload_to='doctor_pictures/', null=True, blank=True)  # FHIR 'photo' field
-    qualification = models.TextField(null=True, blank=True)  # FHIR 'qualification' field
+    photo = models.ImageField(upload_to='doctor_pictures/', null=True, blank=True) 
+    qualification = models.TextField(null=True, blank=True)  
 
     def __str__(self):
         return self.name
 
 class Treatment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)  # FHIR resource identifier
-    name = models.CharField(max_length=255)  # FHIR 'name' field
-    description = models.TextField()  # FHIR 'description' field
-    duration = models.DurationField(null=True, blank=True)  # Kezelés hossza (opcionális)
-    price = models.DecimalField(max_digits=10, decimal_places=0)  # Ár
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)  
+    name = models.CharField(max_length=255)  
+    description = models.TextField() 
+    duration = models.DurationField(null=True, blank=True)  
+    price = models.DecimalField(max_digits=10, decimal_places=0)  
 
     def __str__(self):
         return self.description
 
 class Appointment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)  # FHIR resource identifier
-    patient = models.CharField(max_length=64, null=True, blank=True)  # Az időpontot foglaló páciens azonosítója
-    practitioner = models.ForeignKey(Doctor, on_delete=models.CASCADE)  # Link to Practitioner resource
-    treatment = models.ForeignKey(Treatment, on_delete=models.SET_NULL, null=True, blank=True)  # Link to Treatment
-    start = models.DateTimeField()  # Kezdési időpont
-    end = models.DateTimeField()  # Befejezési időpont
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)  
+    patient = models.CharField(max_length=64, null=True, blank=True)  
+    practitioner = models.ForeignKey(Doctor, on_delete=models.CASCADE)  
+    treatment = models.ForeignKey(Treatment, on_delete=models.SET_NULL, null=True, blank=True) 
+    start = models.DateTimeField() 
+    end = models.DateTimeField() 
     status = models.CharField(max_length=64, null=True, blank=True)  # Időpont státusza (pl. foglalt, elérhető)
-    custom_description = models.TextField(null=True, blank=True)  # Egyéb információk
+    custom_description = models.TextField(null=True, blank=True)  # Időpont leírása, ezt szerkeszti a kezelőorvos
 
     def __str__(self):
         return f"Appointment for {self.patient} with {self.practitioner.name}"

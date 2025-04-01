@@ -46,15 +46,14 @@ a *Python* nyelvet, az *FHIR* szabványt, és a webfejlesztést. Sikeresen műk�
 *Django, SQLite, HTML, JavaScript, CSS, Python, ORM*
 
 # A Django keretrendszer
-A Django egy magas szintű *Python* webkeretrendszer, amely támogatja a gyors fejlesztést és az egyszerű, jól átgondolt megoldásokat. Tapasztalt fejlesztők által készített, így számos webfejlesztési nehézséget megold, és lehetővé teszi, hogy a fejlesztő alkalmazás írására koncentráljon, anélkül, hogy újra fel kellene találnia a kereket. További pozitívuma, hogy ingyenes, és nyílt forráskódú.
-[1]
+A Django egy magas szintű *Python* webkeretrendszer, amely támogatja a gyors fejlesztést és az egyszerű, jól átgondolt megoldásokat. Tapasztalt fejlesztők által készített, így számos webfejlesztési nehézséget megold, és lehetővé teszi, hogy a fejlesztő alkalmazás írására koncentráljon, anélkül, hogy újra fel kellene találnia a kereket. További pozitívuma, hogy ingyenes, és nyílt forráskódú.[1]
 
 # Tartalomjegyzék
 
-# Az MVT programszervezési minta
+# 1. Az MVT programszervezési minta
 Django projekt lévén az alkalmazás az MVT (Model View Template) design pattern alapelveit kell, hogy kövesse. Ez áll a model-ből, ahol az adatbázis struktúrájáját építjük fel, a view-ból, ami lényegében a projekt azon része, ahol a háttérfolyamatok futnak, és a template-ből, ami a felhasználói felületet tartalmazza. Ez a kapcsolata a felhasználónak az alkalmazással. 
 
-## Model
+## 1.1 Model
 
 A Model-ek a Django alkalmazáson belüli adatszerkezet kezelését és interakcióját irányítják, így a Django alkalmazások alapját képezik, mivel az adatok kritikus szerepet játszanak.
 
@@ -64,7 +63,7 @@ Az ORM egyik nagy előnye, hogy lehetővé teszi az adatbázissal való interakc
 
 A Django Model-ek összegzik az összes adatbázissal kapcsolatos logikát és meghatározzák az adatbázis szerkezetét, mint egy tervrajzot annak, hogy milyen adatokat szeretnénk tárolni.[2]
 
-## View
+## 1.2 View
 
 Ha az MVC modellhez szeretnénk hasonlítani, akkor az MVT modellben a View hasonló, mint az MVC-ben a Controller.
 
@@ -72,7 +71,7 @@ A Django view-k felelősek a felhasználói kérések feldolgozásáért és a v
 
 A View-kat függvényekként vagy osztály alapú View-ként is megírhatjuk, attól függően, hogy az alkalmazásunk komplexitása és követelményei melyik megközelítést igénylik.[2]
 
-## Template
+## 1.3 Template
 
 A Django Template-ek feladata, hogy a böngészőben megjelenítendő végső HTML kimenetet rendereljék. Meghatározzák, miként kell az adatokat bemutatni, HTML és a Django sablonnyelvének kombinációjával. 
 
@@ -80,7 +79,7 @@ A Django sablonnyelv template tageket (`{% %}`) és template változókat (`{{ }
 
 A sablonok továbbá formázhatók CSS-sel, illetve bármely kedvelt CSS keretrendszerrel, hogy a felhasználói felület mégszebb legyen. Emellett animálhatók is JS segítségével.[2]
 
-# Alkalmazás struktúrája
+# 2. Alkalmazás struktúrája
 
 Egy Django projekt esetében a projekt felépítése modulárisan, egy vagy több alkalmazásból (app) áll, melyek mindegyike egy adott funkcionális területért felel. A szakdolgozatom esetében a "rendelo" mappa tartalmazza a teljes webalkalmazás forráskódját.
 
@@ -94,17 +93,32 @@ A "rendelo" mappa a következő részekből áll:
 
 - Alkalmazás könyvtára ("rendeloweboldal"): 
   Ez a rész tartalmazza a rendszer egyes moduljait, amelyek a következő fő komponensekből állnak:
-  - *models.py:* Az adatbázis szerkezetét definiáló modellek, melyek meghatározzák a páciensek, orvosok, kezelések, időpontfoglalások és fizetési státuszok struktúráját.
-  - *views.py:* A felhasználói kérések feldolgozásáért és az üzleti logika megvalósításáért felelős réteg, amely összeköti a modelleket a sablonokkal.
+  - *models.py:* Az adatbázis szerkezetét definiáló model-ek, melyek meghatározzák a páciensek, orvosok, kezelések, időpontfoglalások és az időpont foglalások fizetési státuszának struktúráját.
+  - *views.py:* A felhasználói kérések feldolgozásáért és az üzleti logika megvalósításáért felelős fájl, amely összeköti a modelleket a sablonokkal.
   - *forms.py:* Az űrlapok és azok validációs szabályainak definíciója, melyek révén az adatbevitel és ellenőrzés történik.
   - *urls.py:* Az alkalmazás specifikus URL-konfigurációja, amely a különböző view-k elérését biztosítja.
-  - *admin.py:* A Django beépített admin felület konfigurációját tartalmazza, amely az adatok egyszerű kezelését teszi lehetővé.
-  - *migrations/*: Az adatbázis változásait követő migrációs fájlokat tartalmazza, dokumentálva a modellek módosításait.
+  - *admin.py:* A Django beépített adminisztrátori felület konfigurációját tartalmazza. Hozzá kell adni az összes model-t az adatbázisból, amit elérhetővé szeretnénk tenni rajta.
+  - *migrations/*: Az adatbázis változásait követő migrációs fájlokat tartalmazza, dokumentálva a model-ek módosításait.
   - *static/* és *templates/*: A statikus fájlokat (CSS, JavaScript, és az alkalmazás designjához tartozó képek) illetve a HTML template-eket rendszerezi, amelyek a felhasználói felület megjelenítéséért felelősek.
 
 A projekt kialakítása moduláris és átlátható, mely lehetővé teszi a fejlesztés, karbantartás és bővítés egyszerű kezelését.
 
-Emellett a projekt verziókezelése GitHubon történik, így a fejlesztési változtatások könnyen nyomon követhetők, és a kód stabilitása biztosított. 
+Emellett a projekt verziókezelése a GitHubon történik, így könnyen nyomon követhető az egész alkalmazás fejlesztése.
+
+# 3. Adatbázis
+
+A webapplikációkban igen gyakori egy valamilyen adatbázis használata a fejlesztés során, mivel nem tárolhatjuk a szerver memóriájában a felhasználók adatait. 
+A Django alkalmazásokban mivel ORM-et használnak, igen egyszerű az adatbázis kezelés. 
+## 3.1 Az adatbázis típusa
+Először is el kell döntenünk, hogy milyen adatbázist fogunk használni a fejleszteni kívánt alkalmazásunkhoz. 
+Ennek sok szempontja lehet, például hogy mekkora mennyiségű adattal szeretnénk dolgozni, vagy hogy mennyire kell gyorsnak lennie a lekérdezéseknek.
+![Adatbázis beállítás](README_PICTURES/database_setting.png "1.1. ábra. Példa az adatbázis beállításra")
+A szakdolgozatomban a Django beépített adatbázisát használtam, ami sqlite3, mivel egy fogászati rendelőnek nincsen nagyon nagy adatforgalma, így elegendő hozzá ez a fajta adatbázis. 
+Az 1.1 ábrán látható egy példa az adatbázis típusának beállítására. Ezt a beállítást a settings.py fájlban kell megadni, ami az én alkalmazásomban a projekt fő mappáján belüli "rendelo" nevú mappában található.
+
+## 3.2 Az adatbázis felépítése
+
+![Model felépítés példa](README_PICTURES/database_model_example.png "1.2. ábra. Példa az adatbázis model leírására")
 
 # Irodalomjegyzék
 - [1] *Django: The web framework for perfectionists with deadlines https://www.djangoproject.com*
