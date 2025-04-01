@@ -610,7 +610,6 @@ def payment_callback(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            # Ellenőrizd a tranzakció státuszát, például ha data['status'] "COMPLETED"
             if data.get("status") in ["COMPLETED", "APPROVED"]:
                 appointment = get_object_or_404(Appointment, id=data.get("orderRef"))
                 payment_status, _ = PaymentStatus.objects.get_or_create(appointment=appointment)

@@ -71,19 +71,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'rendelo.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'fhir_database',  # Az adatbázis neve
-#         'USER': 'felhasznalonev',  # Az adatbázis felhasználó neve
-#         'PASSWORD': 'jelszo',  # Az adatbázis felhasználó jelszava
-#         'HOST': 'localhost',  # Az adatbázis szerver címe
-#         'PORT': '5432',  # Az adatbázis szerver portja
-#     }
-# }
 AUTH_USER_MODEL = 'rendeloweboldal.RendeloUser'
 
 DATABASES = {
