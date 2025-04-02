@@ -108,8 +108,10 @@ Emellett a projekt verziókezelése a GitHubon történik, így könnyen nyomon 
 # 3. Adatbázis
 
 A webapplikációkban igen gyakori egy valamilyen adatbázis használata a fejlesztés során, mivel nem tárolhatjuk a szerver memóriájában a felhasználók adatait. 
-A Django alkalmazásokban mivel ORM-et használnak, igen egyszerű az adatbázis kezelés. 
+A Django alkalmazásokban mivel ORM-et használnak, igen egyszerű az adatbázis kezelés.
+
 ## 3.1 Az adatbázis típusa
+
 Először is el kell döntenünk, hogy milyen adatbázist fogunk használni a fejleszteni kívánt alkalmazásunkhoz. 
 Ennek sok szempontja lehet, például hogy mekkora mennyiségű adattal szeretnénk dolgozni, vagy hogy mennyire kell gyorsnak lennie a lekérdezéseknek.
 
@@ -124,6 +126,7 @@ Az 1.1 ábrán látható egy példa az adatbázis típusának beállítására. 
 Az adatbázis típusának kiválasztása után a legfontosabb rész következik: Felépíteni az adatbázis szerkezetét. 
 Mivel ORM technológiát használ a keretrendszerünk így szerencsére nincs szükségünk SQL ismeretekre ennek a műveletnek a végrehajtásához. 
 Django-ban minden alkalmazásnak van egy (vagy több) *models.py* nevű fájlja. Ebbe importálnunk kell a Django models modulját, amit így tehetünk meg:
+
 ```from django.db import models```
 
 Ezután python osztályként beleírhatjuk a fájlba a tárolni kívánt adatok tulajdonságait. Az ORM-ben az adatbázis táblák oszlopait a python osztályaink adják meg, és az adatbázis rekordok ezeknek a példányaiból keletkeznek. Minden model osztálynak közvetlenül, vagy közvetetten a *models.Model* modulból kell származnia. A nem közvetlen származás a python nyelv többszörös öröklődés támogatása miatt lehetséges. 
