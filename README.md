@@ -112,13 +112,77 @@ A Django alkalmazásokban mivel ORM-et használnak, igen egyszerű az adatbázis
 ## 3.1 Az adatbázis típusa
 Először is el kell döntenünk, hogy milyen adatbázist fogunk használni a fejleszteni kívánt alkalmazásunkhoz. 
 Ennek sok szempontja lehet, például hogy mekkora mennyiségű adattal szeretnénk dolgozni, vagy hogy mennyire kell gyorsnak lennie a lekérdezéseknek.
+
+#### 1.1. ábra. Példa az adatbázis beállításra
 ![Adatbázis beállítás](README_PICTURES/database_setting.png "1.1. ábra. Példa az adatbázis beállításra")
+
 A szakdolgozatomban a Django beépített adatbázisát használtam, ami sqlite3, mivel egy fogászati rendelőnek nincsen nagyon nagy adatforgalma, így elegendő hozzá ez a fajta adatbázis. 
-Az 1.1 ábrán látható egy példa az adatbázis típusának beállítására. Ezt a beállítást a settings.py fájlban kell megadni, ami az én alkalmazásomban a projekt fő mappáján belüli "rendelo" nevú mappában található.
+Az 1.1 ábrán látható egy példa az adatbázis típusának beállítására. Ezt a beállítást a *settings.py* fájlban kell megadni, ami az én alkalmazásomban a projekt fő mappáján belüli "rendelo" nevú mappában található.
 
 ## 3.2 Az adatbázis felépítése
 
+Az adatbázis típusának kiválasztása után a legfontosabb rész következik: Felépíteni az adatbázis szerkezetét. 
+Mivel ORM technológiát használ a keretrendszerünk így szerencsére nincs szükségünk SQL ismeretekre ennek a műveletnek a végrehajtásához. 
+Django-ban minden alkalmazásnak van egy (vagy több) *models.py* nevű fájlja. Ebbe importálnunk kell a Django models modulját, amit így tehetünk meg:
+```from django.db import models```
+
+Ezután python osztályként beleírhatjuk a fájlba a tárolni kívánt adatok tulajdonságait. Az ORM-ben az adatbázis táblák oszlopait a python osztályaink adják meg, és az adatbázis rekordok ezeknek a példányaiból keletkeznek. Minden model osztálynak közvetlenül, vagy közvetetten a *models.Model* modulból kell származnia. A nem közvetlen származás a python nyelv többszörös öröklődés támogatása miatt lehetséges. 
+
+#### 1.2. ábra. Példa az adatbázis model leírására
 ![Model felépítés példa](README_PICTURES/database_model_example.png "1.2. ábra. Példa az adatbázis model leírására")
+
+A szakdolgozatomban egyértelmű volt, hogy FHIR szabványú adatbázissal kell dolgoznom, mivel az egészségügyi alkalmazásoknak ez a szabványa. Azért éri meg így kialakítani az adatbázist, mert ezzel a módszerrel az összes egészségügyi rendszerrel kompatibilis rendszert hozhatunk létre. Az 1.2. ábrán látható az egyik FHIR szabványú model osztály a szakdolgozatomból. 
+
+A model-ek megírása nem volt egyszerű, mivel meg kellett oldanom a profilkezelést és az autentikációt az alkalmazásban, viszont szabványosnak kellett maradnia. Ezzel az a probléma, hogy az FHIR szabvány nem támogat profilkezelést.
+
+Az alkalmazás model osztályai: 
+- ```RendeloUser```
+- ```Patient```
+- ```Doctor```
+- ```Treatment```
+- ```Appointment```
+- ```WorkingHours```
+- ```PaymentStatus```
+
+### 3.2.1. Profilkezelés
+
+#### 1.3. ábra. A felhasználói profilokat tároló model
+![Abstractuser model](README_PICTURES/abstractuser_model.png "1.3. ábra. A felhasználói profilokat tároló model")
+
+Az alkalmazásomban három felhasználói jogosultságú profil elérhető: 
+- Superuser: Adminisztrátor akinek mindenhez van joga, bármilyen adatot törölhet, meg van valósítva a számára egy külön "Admin" nevű oldal amin az adatok kezeléséhez hozzáfér, és beléphet a Django beépített adminisztrátori felületére is. 
+
+- Staff: A fogászati rendelő orvosainak a jogosultságával rendelkezik. Ezeket a profilokat az adminisztrátor tudja létrehozni az "Admin" oldalon. Minden ilyen profil megjelenik orvosként az orvosok kiválasztásánál az időpontfoglalás során. Joga van megtekinteni a páciensek kezeléstörténetét, és szerkeszteni azt. Joga van az összes hozzá foglalt időpont megtekintésére, a páciensek adatainak lekérdezésére, és a saját munkaidejének a beállítására. 
+
+- User: A páciensek felhasználói fiókjai, a Regisztrációs oldalon hozhatók létre. Az időpontfoglaláshoz csak ezeknek a fiókoknak van joga, emellett megtekinthetik a saját kezeléstörténetüket és az időpontjaikat, illetve le is mondhatják azokat. 
+
+A profilokat az 1.3. ábrán látható *RendeloUser* osztály tárolja. Az osztály az AbstractUser-ből származik, ami a Django beépített autentikációs rendszerébe tartozik. 
+Amikor létrehozunk az alkalmazásban egy bármilyen jogosultsággal rendelkező profilt, akkor ez az osztály fogja tárolni a bejelentkezéshez szükséges adatainkat. 
+Superuser esetén csak ez az egy objektum tartozik a profilunkhoz, mivel az adminisztrátor nem orvos, és nem páciens, nincs szüksége további adat tárolására. 
+
+Ha az adminisztrátor létrehoz egy új orvosnak egy profilt az alkalmazásban, akkor először is létrejön a RendeloUser példány, amihez generálódik egy uuid4 egyedi azonosító, ami id néven van tárolva az 1.3. ábrán látható módon. Ezután létrejön egy FHIR szabványos Doctor osztálypéldány is, ami az orvos adatait tárolja. Ennek az osztálynak is van egy id nevű, karaktersorozat típusú adattagja, amibe bemásolja a program a RendeloUser objektumban létrehozott egyedi azonosítót. Így kapcsolódik össze a két osztálypéldány. Ezen kívül a program hozzáadja a többi tárolni kívánt adatát az orvosnak. 
+
+Hasonló folyamat történik, amikor egy user szintű felhasználó regisztrál az akalmazásba.
+Először létrejön a RendeloUser példány az egyedi uuid4 azonosítóval, ezután létrejön egy FHIR szabványos Patient objektum, amiben a páciens adatait tároljuk, a Patient objektum id nevú karaktersorozat típusú adattagjába pedig bemásolja a program az egyedi azonosítót, így összekapcsolta a profiladatokat tároló RendeloUser példányt a páciens adatokat tároló Patient példánnyal. Ezek után pedig elmenti a user további adatait is. 
+Az 1.4. ábrán látható a Patient model. 
+
+#### 1.4. ábra. A Patient model
+![Patient model](README_PICTURES/patient_model.png "1.4. ábra. A patient model")
+
+### 3.2.2 Az időpontfoglalás adatainak tárolása
+
+Az időpontfoglalás adatait két model-ben tárolja az alkalmazás: 
+- Treatment model: A kezelés típusát tárolja, amire időpontokat lehet foglalni. A kezeléseket az adminisztrátor viszi fel az adatbázisba. A Treatment-nek is van egy id adattagja amibe generálódik automatikusan az uuid4, ezen kívül tárol egy nevet, leírást, egy hosszt, ami azt mondja meg hogy mennyi ideig tart, illetve egy árat ami forintban értendő. 
+- Appointment model: A lefoglalt időpontot tárolja. Ez az osztálypéldány a páciensek időpontfoglalásának a hatására jön létre. Tárolja a saját id-ját ami automatikusan generálódik a számára amikor létrejön, ezen kvívül van egy patient adattagja ami az időpontot lefoglaló páciens id-ját tárolja. 
+A practitioner adattag ahhoz az orvoshoz kapcsolódik ForeignKey-ként, akihez a páciens időpontot foglalt. Erre azért volt szükség, hogy ha töröljük az orvost az adatbázisból, akkor a hozzá foglalt időpontok is törlődjenek automatikusan. 
+A treatment is hasonló, de a lefoglalt kezeléshez kapcsolódik ForeignKey-ként. 
+A start és end adattagok "models.DateTimeField" típusúak, és az időpont kezdetét, és végét tárolják. 
+A status karaktersorozat típusú adattag az időpont státuszát tárolja, ami ha "foglalt", akkor nem lehet rá időpontot foglalni. 
+A custom_description egy TextField típusú adattag, ami a kezeléstörténet tárolására szolgál. Ez az adattag a példány létrehozásakor üres, és a kezelést végző orvos tudja szerkeszteni, a páciensnek csak a megtekintéséhez van joga. 
+
+Mindkét model osztály FHIR szabványos. 
+
+
 
 # Irodalomjegyzék
 - [1] *Django: The web framework for perfectionists with deadlines https://www.djangoproject.com*
