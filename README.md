@@ -171,18 +171,28 @@ Az 1.4. ábrán látható a Patient model.
 
 ### 3.2.2 Az időpontfoglalás adatainak tárolása
 
-Az időpontfoglalás adatait két model-ben tárolja az alkalmazás: 
-- Treatment model: A kezelés típusát tárolja, amire időpontokat lehet foglalni. A kezeléseket az adminisztrátor viszi fel az adatbázisba. A Treatment-nek is van egy id adattagja amibe generálódik automatikusan az uuid4, ezen kívül tárol egy nevet, leírást, egy hosszt, ami azt mondja meg hogy mennyi ideig tart, illetve egy árat ami forintban értendő. 
+Az időpontfoglalás adatait három model-ben tárolja az alkalmazás: 
+- Treatment model: A kezelés típusát tárolja, amire időpontokat lehet foglalni. A kezeléseket az adminisztrátor viszi fel az adatbázisba. A Treatment-nek is van egy id adattagja amibe generálódik automatikusan az uuid4, ezen kívül tárol egy nevet, leírást, egy hosszt, ami azt tárolja, hogy mennyi ideig tart, illetve egy árat ami forintban értendő. 
+Ez a model is FHIR szabványt követ.
 - Appointment model: A lefoglalt időpontot tárolja. Ez az osztálypéldány a páciensek időpontfoglalásának a hatására jön létre. Tárolja a saját id-ját ami automatikusan generálódik a számára amikor létrejön, ezen kvívül van egy patient adattagja ami az időpontot lefoglaló páciens id-ját tárolja. 
 A practitioner adattag ahhoz az orvoshoz kapcsolódik ForeignKey-ként, akihez a páciens időpontot foglalt. Erre azért volt szükség, hogy ha töröljük az orvost az adatbázisból, akkor a hozzá foglalt időpontok is törlődjenek automatikusan. 
 A treatment is hasonló, de a lefoglalt kezeléshez kapcsolódik ForeignKey-ként. 
 A start és end adattagok "models.DateTimeField" típusúak, és az időpont kezdetét, és végét tárolják. 
 A status karaktersorozat típusú adattag az időpont státuszát tárolja, ami ha "foglalt", akkor nem lehet rá időpontot foglalni. 
 A custom_description egy TextField típusú adattag, ami a kezeléstörténet tárolására szolgál. Ez az adattag a példány létrehozásakor üres, és a kezelést végző orvos tudja szerkeszteni, a páciensnek csak a megtekintéséhez van joga. 
+Ez a model is FHIR szabványt követ.
 
-Mindkét model osztály FHIR szabványos. 
+- PaymentStatus model: Ez már nem FHIR szabvány szerinti, viszont szükséges, mert ez tárolja a lefoglalt időpont fizetési státuszát. 
+Tartalmaz egy appointment nevű, "models.OneToOneField" típusú adattagot, ami által az időponthoz kapcsolódik. (Időpont foglalás esetén automatikusan jön létre az osztálypéldány)
+Emellett tartalmaz egy bool típusú adattagot aminek is_paid a neve, és azt tárolja hogy a felhasználó kifizette-e az időpontjára lefoglalt kezelés árát. Ha "true" az értéke, akkor kifizette, ha "false", akkor nem.
 
+### 3.2.3. Az orvosok munkaidejének tárolása
 
+Az orvosok munkaidejének tárolása a WorkingHours model-ben történik. Az orvos a "working_hours.html" oldalon kiválaszthat egy dátumot, és arra a napra beállíthatja a saját munkaidejét. 
+A model tartalmaz egy doctor nevű, "models.ForeignKey" típusú adattagot, ami által hozzá kapcsolódik az orvosnak létrejött Doctor osztálypéldányhoz. 
+Van egy date adattagja, amiben azt a dátumot tárolja, amelyikre a munkaidő be lett állítva.
+Ezek mellett van egy start, és egy end adattag, amik értelem szerűen a munkaidő kezdési, és befejezési időpontját tárolják. 
+Ez a model fontos, mert a páciensek számára megjelenő elérhető időpontok ez alapján jelennek meg. 
 
 # Irodalomjegyzék
 - [1] *Django: The web framework for perfectionists with deadlines https://www.djangoproject.com*
