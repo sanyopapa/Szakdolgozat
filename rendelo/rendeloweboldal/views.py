@@ -21,6 +21,9 @@ from django.utils.timezone import make_aware
 
 logger = logging.getLogger(__name__)
 
+def base(request):
+    return render(request, 'base.html')
+
 def kezdooldal(request):
     treatments = Treatment.objects.all()
     return render(request, 'kezdooldal.html', {'treatments': treatments})

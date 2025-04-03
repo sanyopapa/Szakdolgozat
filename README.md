@@ -197,6 +197,44 @@ Van egy date adattagja, amiben azt a dátumot tárolja, amelyikre a munkaidő be
 Ezek mellett van egy start, és egy end adattag, amik értelem szerűen a munkaidő kezdési, és befejezési időpontját tárolják. 
 Ez a model fontos, mert a páciensek számára megjelenő elérhető időpontok ez alapján jelennek meg. 
 
+# 4. A Template struktúra
+
+Egy webes alkalmazásnak a Template a leglátványosabb része, hiszen ez jeleníti meg a felhasználó számára a kezelőfelületet és animációkat. 
+A Django támogatja a HTML Template-ek öröklődését, ami azért hasznos, mert ezzel sokkal átláthatóbb, és könnyebben karbantartható webalkalmazást kapunk. 
+Az öröklődéshez először is szükség van egy "fő" HTML oldalra, amiből származtatni fogjuk a többit. Erre az oldalra importálhatjuk a CSS és JS fájlokat, amik az egész alkalmazás stílusát és animációit állítják be. Továbbá a navigációs sávot, a fejlécet és a láblécet is itt érdemes megadni. Amikor a fő oldallal készen vagyunk akkor származtathatunk belőle, és minden származtatott oldal megkapja a szülő oldal tulajdonságait. 
+A származtatást úgy oldhatjuk meg, hogy a származtatott oldal elejére az alábbi kódot írjuk: 
+
+```{% extends "base.html" %}```
+
+Ezzel az új html oldalunk szülője a *base.html* lett. 
+A szakdolgozatomban a *base.html* oldalt készítettem el a "fő" HTML fájlnak. Ebbe írtam meg a fejlécet, az importokat, a navigációs sávot, és a láblécet. Meg kellett adnom azokat a részeket az oldalon, amiket a belőle származó HTML oldalak változtatni fognak. 
+
+#### 1.5. ábra. Példa az öröklődésben használt block-okra 
+![block usage](README_PICTURES/base_blocks_example.png "Példa a block-ok használatára")
+
+Az 1.5. ábrán egy példa látható az oldal main részének a block-jára. Ezután, ha írni szeretnénk egy származtatott oldalon ebbe a block-ba, akkor a "content" nevű block-ba szánt kódot ```{% block content %}``` és ```{% endblock %}``` kód között kell megadnunk. Ennek hatására a származtatott oldalon megadott block kódot a *base.html* oldal main részébe fogja helyezni. 
+
+#### 1.6. ábra. A navigációs sáv kódja 
+![navbar](README_PICTURES/navbar_code.png "A navbar kódja")
+
+A navigációs sáv kulcsfontosságú szerepet tölt be az alkalmazás felhasználhatóságában. A szakdolgozatomban az 1.6. ábrán látható módon oldottam meg a navigációs sáv implementációját a *base.html* fájlban. Az *urls.py* fájlban található linkeket adtam hozzá a Django sablonnyelvben írt feltételekkel, hogy a különböző jogokkal rendelkező felhasználók csak a nekik szánt oldalakat láthassák rajta. Ezek a linkek az alkalmazás tobábbi felhasználói felületeire navigálják a felasználót. Ezeken felül pedig van egy gomb is a navigációs sávon, ami a sötét, és világos módok közötti váltást teszi lehetővé egy JS kód segítségével, amire még a későbbiekben kitérek.
+
+# 5. "User" szintű felhasználói felületek, és azok működése
+
+A fogászati rendelő alkalmazás számos felülettel rendelkezik. 
+
+## 5.1. A kezdőoldal
+
+Az összes szintű felhasználó bejelentkezés után a kezdőoldalon találja magát, amit a *kezdooldal.html* fájlban valósítottam meg. Az oldalon található a *base.html* elemein kívül egy marketing leírás a rendelőről ami statikusan az oldalra van írva, nem lehet váltpztatni, csak a HTML kódban. 
+A leírás után pedig egy táblázat a rendelőben lehetséges kezelésekről, és azoknak árairól. A táblázat fejléce után Django sablon nyelven következik egy for ciklus, ami végigmegy a z összes "Treatment" példányon az adatbázisban, és mindegyiknek a nevét, és az árát kiírja egy külön sorba. A Django Template fájlok az adatbázis objektumait a *vievs.py* egyik föggvényétől kapják meg az 1.7. ábrán látható módon. 
+
+#### 1.7. ábra. A kezdőoldal *views.py*-ban található megjelenítési függvénye
+![kezdooldal a views.py-ban](README_PICTURES/kezdooldal_view.png "kezdooldal a views.py-ban")
+
+# 6. "Staff" szintű felhasználói felületek, és azok működése
+
+# 7. "Admin" szintű felhasználói felületek, és azok működése
+
 # Irodalomjegyzék
 - [1] *Django: The web framework for perfectionists with deadlines https://www.djangoproject.com*
 
