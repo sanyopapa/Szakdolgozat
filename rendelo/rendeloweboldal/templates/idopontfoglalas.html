@@ -89,13 +89,16 @@
         const submitButton = document.getElementById('submit_button');
         const paymentMethodInput = document.getElementById('payment_method');
         
+        // Orvos kiválasztása
         doctorLinks.forEach(link => {
             link.addEventListener('click', function(event) {
                 event.preventDefault();
                 const doctorId = this.getAttribute('data-doctor');
                 selectedDoctorInput.value = doctorId;
+
                 doctorLinks.forEach(link => link.classList.remove('selected'));
                 this.classList.add('selected');
+
                 updateAvailableSlots();
             });
         });
@@ -108,9 +111,11 @@
             updateAvailableSlots();
         });
 
+        // Leghamarabbi időpont kiválasztása
         earliestAppointmentButton.addEventListener('click', function() {
             const selectedDoctor = selectedDoctorInput.value;
             const selectedTreatment = document.getElementById('treatment').value;
+
             if (selectedDoctor && selectedTreatment) {
                 fetch(`/get_earliest_slot/?doctor=${selectedDoctor}&treatment=${selectedTreatment}`)
                     .then(response => response.json())
@@ -141,7 +146,9 @@
             const selectedDoctor = selectedDoctorInput.value;
             const selectedDate = document.getElementById('appointment_date').value;
             const selectedTreatment = document.getElementById('treatment').value;
+
             if (selectedDoctor && selectedDate && selectedTreatment) {
+                // Lekéri az elérhető időpontokat az API-ból
                 fetch(`/get_available_slots/?doctor=${selectedDoctor}&date=${selectedDate}&treatment=${selectedTreatment}`)
                     .then(response => response.json())
                     .then(data => {
@@ -150,17 +157,22 @@
                         const morningSlotsDiv = document.getElementById('morning_slots');
                         const afternoonSlotsDiv = document.getElementById('afternoon_slots');
                         const noSlotsMessage = document.getElementById('no_slots_message');
+
                         morningSlotsDiv.innerHTML = '';
                         afternoonSlotsDiv.innerHTML = '';
                         let morningSlotsExist = false;
                         let afternoonSlotsExist = false;
+
                         if (data.slots.length === 0) {
+                            // Ha nincs elérhető időpont, megjeleníti a "Nincs elérhető időpont" üzenetet
                             noSlotsMessage.style.display = 'block';
                             paymentSection.style.display = 'none';
                             submitButton.disabled = true;
                         } else {
+                            // Ha vannak elérhető időpontok, megjeleníti őket
                             noSlotsMessage.style.display = 'none';
                             paymentSection.style.display = 'block';
+
                             data.slots.forEach(slot => {
                                 const button = document.createElement('button');
                                 button.type = 'button';
@@ -168,12 +180,16 @@
                                 button.disabled = !slot.available;
                                 button.classList.remove('selected'); 
                                 button.setAttribute('data-time', slot.time);
+
                                 button.addEventListener('click', function() {
                                     document.getElementById('appointment_datetime').value = `${selectedDate} ${slot.time}`;
                                     submitButton.disabled = false;
+
                                     document.querySelectorAll('.time-slots button').forEach(btn => btn.classList.remove('selected'));
                                     this.classList.add('selected');
                                 });
+
+                                // Délelőtti vagy délutáni időpontok 
                                 if (parseInt(slot.time.split(':')[0]) < 12) {
                                     morningSlotsDiv.appendChild(button);
                                     morningSlotsExist = true;
@@ -183,13 +199,16 @@
                                 }
                             });
                         }
+
                         morningSection.style.display = morningSlotsExist ? 'block' : 'none';
                         afternoonSection.style.display = afternoonSlotsExist ? 'block' : 'none';
+
                         if (callback) callback();
                     });
             }
         }
 
+        // Dátum minimum értékének beállítása (holnaptól kezdve)
         const appointmentDateInput = document.getElementById('appointment_date');
         const today = new Date();
         const tomorrow = new Date(today);
@@ -200,6 +219,7 @@
         const minDate = `${yyyy}-${mm}-${dd}`;
         appointmentDateInput.setAttribute('min', minDate);
 
+        // Ha a kiválasztott dátum korábbi, mint a minimum dátum, visszaállítja
         appointmentDateInput.addEventListener('blur', function() {
             const selectedDate = new Date(this.value);
             if (selectedDate < tomorrow) {
@@ -207,25 +227,31 @@
             }
         });
 
+        // Foglalási űrlap beküldése
         const bookingForm = document.getElementById('booking-form');
         bookingForm.addEventListener('submit', function(event) {
             event.preventDefault();
+
+            // Ellenőrzi, hogy a fizetési mód ki van-e választva
             if (!paymentMethodInput.value) {
                 alert('Kérem válasszon fizetési módot.');
                 return;
             }
+
+            // Megerősítő üzenet megjelenítése
             const selectedDoctor = document.querySelector('.doctor.selected').textContent;
             const selectedTreatment = document.getElementById('treatment').selectedOptions[0].textContent;
             const selectedDate = document.getElementById('appointment_date').value;
             const selectedTime = document.getElementById('appointment_datetime').value.split(' ')[1];
             const confirmationMessage = `Orvos: ${selectedDoctor}\nKezelés: ${selectedTreatment}\nIdőpont: ${selectedDate} ${selectedTime}\nBiztosan lefoglalja az időpontot?`;
+
             if (confirm(confirmationMessage)) {
                 bookingForm.submit();
             }
         });
 
+        // Fizetési mód kiválasztása
         const paymentMethods = document.querySelectorAll('.payment-method');
-
         paymentMethods.forEach(method => {
             method.addEventListener('click', function() {
                 paymentMethods.forEach(m => m.classList.remove('selected'));

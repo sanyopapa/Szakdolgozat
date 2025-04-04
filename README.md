@@ -225,50 +225,54 @@ A fogászati rendelő alkalmazás számos felülettel rendelkezik.
 
 ## 5.1. A bejelentkezés és a regisztráció működése
 
-A regisztráció és bejelentkezés funkciók a Django beépített autentikációs rendszerére épülnek, amely lehetővé teszi a felhasználók kezelését, hitelesítését és jogosultságainak kezelését. 
+Az alkalmazásomban a regisztráció és bejelentkezés funkciók a Django beépített autentikációs rendszerére épülnek, amely lehetővé teszi a felhasználók kezelését, hitelesítését és jogosultságainak kezelését. Ez a funkció azért hasznos egy fejlesztőnek, mert ezáltal nem kell ezeket implementálnia minden új projektjébe. 
 
-### Regisztráció
+### 5.1.1. Az alkalmazás autentikációra használt metódusai:
 
-A regisztráció során a felhasználó létrehozhat egy új fiókot, amelyet a rendszer a "RendeloUser" modellben tárol. A regisztrációs folyamat a következőképpen működik:
+- "authenticate": Ez a metódus ellenőrzi a felhasználó hitelesítő adatait (email és jelszó). Az `EmailBackend` osztály implementálja az "authentication.py" fájlban, és az email cím alapján keresi meg a felhasználót.
+- "auth_login": Bejelentkezteti a felhasználót, és a munkamenethez társítja. A Django beépített metódusa.
+- "check_password": Ellenőrzi, hogy a megadott jelszó megegyezik-e a titkosított jelszóval. A Django beépített metódusa.
+- "set_password": Beállítja az adott felhasználónak a jelszavát, és hashelt formában elmenti az adatbázisba. A Django beépített metódusa.
+- "get_user": Lekéri a felhasználót az azonosítója alapján. A Django beépített metódusa.
+
+#### 5.1. ábra. Az "authentication.py" 
+![authentication.py](README_PICTURES/authentication_py.png "authentication.py")
+
+### 5.1.2. Regisztráció
+
+A regisztráció során a felhasználó a "register.html" fájlban megvalósított oldalon létrehozhat egy új fiókot, amelyet a rendszer a "RendeloUser" model-ben tárol. A regisztrációs folyamat a következőképpen működik:
 
 1. Amikor a felhasználó megnyitja a regisztrációs oldalt, a "register_view" nézet megjeleníti a regisztrációs űrlapot. Az űrlap két részből áll: a "RegistrationForm" a felhasználói fiók alapvető adatait (például felhasználónév, email cím, jelszó) kezeli, míg a "PatientForm" a páciens adatait (például név, születési dátum) tartalmazza.
 
-2. Az űrlap elküldése után a "register_view" nézet ellenőrzi az űrlapok érvényességét. Ha az adatok helyesek, a "RegistrationForm" létrehoz egy új RendeloUser példányt, amely a felhasználói fiókot reprezentálja. A jelszó titkosítva kerül tárolásra a "set_password" metódus segítségével.
+2. Az űrlap elküldése után a "register_view" nézet ellenőrzi az űrlapok érvényességét. Ha az adatok helyesek, a "RegistrationForm" "save" metódusa létrehoz egy új RendeloUser példányt, amely a felhasználói fiókot reprezentálja. A jelszó titkosítva kerül tárolásra a "set_password" metódus segítségével, ami az "AbstractUser" metódusa, amiből a "RendeloUser" osztály származik.
 
-3. A "PatientForm" létrehoz egy új Patient példányt, amely a páciens adatait tárolja. A Patient példány azonosítója megegyezik a RendeloUser példány azonosítójával, így a két objektum összekapcsolódik.
+3. A "PatientForm" létrehoz egy új Patient példányt, amely a páciens adatait tárolja. A "register_view" nézet pedig beállítja a Patient "id" adattagjának az értékét az újonnan létrehozott RendeloUser is adattagjának az értékére, hogy a Patient példány azonosítója megegyezzen a RendeloUser példány azonosítójával, így a két objektum összekapcsolódhasson.
 
-4. A regisztráció sikeres befejezése után az "auth_login" metódus (A Django beépített autentikációjához tartozó metódus) automatikusan bejelentkezteti a felhasználót, és átirányítja a kezdőoldalra.
+4. A regisztráció sikeres befejezése után az "auth_login" metódus automatikusan bejelentkezteti a felhasználót, és átirányítja a kezdőoldalra.
 
-### Bejelentkezés
+5. A felhasználó beállított email címére egy email kerül kiküldésre, amelyben megköszöni a cég a regisztrációt. (Jelenleg egy konzolos email küldés van beállítva, csupán a demózás céljából.)
 
-A bejelentkezés során a felhasználó megadja az email címét és jelszavát, amelyeket a rendszer ellenőriz. A folyamat a következőképpen működik:
+#### 5.2. ábra. A register_view nézet
+![A register_view nézet](README_PICTURES/register_view.png "A register_view nézet")
+
+### 5.1.3. Bejelentkezés
+
+A bejelentkezés során a felhasználó a "login.html" fájlban megvalósított oldalon megadja az email címét és jelszavát, amelyek alapján a bejelentkezés történik. A folyamat a következőképpen működik:
 
 1. Amikor a felhasználó megnyitja a bejelentkezési oldalt, a "login_view" nézet megjeleníti a bejelentkezési űrlapot. Az űrlap tartalmazza az email cím és jelszó mezőket.
 
-2. Az űrlap elküldése után a "login_view" nézet az authentication.py "authenticate" metódusát hívja meg, amely az email cím és jelszó páros érvényességét ellenőrzi. Az "EmailBackend" osztály "authenticate" metódusa a "RendeloUser" modellben keresi meg a felhasználót az email cím alapján, majd a "check_password" metódussal ellenőrzi a jelszót.
+2. Az űrlap elküldése után a "login_view" nézet az authentication.py "EmailBackend" osztályának "authenticate" metódusát hívja meg, amely az email cím és jelszó páros érvényességét ellenőrzi. Az "authenticate" metódus a "RendeloUser" modellben keresi meg a felhasználót az email cím alapján, majd a "check_password" metódussal ellenőrzi a jelszót.
 
-3. Ha a hitelesítés sikeres, a "auth_login" metódus bejelentkezteti a felhasználót, és a munkamenethez társítja. Ezután a felhasználó átirányításra kerül a kezdőoldalra.
+3. Ha a hitelesítés sikeres, az "auth_login" metódus bejelentkezteti a felhasználót, és a munkamenethez társítja. Ezután a felhasználó átirányításra kerül a kezdőoldalra.
 
 4. Ha a hitelesítés sikertelen (például helytelen email cím vagy jelszó miatt), a rendszer hibaüzenetet jelenít meg a felhasználónak.
-
-### Django autentikációs rendszer működése
-
-A Django autentikációs rendszer több beépített metódust használ a regisztráció és bejelentkezés során:
-
-- **`authenticate`:** Ez a metódus ellenőrzi a felhasználó hitelesítő adatait (email és jelszó). Az `EmailBackend` osztály implementálja, amely az email cím alapján keresi meg a felhasználót.
-- **`auth_login`:** Ez a metódus bejelentkezteti a felhasználót, és a munkamenethez társítja.
-- **`check_password`:** Ez a metódus ellenőrzi, hogy a megadott jelszó megegyezik-e a titkosított jelszóval.
-- **`set_password`:** Ez a metódus a jelszót titkosítva tárolja az adatbázisban.
-- **`get_user`:** Ez a metódus lekéri a felhasználót az azonosítója alapján.
-
-A regisztráció és bejelentkezés funkciók a Django autentikációs rendszerének metódusaira épülnek. A regisztráció során a felhasználó adatai validálásra kerülnek, és a jelszó titkosítva tárolódik. A bejelentkezés során az email cím és jelszó páros ellenőrzése történik, és a sikeres hitelesítés után a felhasználó munkamenethez kapcsolódik. Ez a megoldás egyszerre biztonságos és könnyen bővíthető.
 
 ## 5.2. A kezdőoldal
 
 Az összes szintű felhasználó bejelentkezés után a kezdőoldalon találja magát, amit a *kezdooldal.html* fájlban valósítottam meg. Az oldalon található a *base.html* elemein kívül egy marketing leírás a rendelőről ami statikusan az oldalra van írva, nem lehet váltpztatni, csak a HTML kódban. 
 A leírás után pedig egy táblázat a rendelőben lehetséges kezelésekről, és azoknak árairól. A táblázat fejléce után Django sablon nyelven következik egy for ciklus, ami végigmegy a z összes "Treatment" példányon az adatbázisban, és mindegyiknek a nevét, és az árát kiírja egy külön sorba. A Django Template fájlok az adatbázis objektumait a *vievs.py* egyik föggvényétől kapják meg az 1.7. ábrán látható módon. 
 
-#### 1.7. ábra. A kezdőoldal *views.py*-ban található megjelenítési függvénye
+#### 5.3. ábra. A kezdőoldal *views.py*-ban található megjelenítési függvénye
 ![kezdooldal a views.py-ban](README_PICTURES/kezdooldal_view.png "kezdooldal a views.py-ban")
 
 ## 5.3. Az időpont foglalás
@@ -279,43 +283,55 @@ Az időpont foglalás oldal az egyik legösszetettebb része az alkalmazásnak. 
 
 1. Orvos kiválasztása:  
    - Interakció: A felhasználó az oldal tetején megjelenített orvosok listájából választ.  
-   - Kód: JavaScript eseménykezelő aktiválódik, amely beállítja a rejtett `selected_doctor` mező értékét a kiválasztott orvos azonosítójára, majd meghívja az `updateAvailableSlots()` függvényt.
+   - Kód: JavaScript eseménykezelő aktiválódik, amely beállítja a "selected_doctor" mező értékét a kiválasztott orvos azonosítójára, majd meghívja az "updateAvailableSlots()" függvényt.
 
 2. Kezelés kiválasztása:  
    - Interakció: A felhasználó a legördülő menüből választja ki a kívánt kezelést.  
-   - Kód: A kezelési opció módosítása szintén az `updateAvailableSlots()` függvényt indítja el, frissítve a kezeléshez tartozó időpontokat.
+   - Kód: A kezelési opció módosítása szintén az "updateAvailableSlots()" függvényt indítja el, frissítve a kezeléshez tartozó időpontokat.
 
 3. Dátum kiválasztása:  
    - Interakció: A felhasználó a naptármezőből választja ki a foglalni kívánt napot.  
    - Kód: A dátumválasztás után a JavaScript lekéri az adott napra vonatkozó szabad időpontokat az API végpontból, majd megjeleníti azokat.
 
 4. Időpont kiválasztása:  
-   - Interakció: A megjelenített időpontgombok közül a felhasználó kiválaszt egyet.  
-   - Kód: A kiválasztáskor a JavaScript beállítja a rejtett `appointment_datetime` mező értékét (dátum és idő kombináció), illetve vizuálisan kiemeli a kiválasztott időpontot.
+   - Interakció: A megjelenített időpontgombok közül a felhasználó kiválaszt egyet, vagy rákattint a "legközelebbi időpont" gombra.  
+   - Kód: A kiválasztáskor a JavaScript beállítja az "appointment_datetime" mező értékét (dátum és idő kombináció), illetve vizuálisan kiemeli a kiválasztott időpontot.
+
+   Itt kihívásként említeném a felhasználó számára megjelenített elérhető időpontok megjelenítését. Azt kellett megoldanom, hogy ne csúszhassanak egymásba az időpontok. Tehát például ha le van foglalva valamilyen kezelésre egy időpont az adott dátumon 11:00-ra, akkor ne jeleníthessen meg a felhasználónak 10:45-re szabad időpontot, amikor egy 35 perc hosszúságú kezelést választott ki. Ezt az 5.4. ábrán látható metódussal oldottam meg, amit az "idopontfoglalas.html" JS kódja hív meg. A metódus először is 15-tel osztható számra kerekíti a kiválasztott kezelés hosszát felfelé, (például egy 50 perces kezelés hosszát 60 percesre kerekít), majd a HTML oldalon lévő JS kód által megjelenített időpontokat szűri. A get_available_slots metódus biztosítja, hogy csak azok az időpontok jelenjenek meg a felhasználónak, amelyek nem ütköznek más foglalásokkal. Ehhez a metódus minden egyes időintervallumot ellenőriz, hogy az adott időpontban és az azt követő időtartamban (a kezelés hossza alapján) ne legyen másik foglalás. 
+   A metódus figyelembe veszi az orvos munkaidejét is, így csak az orvos által megadott munkaidőn belüli időpontokat jeleníti meg. Az eredmény egy JSON válasz, amely tartalmazza az elérhető időpontokat és azok elérhetőségét. Ez a válasz a frontend JavaScript kódjában kerül feldolgozásra, amely a felhasználó számára vizuálisan is megjeleníti a szabad időpontokat.
+
+   #### 5.4. ábra. A get_avaliable_slots metódus implementációja a views.py-ban
+![get_avaliable_slots](README_PICTURES/get_avaliable_slots.png "get_avaliable_slots")
 
 5. Fizetési mód kiválasztása: 
    - Interakció: A fizetési módok közül a felhasználó egyet választ (pl. online fizetés – PayPal vagy bankkártya –, illetve helyszíni fizetés).  
-   - Kód: A JavaScript eseménykezelő beállítja a rejtett `payment_method` mezőt, amely később a Django backendben a foglalás véglegesítéséhez és a fizetési folyamat elindításához szükséges.
+   - Kód: A JavaScript eseménykezelő beállítja a "payment_method" mezőt, amely később a Django backendben a foglalás véglegesítéséhez és a fizetési folyamat elindításához szükséges.
 
 6. Foglalás véglegesítése: 
    - Interakció: A felhasználó a „Foglalás” gombra kattint, miután minden kötelező adatot megadott.  
    - Kód:  
      - A JavaScript egy megerősítő üzenetben összegzi a kiválasztott orvos, kezelés, dátum és időpont adatait.  
-     - Ha a felhasználó megerősít, az űrlap elküldésre kerül, és a *views.py* `idopontfoglalas` függvénye végrehajtja az alábbiakat:
+     - Ha a felhasználó megerősít, az űrlap elküldésre kerül, és a *views.py* "idopontfoglalas" függvénye végrehajtja az alábbiakat:
        - Ellenőrzi az időpont elérhetőségét (szabad-e az adott időintervallum).
        - Lekéri az orvos munkaidejét a *WorkingHours* modell alapján.
        - Létrehoz egy új *Appointment* objektumot az adatbázisban.
        - Rögzíti a foglalás fizetési státuszát a *PaymentStatus* modell segítségével.
        - Ha a felhasználó online fizetést választott, átirányítja a fizetési oldalra a tranzakció elindításához.
 
-- `updateAvailableSlots()` JavaScript függvény:  
+- "updateAvailableSlots()" JavaScript függvény:  
   Lekéri a kiválasztott orvos, kezelés és dátum alapján az elérhető időpontokat az API-ból, majd megjeleníti a délelőtti és délutáni időpontokat gombok formájában.
 
-- `earliestAppointmentButton` eseménykezelő:  
+- "earliestAppointmentButton" eseménykezelő:  
   A „Leghamarabbi időpont kiválasztása” gomb megnyomásakor az API-tól lekéri a legkorábbi szabad időpontot, majd automatikusan beállítja a dátumot és az időpontot.
 
 - Űrlap beküldése:  
-  A foglalási űrlap beküldése előtt a JavaScript egy megerősítő párbeszédablakban összegzi a választott opciókat, majd a felhasználó jóváhagyása esetén elküldi az űrlapot. A Django view feldolgozza a POST kérést, létrehozza az időpontfoglalást, és a fizetési mód függvényében vagy a profil oldalra irányítja a felhasználót, vagy elindítja az online fizetési folyamatot.
+  A foglalási űrlap beküldése előtt a JavaScript egy megerősítő párbeszédablakban összegzi a választott opciókat, majd a felhasználó jóváhagyása esetén elküldi az űrlapot. A Django view feldolgozza a POST kérést, létrehozza az időpontfoglalást, és ha a felhasználó az online fizetést választja, akkor a fizetési oldalra irányítja át, ha pedig a fizetés a helyszínen opciót, akkor a profil oldalra. 
+
+## 5.4 A fizetési oldal
+
+A fizetési oldal a "payment_page.html" oldalon lett megvalósítva. 
+
+## 5.5. A profil oldal
 
 # 6. "Staff" szintű felhasználói felületek, és azok működése
 
