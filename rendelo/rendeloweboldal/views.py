@@ -98,6 +98,75 @@ def idopontfoglalas(request):
         
     return render(request, 'idopontfoglalas.html', {'doctors': Doctor.objects.all(), 'treatments': Treatment.objects.all()})
 
+def get_available_slots(request):
+    doctor_id = request.GET.get('doctor')
+    date = request.GET.get('date')
+    treatment_id = request.GET.get('treatment')
+    treatment = Treatment.objects.get(id=treatment_id)
+    treatment_duration = treatment.duration.total_seconds() // 60
+
+    # Felfelé kerekítés 15 perces intervallumokra
+    treatment_duration = ((treatment_duration + 14) // 15) * 15
+
+    working_hours = WorkingHours.objects.filter(doctor_id=doctor_id, date=date)
+    slots = []
+
+    for wh in working_hours:
+        start_time = datetime.combine(wh.date, wh.start)
+        end_time = datetime.combine(wh.date, wh.end)
+        current_time = start_time
+
+        while current_time + timedelta(minutes=treatment_duration) <= end_time:
+            slot_end_time = current_time + timedelta(minutes=treatment_duration)
+            is_available = not Appointment.objects.filter(
+                practitioner_id=doctor_id,
+                start__lt=slot_end_time,
+                end__gt=current_time,
+                status='booked'
+            ).exists()
+            slots.append({
+                'time': current_time.strftime('%H:%M'),
+                'available': is_available
+            })
+            current_time += timedelta(minutes=15)
+
+    return JsonResponse({'slots': slots})
+
+def get_earliest_slot(request):
+    doctor_id = request.GET.get('doctor')
+    treatment_id = request.GET.get('treatment')
+    treatment = Treatment.objects.get(id=treatment_id)
+    treatment_duration = treatment.duration.total_seconds() // 60
+
+    # Felfelé kerekítés 15 perces intervallumokra
+    treatment_duration = ((treatment_duration + 14) // 15) * 15
+
+    start_time = timezone.now() + timedelta(days=1)
+    start_time = start_time.replace(hour=8, minute=0, second=0, microsecond=0)
+    end_time = start_time.replace(hour=20, minute=0, second=0, microsecond=0)
+
+    while True:
+        current_time = start_time
+        while current_time < end_time:
+            slot_end_time = current_time + timedelta(minutes=treatment_duration)
+            is_available = True
+            check_time = current_time
+            while check_time < slot_end_time:
+                if Appointment.objects.filter(practitioner_id=doctor_id, start__lte=check_time, end__gt=check_time, status='booked').exists() or check_time.time() == end_time.time():
+                    is_available = False
+                    break
+                check_time += timedelta(minutes=15)
+            
+            if is_available:
+                return JsonResponse({'earliest_slot': {'date': current_time.strftime('%Y-%m-%d'), 'time': current_time.strftime('%H:%M')}})
+            current_time += timedelta(minutes=15)
+        
+        start_time += timedelta(days=1)
+        start_time = start_time.replace(hour=8, minute=0, second=0, microsecond=0)
+        end_time = start_time.replace(hour=20, minute=0, second=0, microsecond=0)
+
+    return JsonResponse({'earliest_slot': None})
+
 @login_required
 def payment_page(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
@@ -395,75 +464,6 @@ def cancel_appointment(request, appointment_id):
         return redirect('profile')
     
     return render(request, 'cancel_appointment.html', {'appointment': appointment})
-
-def get_available_slots(request):
-    doctor_id = request.GET.get('doctor')
-    date = request.GET.get('date')
-    treatment_id = request.GET.get('treatment')
-    treatment = Treatment.objects.get(id=treatment_id)
-    treatment_duration = treatment.duration.total_seconds() // 60
-
-    # Felfelé kerekítés 15 perces intervallumokra
-    treatment_duration = ((treatment_duration + 14) // 15) * 15
-
-    working_hours = WorkingHours.objects.filter(doctor_id=doctor_id, date=date)
-    slots = []
-
-    for wh in working_hours:
-        start_time = datetime.combine(wh.date, wh.start)
-        end_time = datetime.combine(wh.date, wh.end)
-        current_time = start_time
-
-        while current_time + timedelta(minutes=treatment_duration) <= end_time:
-            slot_end_time = current_time + timedelta(minutes=treatment_duration)
-            is_available = not Appointment.objects.filter(
-                practitioner_id=doctor_id,
-                start__lt=slot_end_time,
-                end__gt=current_time,
-                status='booked'
-            ).exists()
-            slots.append({
-                'time': current_time.strftime('%H:%M'),
-                'available': is_available
-            })
-            current_time += timedelta(minutes=15)
-
-    return JsonResponse({'slots': slots})
-
-def get_earliest_slot(request):
-    doctor_id = request.GET.get('doctor')
-    treatment_id = request.GET.get('treatment')
-    treatment = Treatment.objects.get(id=treatment_id)
-    treatment_duration = treatment.duration.total_seconds() // 60
-
-    # Felfelé kerekítés 15 perces intervallumokra
-    treatment_duration = ((treatment_duration + 14) // 15) * 15
-
-    start_time = timezone.now() + timedelta(days=1)
-    start_time = start_time.replace(hour=8, minute=0, second=0, microsecond=0)
-    end_time = start_time.replace(hour=20, minute=0, second=0, microsecond=0)
-
-    while True:
-        current_time = start_time
-        while current_time < end_time:
-            slot_end_time = current_time + timedelta(minutes=treatment_duration)
-            is_available = True
-            check_time = current_time
-            while check_time < slot_end_time:
-                if Appointment.objects.filter(practitioner_id=doctor_id, start__lte=check_time, end__gt=check_time, status='booked').exists() or check_time.time() == end_time.time():
-                    is_available = False
-                    break
-                check_time += timedelta(minutes=15)
-            
-            if is_available:
-                return JsonResponse({'earliest_slot': {'date': current_time.strftime('%Y-%m-%d'), 'time': current_time.strftime('%H:%M')}})
-            current_time += timedelta(minutes=15)
-        
-        start_time += timedelta(days=1)
-        start_time = start_time.replace(hour=8, minute=0, second=0, microsecond=0)
-        end_time = start_time.replace(hour=20, minute=0, second=0, microsecond=0)
-
-    return JsonResponse({'earliest_slot': None})
 
 @login_required
 def add_admin_user(request):
