@@ -50,7 +50,46 @@ A Django egy magas szintű *Python* webkeretrendszer, amely támogatja a gyors f
 
 # Tartalomjegyzék
 
-# 1. Az MVT programszervezési minta
+1. **Az MVT programszervezési minta**
+   - 1.1. Model
+   - 1.2. View
+   - 1.3. Template
+
+2. **Alkalmazás struktúrája**
+
+3. **Adatbázis**
+   - 3.1. Az adatbázis típusa
+   - 3.2. Az adatbázis felépítése
+     - 3.2.1. Profilkezelés
+     - 3.2.2. Az időpontfoglalás adatainak tárolása
+     - 3.2.3. Az orvosok munkaidejének tárolása
+
+4. **A Template struktúra**
+
+5. **"User" szintű felhasználói felületek, és azok működése**
+   - 5.1. A bejelentkezés és a regisztráció működése
+   - 5.2. Az időpontfoglalás
+   - 5.3. A profil oldal
+
+6. **"Staff" szintű felhasználói felületek, és azok működése**
+   - 6.1. A "Páciensek" oldal
+   - 6.2. Az "Időpontjaim mára" oldal
+   - 6.3. A "Munkaidő oldal"
+   - 6.4. Az orvosok profil oldala
+
+7. **"Superuser" szintű felhasználói felületek, és azok működése**
+   - 7.1. Az "Admin" oldal
+
+8. **Design**
+
+9. **Összefoglaló**
+
+10. **Irodalomjegyzék**
+
+11. **Nyilatkozat**
+
+# 1. fejezet
+# Az MVT programszervezési minta
 Django projekt lévén az alkalmazás az MVT (Model View Template) design pattern alapelveit kell, hogy kövesse. Ez áll a model-ből, ahol az adatbázis struktúrájáját építjük fel, a view-ból, ami lényegében a projekt azon része, ahol a háttérfolyamatok futnak, és a template-ből, ami a felhasználói felületet tartalmazza. Ez a kapcsolata a felhasználónak az alkalmazással. 
 
 ## 1.1 Model
@@ -79,7 +118,8 @@ A Django sablonnyelv template tageket (`{% %}`) és template változókat (`{{ }
 
 A sablonok továbbá formázhatók CSS-sel, illetve bármely kedvelt CSS keretrendszerrel, hogy a felhasználói felület mégszebb legyen. Emellett animálhatók is JS segítségével.[2]
 
-# 2. Alkalmazás struktúrája
+# 2. fejezet
+# Alkalmazás struktúrája
 
 Egy Django projekt esetében a projekt felépítése modulárisan, egy vagy több alkalmazásból (app) áll, melyek mindegyike egy adott funkcionális területért felel. A szakdolgozatom esetében a "rendelo" mappa tartalmazza a teljes webalkalmazás forráskódját.
 
@@ -105,7 +145,8 @@ A projekt kialakítása moduláris és átlátható, mely lehetővé teszi a fej
 
 Emellett a projekt verziókezelése a GitHubon történik, így könnyen nyomon követhető az egész alkalmazás fejlesztése.
 
-# 3. Adatbázis
+# 3. fejezet
+# Adatbázis
 
 A webapplikációkban igen gyakori egy valamilyen adatbázis használata a fejlesztés során, mivel nem tárolhatjuk a szerver memóriájában a felhasználók adatait. 
 A Django alkalmazásokban mivel ORM-et használnak, igen egyszerű az adatbázis kezelés.
@@ -197,7 +238,8 @@ Van egy date adattagja, amiben azt a dátumot tárolja, amelyikre a munkaidő be
 Ezek mellett van egy start, és egy end adattag, amik értelem szerűen a munkaidő kezdési, és befejezési időpontját tárolják. 
 Ez a model fontos, mert a páciensek számára megjelenő elérhető időpontok ez alapján jelennek meg. 
 
-# 4. A Template struktúra
+# 4. fejezet
+# A Template struktúra
 
 Egy webes alkalmazásnak a Template a leglátványosabb része, hiszen ez jeleníti meg a felhasználó számára a kezelőfelületet és animációkat. 
 A Django támogatja a HTML Template-ek öröklődését, ami azért hasznos, mert ezzel sokkal átláthatóbb, és könnyebben karbantartható webalkalmazást kapunk. 
@@ -219,7 +261,8 @@ Az 4.1. ábrán egy példa látható az oldal main részének a block-jára. Ezu
 
 A navigációs sáv kulcsfontosságú szerepet tölt be az alkalmazás felhasználhatóságában. A szakdolgozatomban az 4.2. ábrán látható módon oldottam meg a navigációs sáv implementációját a *base.html* fájlban. Az *urls.py* fájlban található linkeket adtam hozzá a Django sablonnyelvben írt feltételekkel, hogy a különböző jogokkal rendelkező felhasználók csak a nekik szánt oldalakat láthassák rajta. Ezek a linkek az alkalmazás tobábbi felhasználói felületeire navigálják a felasználót. Ezeken felül pedig van egy gomb is a navigációs sávon, ami a sötét, és világos módok közötti váltást teszi lehetővé egy JS kód segítségével, amire még a későbbiekben kitérek.
 
-# 5. "user" szintű felhasználói felületek, és azok működése
+# 5. fejezet
+# "user" szintű felhasználói felületek, és azok működése
 
 A fogászati rendelő alkalmazás számos felülettel rendelkezik. 
 
@@ -330,22 +373,65 @@ Az időpont foglalás oldal az egyik legösszetettebb része az alkalmazásnak. 
 ## 5.4 A fizetési oldal
 
 A fizetési oldal a "payment_page.html" oldalon lett megvalósítva.
+A fizetéshez a tématervembe OTP Simple Pay fizetési rendszert írtam, viszont egy kis kutatás után a PayPal-t könnyebben beépíthetőbbnek, stabilabbnak, és jobban átláthatóbbnak találtam. Ezért inkább azt építettem be az alkalmazásba.  
 
+A PayPal fizetés demózásához létre kellett hoznom egy sandbox PayPal fiókot, majd az azonosítómat használva importálnom kellett az oldalra egy JavaScriptet az alábbi módon:
 
+```html 
+<script src="https://www.paypal.com/sdk/js?client-id=Abw9kvI2SEa...&currency=HUF"></script>
+```
 
+Ezután egy "div"-hez hozzá kellett adnom a "paypal-button-container" id-t, és meg kellett valósítanom a fizetési logikát, amit az alábbi módon tettem meg a HTML fájlban:
 
+```html
+<script>
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: '1', // Teszt összeg
+                        currency_code: 'HUF'
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                fetch("{% url 'payment_callback' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        orderID: data.orderID,
+                        status: details.status,
+                        orderRef: '{{ appointment.id }}'
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        alert('A tranzakció sikeresen megtörtént: ' + details.payer.name.given_name);
+                        window.location.href = "{% url 'profile' %}";
+                    } else {
+                        alert('Hiba történt a fizetés során.');
+                    }
+                }).catch(error => {
+                    console.error('Hiba történt a fizetés során:', error);
+                    alert('Hiba történt a fizetés során.');
+                });
+            });
+        },
+        onError: function(err) {
+            console.error(err);
+            alert('Hiba történt a fizetés során.');
+        }
+    }).render('#paypal-button-container');
+</script>
+```
 
-
-
-
-
-
-
-
-
-
-
-
+Ennek hatására a fizetési oldalon egy bankkártya, vagy egy PayPal fiókos fizetési opció jelenik meg, amiből a felhasználó tud választani. Ha a fizetés sikeres, akkor az időponthoz tartozó "PaymentStatus"-nak az "is_paid" adattagját "true"-ra állítja, és a felhasználót átirányítja a Profil oldalra, ahol a lefoglalt időpontnál látszik a "Fizetve" felirat. 
+Ha nem sikerült a fizetés akkor kiírja a hibaüzenetet, és nem állítja az "is_paid" adattagot "true"-ra.
 
 ## 5.5. A profil oldal
 
@@ -359,7 +445,8 @@ A formok kitöltve jelennek meg a felhasználók adataival az oldalon, amiket v�
 
 "User" szintű felhasználó esetében megjelennek a formok után a felhasználó által lefoglalt időpontok is, dátum szerint csökkenő sorrendben. Az időpontok kattinthatók, ezek átvisznek az "edit_appointment.html" "read only" nézetébe, ahol a felhasználó megtekintheti az adott időponthoz írt kezelés leírást, és az időpont adatait bővebben. Például hogy fizetve van-e, vagy hogy melyik orvoshoz lett foglalva. Az időpontok le is mondhatók a "Lemondás" gombbal a profil oldalon abban az esetben, ha dátum szerint legalább egy nappal későbbre lettek lefoglalva. Az időpont lemondásához megerősítést kér az oldal egy párbeszédablakban. Az időpont törlését a *views.py* fájlban található "cancel_appointment" metódus végzi. 
 
-# 6. "staff" szintű felhasználói felületek, és azok működése
+# 6. fejezet
+# "staff" szintű felhasználói felületek, és azok működése
 
 Ahogy a korábbiakban már leírtam, az alkalmazásban a "Staff" felhasználói szint az orvosokat reprezentálja. Nekik lehetőségük van belenézni bármelyik páciens kezeléstörténetébe, és hozzáférnek a páciensek elérhetőségéhez is. Továbbá megadhatják a saját munkaidejüket, és megnézhetik a saját időpontjaikat dátumonként szűrve. Ugyanakkor időpontfoglaláshoz nincs joguk, nem is lenne lehetséges, mivel az orvosok fiókjaihoz nincs "Patient" példány rendelve. 
 
@@ -380,7 +467,7 @@ Ezen az oldalon láthatja az orvos a hozzá foglalt időpontokat a megadott dát
 A 6.2. ábrán látható módon jelennek meg az időpontok az oldalon. Alapértelmezetten a jelenlegi dátumra lefoglalt időpontok jelennek meg, viszont a beviteli mező segítségével a más dátumokra foglalt időpontokat is meg lehet nézni. Egy adott időpontnál a "Szerkesztés" gomb átnavigálja a felhasználót az "Időpont adatai" oldalra, ahol a "user" típusú felhasználók csak nézhetik az időpontjaik adatait, viszont az orvosoknak lehetőségük van szerkeszteni azok leírását. Így adható meg a páciens kezeléstörténete. Ez az oldal az "edit_appointment.html" oldalon lett megvalósítva. 
 
   #### 6.3. ábra. Az "Időpont adatai" oldal 
-![edit_appointment](README_PICTURES/idopontok_mara.png "edit_appointment")
+![edit_appointment](README_PICTURES/idopont_szerkesztes.png "edit_appointment")
 
 A "Metés" gombbal elmenthető a leírás amit az időponthoz rendeltünk, a "Mégse" gomb pedig visszanavigál az "Időpontjaim mára" oldalra. 
 
@@ -411,9 +498,10 @@ Ezt már lehetett CSS kóddal designolni, így megoldódott a probléma, és a 6
 
 A "Feltöltés" gomb megnyomásával ki lehet választani a képet, amit a felhasználó profilképként szeretne használni. Ez a kép jelenik meg a pácienseknek az időpont foglalásnál is, amikor az orvos kiválasztására kerül sor. A program a profilképeket a rendelo/media/doctor_pictures mappába menti. 
 
-# 7. "superuser" szintű felhasználói felületek, és azok működése
+# 7. fejezet
+# "superuser" szintű felhasználói felületek, és azok működése
 
-A "superuser" szintű felhasználók az oldal adminisztrátorai. Nem tartozik a profiljukhoz sem "Patient" példány, sem "Doctor" példány. A felhasználók személyes adatain kívül mindenhez hozzáférnek az adatbázisban, és mindent joguk van törölni, vagy módosítani. A Django beépített admin felületére is van joguk bejelentkezni. 
+A "superuser" szintű felhasználók az oldal adminisztrátorai. Nem tartozik a profiljukhoz sem "Patient" példány, sem "Doctor" példány. A felhasználók személyes adatain kívül mindenhez hozzáférnek az adatbázisban, és mindent joguk van törölni, vagy módosítani. A Django beépített admin felületére is van joguk bejelentkezni. Időpontot foglalni viszont nem tudnak, hasonló okok miatt, mint az orvosok. 
 
 ## 7.1. Az "Admin" oldal
 
@@ -442,8 +530,8 @@ Az új orvos létrehozása esetén az orvos a megadott email címére meg is kap
 
 A felhasználói fiókok lenyíló menüben ismét az adatbázisban található összes adat fogadja a felhasználót kilistázva, viszont ezeket lehetősége van szűrni a megszokott módon felhasználónév alapján. 
 
-  #### 7.2. ábra. Az "Admin" oldal 
-![Felhasználói fiókok](README_PICTURES/admin_page_felhasznaloi_fiokok.png.png "Felhasználói fiókok")
+  #### 7.2. ábra. Felhasználói fiókok 
+![Felhasználói fiókok](README_PICTURES/admin_page_felhasznaloi_fiokok.png "Felhasználói fiókok")
 
 Az adminisztrátornak joga van új admin felhasználót hozzáadnia az adatbázishoz, amit az "Új admin felhasználó hozzáadása" gombbal tehet meg. Ez elvezeti az "add_admin_user.html" oldalra, amin a "CustomUserCreationForm" segítségével a megszokott módon létrehozhat új rekordot az adatbázisba.  
 
@@ -453,7 +541,68 @@ A "user" szintű felhasználókat, és a többi adminisztrátort pedig ugyan úg
 - "edit_user.html"
 - "delete_user.html"
 
-# 8. Design
+# 8. fejezet
+# Design
+
+A Design-t összesen 3 CSS fájllal oldottam meg. Ezek a fájlok a rendelo/static/Css mappában találhatók:
+- ```style.css```: Az oldalak kinézetét írtam meg benne színek nélkül.
+- ```colors_light.css```: Az alkalmazás világos módjánk a színeit írtam meg benne.
+- ```colors_dark.css```: Az alkalmazás világos módjánk a színeit írtam meg benne.
+
+  #### 8.1. ábra. A "base.html" kinézete, és a navbar világos módban
+![base_html](README_PICTURES/base_page_light.png "base_html")
+
+A 8.1. ábrán világos módban megtekinthető a "base.html". Ahogy korábban már írtam, ebből származik az összes többi oldal, így mindegyik ezt a designt követi. Sötét módba a navigációs sáv jobb oldalán lévő "hold" ikonnal léphetünk. 
+
+  #### 8.2. ábra. A "base.html" kinézete, és a navbar sötét módban
+![base_html](README_PICTURES/base_page_dark.png "base_html")
+
+Ezt a "base.html" fájlban megírt JS kód hajtja végre: 
+
+```html
+<script>
+        function toggleColorScheme() {
+            const currentScheme = document.getElementById('color-scheme').getAttribute('href');
+            const newScheme = currentScheme.includes('colors_light.css') ? 'colors_dark.css' : 'colors_light.css';
+            document.getElementById('color-scheme').setAttribute('href', `{% static 'css/' %}` + newScheme);
+            localStorage.setItem('color-scheme', newScheme);
+            updateIcon(newScheme);
+        }
+
+        function updateIcon(scheme) {
+            const icon = document.getElementById('color-scheme-icon');
+            if (scheme.includes('colors_light.css')) {
+                icon.src = '{% static "images/moon_icon.png" %}';
+                icon.alt = 'Sötét mód';
+            } else {
+                icon.src = '{% static "images/sun_icon.png" %}';
+                icon.alt = 'Világos mód';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedScheme = localStorage.getItem('color-scheme') || 'colors_light.css';
+            document.getElementById('color-scheme').setAttribute('href', `{% static 'css/' %}` + savedScheme);
+            updateIcon(savedScheme);
+        });
+    </script>
+```
+
+Alapértelmezetten a világos mód Css fájlját improtálja, viszont ha kattintunk a "hold" ikonra, akkor átírja az importot a sötét mód Css fájljának az importjára, majd utána átváltja "napra" az ikont, amire kattintottunk jelezve ezzel, hogy az a világos módba vezet. 
+A design megírásához sima Css-t használtam. 
+
+# 9. fejezet
+# Összefoglaló
+
+A szakdolgozatom elején bemutattam a Django keretrendszer által nyújtott lehetőségeket, az MVT architektúra működését, valamint a keretrendszer által biztosított eszközöket, amelyek megkönnyítik a webalkalmazások fejlesztését. Ismertettem a Django ORM működését, amely lehetővé teszi az adatbázis-kezelést SQL ismeretek nélkül, valamint bemutattam az alkalmazás adatbázisának FHIR szabvány szerinti felépítését.
+
+Ezt követően részletesen bemutattam az alkalmazás felhasználói felületeit, amelyek a páciensek, orvosok és adminisztrátorok számára készültek. Ismertettem az időpontfoglalási rendszer működését, amely lehetővé teszi a páciensek számára, hogy egyszerűen foglaljanak időpontot a rendelőben elérhető kezelésekre. Bemutattam az online fizetési rendszer integrációját, amely a PayPal API segítségével biztosít biztonságos és egyszerű fizetési lehetőséget.
+
+A szakdolgozatban külön fejezetet szenteltem az adminisztrátori felületek ismertetésére, amelyek lehetővé teszik a kezelések, orvosok és felhasználók adatainak kezelését. Részletesen bemutattam az orvosok munkaidő-beállítási lehetőségeit, valamint a páciensek kezeléstörténetének megtekintésére és szerkesztésére szolgáló funkciókat.
+
+A dolgozatban kitértem az alkalmazás reszponzív designjára, amely modern CSS és JavaScript megoldásokkal készült, biztosítva a könnyű használatot különböző eszközökön. Bemutattam a világos és sötét mód közötti váltás megvalósítását, amely a felhasználói élményt hivatott javítani.
+
+A szakdolgozat elkészítése során betekintést nyertem a Django keretrendszerben való fejlesztés rejtelmeibe, valamint a webfejlesztés különböző aspektusaiba. Megismertem az online fizetési rendszerek integrációjának folyamatát, az adatbázis-tervezés kihívásait, valamint a felhasználói jogosultságok kezelésének megvalósítását. A dolgozatom forráskódja elérhető a GitHubon, ahol részletes dokumentáció is található a projekt működéséről és telepítéséről.
 
 # Irodalomjegyzék
 - [1] *Django: The web framework for perfectionists with deadlines https://www.djangoproject.com*

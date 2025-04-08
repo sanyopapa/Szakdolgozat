@@ -168,16 +168,6 @@ def get_earliest_slot(request):
     return JsonResponse({'earliest_slot': None})
 
 @login_required
-def payment_page(request, appointment_id):
-    appointment = get_object_or_404(Appointment, id=appointment_id)
-    if request.method == 'POST':
-        payment_status = get_object_or_404(PaymentStatus, appointment=appointment)
-        payment_status.is_paid = True
-        payment_status.save()
-        return redirect('profile')
-    return render(request, 'payment_page.html', {'appointment': appointment})
-
-@login_required
 def admin_view(request):
     if not (request.user.is_superuser):
         return redirect('home')
@@ -606,7 +596,16 @@ def delete_working_hours(request, date):
         return redirect(f'/working_hours/?date={date}')
     except WorkingHours.DoesNotExist:
         return redirect('working_hours')
-
+    
+@login_required
+def payment_page(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    if request.method == 'POST':
+        payment_status = get_object_or_404(PaymentStatus, appointment=appointment)
+        payment_status.is_paid = True
+        payment_status.save()
+        return redirect('profile')
+    return render(request, 'payment_page.html', {'appointment': appointment})
 
 @csrf_exempt
 def payment_callback(request):
