@@ -50,43 +50,43 @@ A Django egy magas szintű *Python* webkeretrendszer, amely támogatja a gyors f
 
 # Tartalomjegyzék
 
-1. **Az MVT programszervezési minta**
-   - 1.1. Model
-   - 1.2. View
-   - 1.3. Template
+1. [Az MVT programszervezési minta](#az-mvt-programszervezési-minta)
+   - [1.1. Model](#11-model)
+   - [1.2. View](#12-view)
+   - [1.3. Template](#13-template)
 
-2. **Alkalmazás struktúrája**
+2. [Alkalmazás struktúrája](#alkalmazás-struktúrája)
 
-3. **Adatbázis**
-   - 3.1. Az adatbázis típusa
-   - 3.2. Az adatbázis felépítése
-     - 3.2.1. Profilkezelés
-     - 3.2.2. Az időpontfoglalás adatainak tárolása
-     - 3.2.3. Az orvosok munkaidejének tárolása
+3. [Adatbázis](#adatbázis)
+   - [3.1. Az adatbázis típusa](#31-az-adatbázis-típusa)
+   - [3.2. Az adatbázis felépítése](#32-az-adatbázis-felépítése)
+     - [3.2.1. Profilkezelés](#321-profilkezelés)
+     - [3.2.2. Az időpontfoglalás adatainak tárolása](#322-az-időpontfoglalás-adatainak-tárolása)
+     - [3.2.3. Az orvosok munkaidejének tárolása](#323-az-orvosok-munkaidejének-tárolása)
 
-4. **A Template struktúra**
+4. [A Template struktúra](#a-template-struktúra)
 
-5. **"User" szintű felhasználói felületek, és azok működése**
-   - 5.1. A bejelentkezés és a regisztráció működése
-   - 5.2. Az időpontfoglalás
-   - 5.3. A profil oldal
+5. ["User" szintű felhasználói felületek, és azok működése](#user-szintű-felhasználói-felületek-és-azok-működése)
+   - [5.1. A bejelentkezés és a regisztráció működése](#51-a-bejelentkezés-és-a-regisztráció-működése)
+   - [5.2. Az időpontfoglalás](#52-az-időpontfoglalás)
+   - [5.3. A profil oldal](#53-a-profil-oldal)
 
-6. **"Staff" szintű felhasználói felületek, és azok működése**
-   - 6.1. A "Páciensek" oldal
-   - 6.2. Az "Időpontjaim mára" oldal
-   - 6.3. A "Munkaidő oldal"
-   - 6.4. Az orvosok profil oldala
+6. ["Staff" szintű felhasználói felületek, és azok működése](#staff-szintű-felhasználói-felületek-és-azok-működése)
+   - [6.1. A "Páciensek" oldal](#61-a-páciensek-oldal)
+   - [6.2. Az "Időpontjaim mára" oldal](#62-az-időpontjaim-mára-oldal)
+   - [6.3. A "Munkaidő oldal"](#63-a-munkaidő-oldal)
+   - [6.4. Az orvosok profil oldala](#64-az-orvosok-profil-oldala)
 
-7. **"Superuser" szintű felhasználói felületek, és azok működése**
-   - 7.1. Az "Admin" oldal
+7. ["Superuser" szintű felhasználói felületek, és azok működése](#superuser-szintű-felhasználói-felületek-és-azok-működése)
+   - [7.1. Az "Admin" oldal](#71-az-admin-oldal)
 
-8. **Design**
+8. [Design](#design)
 
-9. **Összefoglaló**
+9. [Összefoglaló](#összefoglaló)
 
-10. **Irodalomjegyzék**
+10. [Irodalomjegyzék](#irodalomjegyzék)
 
-11. **Nyilatkozat**
+11. [Nyilatkozat](#nyilatkozat)
 
 # 1. fejezet
 # Az MVT programszervezési minta
@@ -289,7 +289,7 @@ A regisztráció során a felhasználó a "register.html" fájlban megvalósíto
 
 2. Az űrlap elküldése után a "register_view" nézet ellenőrzi az űrlapok érvényességét. Ha az adatok helyesek, a "RegistrationForm" "save" metódusa létrehoz egy új RendeloUser példányt, amely a felhasználói fiókot reprezentálja. A jelszó titkosítva kerül tárolásra a "set_password" metódus segítségével, ami az "AbstractUser" metódusa, amiből a "RendeloUser" osztály származik.
 
-3. A "PatientForm" létrehoz egy új Patient példányt, amely a páciens adatait tárolja. A "register_view" nézet pedig beállítja a Patient "id" adattagjának az értékét az újonnan létrehozott RendeloUser is adattagjának az értékére, hogy a Patient példány azonosítója megegyezzen a RendeloUser példány azonosítójával, így a két objektum összekapcsolódhasson.
+3. A "PatientForm" létrehoz egy új Patient példányt, amely a páciens adatait tárolja. A "register_view" nézet pedig beállítja a Patient "id" adattagjának az értékét az újonnan létrehozott RendeloUser id adattagjának az értékére, hogy a Patient példány azonosítója megegyezzen a RendeloUser példány azonosítójával, így a két objektum összekapcsolódhasson.
 
 4. A regisztráció sikeres befejezése után az "auth_login" metódus automatikusan bejelentkezteti a felhasználót, és átirányítja a kezdőoldalra.
 
@@ -312,17 +312,17 @@ A bejelentkezés során a felhasználó a "login.html" fájlban megvalósított 
 
 ## 5.2. A kezdőoldal
 
-Az összes szintű felhasználó bejelentkezés után a kezdőoldalon találja magát, amit a *kezdooldal.html* fájlban valósítottam meg. Az oldalon található a *base.html* elemein kívül egy marketing leírás a rendelőről ami statikusan az oldalra van írva, nem lehet váltpztatni, csak a HTML kódban. 
-A leírás után pedig egy táblázat a rendelőben lehetséges kezelésekről, és azoknak árairól. A táblázat fejléce után Django sablon nyelven következik egy for ciklus, ami végigmegy a z összes "Treatment" példányon az adatbázisban, és mindegyiknek a nevét, és az árát kiírja egy külön sorba. A Django Template fájlok az adatbázis objektumait a *vievs.py* egyik föggvényétől kapják meg az 1.7. ábrán látható módon. 
+Az összes szintű felhasználó bejelentkezés után a kezdőoldalon találja magát, amit a *kezdooldal.html* fájlban valósítottam meg. Az oldalon található a *base.html* elemein kívül egy marketing leírás a rendelőről, ami statikusan az oldalra van írva, nem lehet változtatni, csak a HTML kódban.  
+A leírás után pedig egy táblázat a rendelőben lehetséges kezelésekről, és azok árairól. A táblázat fejléce után Django sablon nyelven következik egy for ciklus, ami végigmegy az összes "Treatment" példányon az adatbázisban, és mindegyiknek a nevét, és az árát kiírja egy külön sorba. A Django Template fájlok az adatbázis objektumait a *views.py* egyik függvényétől kapják meg az 1.7. ábrán látható módon. 
 
 #### 5.3. ábra. A kezdőoldal *views.py*-ban található megjelenítési függvénye
 ![kezdooldal a views.py-ban](README_PICTURES/kezdooldal_view.png "kezdooldal a views.py-ban")
 
-## 5.3. Az időpont foglalás
+## 5.3. Az időpontfoglalás
 
-Az időpont foglalás oldal az egyik legösszetettebb része az alkalmazásnak. A foglalási folyamat során a felhasználó kiválasztja az orvost, a kezelést, a dátumot és az időpontot, majd a fizetési módot, ezzel elindítva az időpontfoglalás teljes folyamatát. A *views.py* fájlban definiált "idopontfoglalas" függvény koordinálja a folyamatot.
+Az időpontfoglalás oldal az egyik legösszetettebb része az alkalmazásnak. A foglalási folyamat során a felhasználó kiválasztja az orvost, a kezelést, a dátumot és az időpontot, majd a fizetési módot, ezzel elindítva az időpontfoglalás teljes folyamatát. A *views.py* fájlban definiált "idopontfoglalas" függvény koordinálja a folyamatot.
 
-### 5.3.1. Az időpont foglalás lépései
+### 5.3.1. Az időpontfoglalás lépései
 
 1. Orvos kiválasztása:  
    - Interakció: A felhasználó az oldal tetején megjelenített orvosok listájából választ.  
