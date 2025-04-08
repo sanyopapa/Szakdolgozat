@@ -20,6 +20,7 @@
                 <span class="appointment-patient">{{ appointment.patient_name }}</span>
                 <span class="appointment-time">{{ appointment.start|date:"Y-m-d H:i" }} - {{ appointment.end|date:"H:i" }}</span>
             </div>
+            <p><strong>Kezelés:</strong> {{ appointment.treatment.name }}</p>
             <p><strong>Orvos:</strong> {{ appointment.practitioner.name }}</p>
             <p><strong>Leírás:</strong> {{ appointment.custom_description }}</p>
             <button onclick="editAppointment('{{ appointment.id }}')">Szerkesztés</button>

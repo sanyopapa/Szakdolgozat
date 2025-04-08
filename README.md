@@ -115,11 +115,11 @@ A Django alkalmazásokban mivel ORM-et használnak, igen egyszerű az adatbázis
 Először is el kell döntenünk, hogy milyen adatbázist fogunk használni a fejleszteni kívánt alkalmazásunkhoz. 
 Ennek sok szempontja lehet, például hogy mekkora mennyiségű adattal szeretnénk dolgozni, vagy hogy mennyire kell gyorsnak lennie a lekérdezéseknek.
 
-#### 1.1. ábra. Példa az adatbázis beállításra
-![Adatbázis beállítás](README_PICTURES/database_setting.png "1.1. ábra. Példa az adatbázis beállításra")
+#### 3.1. ábra. Példa az adatbázis beállításra
+![Adatbázis beállítás](README_PICTURES/database_setting.png "3.1. ábra. Példa az adatbázis beállításra")
 
 A szakdolgozatomban a Django beépített adatbázisát használtam, ami sqlite3, mivel egy fogászati rendelőnek nincsen nagyon nagy adatforgalma, így elegendő hozzá ez a fajta adatbázis. 
-Az 1.1 ábrán látható egy példa az adatbázis típusának beállítására. Ezt a beállítást a *settings.py* fájlban kell megadni, ami az én alkalmazásomban a projekt fő mappáján belüli "rendelo" nevú mappában található.
+A 3.1 ábrán látható egy példa az adatbázis típusának beállítására. Ezt a beállítást a *settings.py* fájlban kell megadni, ami az én alkalmazásomban a projekt fő mappáján belüli "rendelo" nevú mappában található.
 
 ## 3.2 Az adatbázis felépítése
 
@@ -131,10 +131,10 @@ Django-ban minden alkalmazásnak van egy (vagy több) *models.py* nevű fájlja.
 
 Ezután python osztályként beleírhatjuk a fájlba a tárolni kívánt adatok tulajdonságait. Az ORM-ben az adatbázis táblák oszlopait a python osztályaink adják meg, és az adatbázis rekordok ezeknek a példányaiból keletkeznek. Minden model osztálynak közvetlenül, vagy közvetetten a *models.Model* modulból kell származnia. A nem közvetlen származás a python nyelv többszörös öröklődés támogatása miatt lehetséges. 
 
-#### 1.2. ábra. Példa az adatbázis model leírására
-![Model felépítés példa](README_PICTURES/database_model_example.png "1.2. ábra. Példa az adatbázis model leírására")
+#### 3.2. ábra. Példa az adatbázis model leírására
+![Model felépítés példa](README_PICTURES/database_model_example.png "3.2. ábra. Példa az adatbázis model leírására")
 
-A szakdolgozatomban egyértelmű volt, hogy FHIR szabványú adatbázissal kell dolgoznom, mivel az egészségügyi alkalmazásoknak ez a szabványa. Azért éri meg így kialakítani az adatbázist, mert ezzel a módszerrel az összes egészségügyi rendszerrel kompatibilis rendszert hozhatunk létre. Az 1.2. ábrán látható az egyik FHIR szabványú model osztály a szakdolgozatomból. 
+A szakdolgozatomban egyértelmű volt, hogy FHIR szabványú adatbázissal kell dolgoznom, mivel az egészségügyi alkalmazásoknak ez a szabványa. Azért éri meg így kialakítani az adatbázist, mert ezzel a módszerrel az összes egészségügyi rendszerrel kompatibilis rendszert hozhatunk létre. A 3.2. ábrán látható az egyik FHIR szabványú model osztály a szakdolgozatomból. 
 
 A model-ek megírása nem volt egyszerű, mivel meg kellett oldanom a profilkezelést és az autentikációt az alkalmazásban, viszont szabványosnak kellett maradnia. Ezzel az a probléma, hogy az FHIR szabvány nem támogat profilkezelést.
 
@@ -149,8 +149,8 @@ Az alkalmazás model osztályai:
 
 ### 3.2.1. Profilkezelés
 
-#### 1.3. ábra. A felhasználói profilokat tároló model
-![Abstractuser model](README_PICTURES/abstractuser_model.png "1.3. ábra. A felhasználói profilokat tároló model")
+#### 3.3. ábra. A felhasználói profilokat tároló model
+![Abstractuser model](README_PICTURES/abstractuser_model.png "3.3. ábra. A felhasználói profilokat tároló model")
 
 Az alkalmazásomban három felhasználói jogosultságú profil elérhető: 
 - Superuser: Adminisztrátor akinek mindenhez van joga, bármilyen adatot törölhet, meg van valósítva a számára egy külön "Admin" nevű oldal amin az adatok kezeléséhez hozzáfér, és beléphet a Django beépített adminisztrátori felületére is. 
@@ -159,18 +159,18 @@ Az alkalmazásomban három felhasználói jogosultságú profil elérhető:
 
 - User: A páciensek felhasználói fiókjai, a Regisztrációs oldalon hozhatók létre. Az időpontfoglaláshoz csak ezeknek a fiókoknak van joga, emellett megtekinthetik a saját kezeléstörténetüket és az időpontjaikat, illetve le is mondhatják azokat. 
 
-A profilokat az 1.3. ábrán látható *RendeloUser* osztály tárolja. Az osztály az AbstractUser-ből származik, ami a Django beépített autentikációs rendszerébe tartozik. 
+A profilokat a 3.3. ábrán látható *RendeloUser* osztály tárolja. Az osztály az AbstractUser-ből származik, ami a Django beépített autentikációs rendszerébe tartozik. 
 Amikor létrehozunk az alkalmazásban egy bármilyen jogosultsággal rendelkező profilt, akkor ez az osztály fogja tárolni a bejelentkezéshez szükséges adatainkat. 
 Superuser esetén csak ez az egy objektum tartozik a profilunkhoz, mivel az adminisztrátor nem orvos, és nem páciens, nincs szüksége további adat tárolására. 
 
-Ha az adminisztrátor létrehoz egy új orvosnak egy profilt az alkalmazásban, akkor először is létrejön a RendeloUser példány, amihez generálódik egy uuid4 egyedi azonosító, ami id néven van tárolva az 1.3. ábrán látható módon. Ezután létrejön egy FHIR szabványos Doctor osztálypéldány is, ami az orvos adatait tárolja. Ennek az osztálynak is van egy id nevű, karaktersorozat típusú adattagja, amibe bemásolja a program a RendeloUser objektumban létrehozott egyedi azonosítót. Így kapcsolódik össze a két osztálypéldány. Ezen kívül a program hozzáadja a többi tárolni kívánt adatát az orvosnak. 
+Ha az adminisztrátor létrehoz egy új orvosnak egy profilt az alkalmazásban, akkor először is létrejön a RendeloUser példány, amihez generálódik egy uuid4 egyedi azonosító, ami id néven van tárolva a 3.3. ábrán látható módon. Ezután létrejön egy FHIR szabványos Doctor osztálypéldány is, ami az orvos adatait tárolja. Ennek az osztálynak is van egy id nevű, karaktersorozat típusú adattagja, amibe bemásolja a program a RendeloUser objektumban létrehozott egyedi azonosítót. Így kapcsolódik össze a két osztálypéldány. Ezen kívül a program hozzáadja a többi tárolni kívánt adatát az orvosnak. 
 
 Hasonló folyamat történik, amikor egy user szintű felhasználó regisztrál az akalmazásba.
 Először létrejön a RendeloUser példány az egyedi uuid4 azonosítóval, ezután létrejön egy FHIR szabványos Patient objektum, amiben a páciens adatait tároljuk, a Patient objektum id nevú karaktersorozat típusú adattagjába pedig bemásolja a program az egyedi azonosítót, így összekapcsolta a profiladatokat tároló RendeloUser példányt a páciens adatokat tároló Patient példánnyal. Ezek után pedig elmenti a user további adatait is. 
-Az 1.4. ábrán látható a Patient model. 
+A 3.4. ábrán látható a Patient model. 
 
-#### 1.4. ábra. A Patient model
-![Patient model](README_PICTURES/patient_model.png "1.4. ábra. A patient model")
+#### 3.4. ábra. A Patient model
+![Patient model](README_PICTURES/patient_model.png "3.4. ábra. A patient model")
 
 ### 3.2.2 Az időpontfoglalás adatainak tárolása
 
@@ -209,15 +209,15 @@ A származtatást úgy oldhatjuk meg, hogy a származtatott oldal elejére az al
 Ezzel az új html oldalunk szülője a *base.html* lett. 
 A szakdolgozatomban a *base.html* oldalt készítettem el a "fő" HTML fájlnak. Ebbe írtam meg a fejlécet, az importokat, a navigációs sávot, és a láblécet. Meg kellett adnom azokat a részeket az oldalon, amiket a belőle származó HTML oldalak változtatni fognak. 
 
-#### 1.5. ábra. Példa az öröklődésben használt block-okra 
+#### 4.1. ábra. Példa az öröklődésben használt block-okra 
 ![block usage](README_PICTURES/base_blocks_example.png "Példa a block-ok használatára")
 
-Az 1.5. ábrán egy példa látható az oldal main részének a block-jára. Ezután, ha írni szeretnénk egy származtatott oldalon ebbe a block-ba, akkor a "content" nevű block-ba szánt kódot ```{% block content %}``` és ```{% endblock %}``` kód között kell megadnunk. Ennek hatására a származtatott oldalon megadott block kódot a *base.html* oldal main részébe fogja helyezni. 
+Az 4.1. ábrán egy példa látható az oldal main részének a block-jára. Ezután, ha írni szeretnénk egy származtatott oldalon ebbe a block-ba, akkor a "content" nevű block-ba szánt kódot ```{% block content %}``` és ```{% endblock %}``` kód között kell megadnunk. Ennek hatására a származtatott oldalon megadott block kódot a *base.html* oldal main részébe fogja helyezni. 
 
-#### 1.6. ábra. A navigációs sáv kódja 
+#### 4.2. ábra. A navigációs sáv kódja 
 ![navbar](README_PICTURES/navbar_code.png "A navbar kódja")
 
-A navigációs sáv kulcsfontosságú szerepet tölt be az alkalmazás felhasználhatóságában. A szakdolgozatomban az 1.6. ábrán látható módon oldottam meg a navigációs sáv implementációját a *base.html* fájlban. Az *urls.py* fájlban található linkeket adtam hozzá a Django sablonnyelvben írt feltételekkel, hogy a különböző jogokkal rendelkező felhasználók csak a nekik szánt oldalakat láthassák rajta. Ezek a linkek az alkalmazás tobábbi felhasználói felületeire navigálják a felasználót. Ezeken felül pedig van egy gomb is a navigációs sávon, ami a sötét, és világos módok közötti váltást teszi lehetővé egy JS kód segítségével, amire még a későbbiekben kitérek.
+A navigációs sáv kulcsfontosságú szerepet tölt be az alkalmazás felhasználhatóságában. A szakdolgozatomban az 4.2. ábrán látható módon oldottam meg a navigációs sáv implementációját a *base.html* fájlban. Az *urls.py* fájlban található linkeket adtam hozzá a Django sablonnyelvben írt feltételekkel, hogy a különböző jogokkal rendelkező felhasználók csak a nekik szánt oldalakat láthassák rajta. Ezek a linkek az alkalmazás tobábbi felhasználói felületeire navigálják a felasználót. Ezeken felül pedig van egy gomb is a navigációs sávon, ami a sötét, és világos módok közötti váltást teszi lehetővé egy JS kód segítségével, amire még a későbbiekben kitérek.
 
 # 5. "User" szintű felhasználói felületek, és azok működése
 
@@ -333,7 +333,42 @@ A fizetési oldal a "payment_page.html" oldalon lett megvalósítva.
 
 ## 5.5. A profil oldal
 
+A profil oldal mindhárom felhasználói jogosultságú felhasználó számára látható, viszont mindhárom típusú felhasználó számára más jelenik meg rajta. 
+A "ProfileForm" mindenképp megjelenik, ezen tudja változtatni a felhasználó a felhasználónevét, az email címét, és a jelszavát. Ez a form szerkeszti a "RendeloUser" model-t. A "profile_view" metódus a *views.py* fájlban az 5.5. ábrán látható módon vizsgálja meg a felhasználó jogosultságát, hogy ez alapján jelenítse meg a formokat a felhasználó számára. Ha a felhasználó "superuser", akkor semmit nem jelenít meg a "ProfileForm" után(a "patient_form" változó amúgy is none kezdőértékű), ha nem "superuser", hanem "staff", akkor ez azt jelenti, hogy egy orvos kattintott az oldalra, tehát lekéri azt a "Doctor" osztálypéldányt az adatbázisból, amelyiknek egyezik az azonosítója a bejelentkezett felhasználó azonosítójával, és a "doctor_form" változóba is lekéri az adott formot, és átadja neki a "Doctor" példányt, amit lekért. Ha pedig nem is "staff" a felhasználó, akkor a "Patient" példányt és formot kéri le hozzá. 
+
+  #### 5.5. ábra. A profile_view metódus form kiválasztása
+![profile_view_forms](README_PICTURES/profile_view_forms.png "profile_view_forms")
+
+A formok kitöltve jelennek meg a felhasználók adataival az oldalon, amiket változtathatnak és a formok után található "Mentés" gombbal a változtatásaik elmenthetők. 
+
+"User" szintű felhasználó esetében megjelennek a formok után a felhasználó által lefoglalt időpontok is, dátum szerint csökkenő sorrendben. Az időpontok kattinthatók, ezek átvisznek az "edit_appointment.html" "read only" nézetébe, ahol a felhasználó megtekintheti az adott időponthoz írt kezelés leírást, és az időpont adatait bővebben. Például hogy fizetve van-e, vagy hogy melyik orvoshoz lett foglalva. Az időpontok le is mondhatók a "Lemondás" gombbal a profil oldalon abban az esetben, ha dátum szerint legalább egy nappal későbbre lettek lefoglalva. Az időpont lemondásához megerősítést kér az oldal egy párbeszédablakban. Az időpont törlését a *views.py* fájlban található "cancel_appointment" metódus végzi. 
+
 # 6. "Staff" szintű felhasználói felületek, és azok működése
+
+Ahogy a korábbiakban már leírtam, az alkalmazásban a "Staff" felhasználói szint az orvosokat reprezentálja. Nekik lehetőségük van belenézni bármelyik páciens kezeléstörténetébe, és hozzáférnek a páciensek elérhetőségéhez is. Továbbá megadhatják a saját munkaidejüket, és megnézhetik a saját időpontjaikat dátumonként szűrve. Ugyanakkor időpontfoglaláshoz nincs joguk, nem is lenne lehetséges, mivel az orvosok fiókjaihoz nincs "Patient" példány rendelve. 
+
+## A "Páciensek" oldal
+
+Ezen az oldalon az orvos rákereshet bármelyik páciensre név szerint az oldalon lévő kereső segítségével, vagy az "Összes páciens" gombra kattintva visszatérhet az alapértelmezett nézetbe, ami az összes adatbázisban lévő pácienst kilistázza az oldalon látható táblázatba. Az oldal a "patients.html" fájlban lett megvalósítva. Mindegyik páciens kattintható, kattintás hatására az adott páciens adatlapjára jut a felhasználó, ami a "patient.html" oldalon lett megvalósítva. Ezen az oldalon vannak a páciensnek az adatai láthatók amelyikre a felhasználó kattintott, továbbá az összes lefoglalt időpontja és azoknak leírása időrend szerint csökkenő sorrendben. Az oldalon alapértelmezetten minden a páciens álta lefoglalt időpont megjelenik, viszont a felhasználónak lehetősége van hónap alapján szűrni őket, ezzel könnyebbé téve a kezeléstörténet vizsgálatát. Az oldalon található még egy "Vissza a páciensekhez" gomb, ami visszavezet a "Páciensek" oldalra. A 6.1. ábrán ennek az oldalnak a kinézete látható.  
+
+  #### 6.1. ábra. A "Páciensek" oldal 
+![patient_page](README_PICTURES/patients_page.png "patient_page")
+
+## Az "Időpontjaim mára" oldal
+
+Ezen az oldalon láthatja az orvos a hozzá foglalt időpontokat a megadott dátumon. 
+
+  #### 6.2. ábra. Az "Időpontjaim mára" oldal 
+![appoitments_today](README_PICTURES/idopontok_mara.png "appoitments_today")
+
+A 6.2. ábrán látható módon jelennek meg az időpontok az oldalon. Alapértelmezetten a jelenlegi dátumra lefoglalt időpontok jelennek meg, viszont a beviteli mező segítségével a más dátumokra foglalt időpontokat is meg lehet nézni. Egy adott időpontnál a "Szerkesztés" gomb átnavigálja a felhasználót az "Időpont adatai" oldalra, ahol a "user" típusú felhasználók csak nézhetik az időpontjaik adatait, viszont az orvosoknak lehetőségük van szerkeszteni azok leírását. Így adható meg a páciens kezeléstörténete. Ez az oldal az "edit_appointment.html" oldalon lett megvalósítva. 
+
+  #### 6.3. ábra. Az "Időpont adatai" oldal 
+![edit_appointment](README_PICTURES/idopontok_mara.png "edit_appointment")
+
+A "Metés" gombbal elmenthető a leírás amit az időponthoz rendeltünk, a "Mégse" gomb pedig visszanavigál az "Időpontjaim mára" oldalra. 
+
+## A "Munkaidő oldal"
 
 # 7. "Admin" szintű felhasználói felületek, és azok működése
 

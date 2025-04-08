@@ -45,7 +45,7 @@ class Treatment(models.Model):
 class Appointment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)  
     patient = models.CharField(max_length=64, null=True, blank=True)  
-    practitioner = models.ForeignKey(Doctor, on_delete=models.CASCADE)  
+    practitioner = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)  
     treatment = models.ForeignKey(Treatment, on_delete=models.SET_NULL, null=True, blank=True) 
     start = models.DateTimeField() 
     end = models.DateTimeField() 
