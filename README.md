@@ -121,7 +121,7 @@ Ennek sok szempontja lehet, például hogy mekkora mennyiségű adattal szeretn�
 A szakdolgozatomban a Django beépített adatbázisát használtam, ami sqlite3, mivel egy fogászati rendelőnek nincsen nagyon nagy adatforgalma, így elegendő hozzá ez a fajta adatbázis. 
 A 3.1 ábrán látható egy példa az adatbázis típusának beállítására. Ezt a beállítást a *settings.py* fájlban kell megadni, ami az én alkalmazásomban a projekt fő mappáján belüli "rendelo" nevú mappában található.
 
-## 3.2 Az adatbázis felépítése
+## 3.2. Az adatbázis felépítése
 
 Az adatbázis típusának kiválasztása után a legfontosabb rész következik: Felépíteni az adatbázis szerkezetét. 
 Mivel ORM technológiát használ a keretrendszerünk így szerencsére nincs szükségünk SQL ismeretekre ennek a műveletnek a végrehajtásához. 
@@ -219,7 +219,7 @@ Az 4.1. ábrán egy példa látható az oldal main részének a block-jára. Ezu
 
 A navigációs sáv kulcsfontosságú szerepet tölt be az alkalmazás felhasználhatóságában. A szakdolgozatomban az 4.2. ábrán látható módon oldottam meg a navigációs sáv implementációját a *base.html* fájlban. Az *urls.py* fájlban található linkeket adtam hozzá a Django sablonnyelvben írt feltételekkel, hogy a különböző jogokkal rendelkező felhasználók csak a nekik szánt oldalakat láthassák rajta. Ezek a linkek az alkalmazás tobábbi felhasználói felületeire navigálják a felasználót. Ezeken felül pedig van egy gomb is a navigációs sávon, ami a sötét, és világos módok közötti váltást teszi lehetővé egy JS kód segítségével, amire még a későbbiekben kitérek.
 
-# 5. "User" szintű felhasználói felületek, és azok működése
+# 5. "user" szintű felhasználói felületek, és azok működése
 
 A fogászati rendelő alkalmazás számos felülettel rendelkezik. 
 
@@ -329,7 +329,23 @@ Az időpont foglalás oldal az egyik legösszetettebb része az alkalmazásnak. 
 
 ## 5.4 A fizetési oldal
 
-A fizetési oldal a "payment_page.html" oldalon lett megvalósítva. 
+A fizetési oldal a "payment_page.html" oldalon lett megvalósítva.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 5.5. A profil oldal
 
@@ -343,18 +359,18 @@ A formok kitöltve jelennek meg a felhasználók adataival az oldalon, amiket v�
 
 "User" szintű felhasználó esetében megjelennek a formok után a felhasználó által lefoglalt időpontok is, dátum szerint csökkenő sorrendben. Az időpontok kattinthatók, ezek átvisznek az "edit_appointment.html" "read only" nézetébe, ahol a felhasználó megtekintheti az adott időponthoz írt kezelés leírást, és az időpont adatait bővebben. Például hogy fizetve van-e, vagy hogy melyik orvoshoz lett foglalva. Az időpontok le is mondhatók a "Lemondás" gombbal a profil oldalon abban az esetben, ha dátum szerint legalább egy nappal későbbre lettek lefoglalva. Az időpont lemondásához megerősítést kér az oldal egy párbeszédablakban. Az időpont törlését a *views.py* fájlban található "cancel_appointment" metódus végzi. 
 
-# 6. "Staff" szintű felhasználói felületek, és azok működése
+# 6. "staff" szintű felhasználói felületek, és azok működése
 
 Ahogy a korábbiakban már leírtam, az alkalmazásban a "Staff" felhasználói szint az orvosokat reprezentálja. Nekik lehetőségük van belenézni bármelyik páciens kezeléstörténetébe, és hozzáférnek a páciensek elérhetőségéhez is. Továbbá megadhatják a saját munkaidejüket, és megnézhetik a saját időpontjaikat dátumonként szűrve. Ugyanakkor időpontfoglaláshoz nincs joguk, nem is lenne lehetséges, mivel az orvosok fiókjaihoz nincs "Patient" példány rendelve. 
 
-## A "Páciensek" oldal
+## 6.1. A "Páciensek" oldal
 
 Ezen az oldalon az orvos rákereshet bármelyik páciensre név szerint az oldalon lévő kereső segítségével, vagy az "Összes páciens" gombra kattintva visszatérhet az alapértelmezett nézetbe, ami az összes adatbázisban lévő pácienst kilistázza az oldalon látható táblázatba. Az oldal a "patients.html" fájlban lett megvalósítva. Mindegyik páciens kattintható, kattintás hatására az adott páciens adatlapjára jut a felhasználó, ami a "patient.html" oldalon lett megvalósítva. Ezen az oldalon vannak a páciensnek az adatai láthatók amelyikre a felhasználó kattintott, továbbá az összes lefoglalt időpontja és azoknak leírása időrend szerint csökkenő sorrendben. Az oldalon alapértelmezetten minden a páciens álta lefoglalt időpont megjelenik, viszont a felhasználónak lehetősége van hónap alapján szűrni őket, ezzel könnyebbé téve a kezeléstörténet vizsgálatát. Az oldalon található még egy "Vissza a páciensekhez" gomb, ami visszavezet a "Páciensek" oldalra. A 6.1. ábrán ennek az oldalnak a kinézete látható.  
 
   #### 6.1. ábra. A "Páciensek" oldal 
 ![patient_page](README_PICTURES/patients_page.png "patient_page")
 
-## Az "Időpontjaim mára" oldal
+## 6.2. Az "Időpontjaim mára" oldal
 
 Ezen az oldalon láthatja az orvos a hozzá foglalt időpontokat a megadott dátumon. 
 
@@ -368,9 +384,74 @@ A 6.2. ábrán látható módon jelennek meg az időpontok az oldalon. Alapérte
 
 A "Metés" gombbal elmenthető a leírás amit az időponthoz rendeltünk, a "Mégse" gomb pedig visszanavigál az "Időpontjaim mára" oldalra. 
 
-## A "Munkaidő oldal"
+## 6.3. A "Munkaidő oldal"
 
-# 7. "Admin" szintű felhasználói felületek, és azok működése
+Az orvos a munkaidejét ezen az oldalon állíthatja be. Az oldal a "working_hours.html" fájlban lett megvalósítva. 
+
+  #### 6.4. ábra. A munkaidő megadása
+![working_hours](README_PICTURES/working_hours.png "working_hours")
+
+Amikor a felhasználó ellátogat az oldalra és kiválaszt egy dátumot, akkor a 6.4. ábrán látható kép fogadja. A rendelő 8:00-20:00 között van nyitva, tehát ennél korábbi kezdést, vagy későbbi végzést nem lehet beállítani munkaidőnek. A kezdés és végzés ideje a ```+``` és ```-``` gombokkal növelhető, vagy csökkenthető. Egy kattintás 15 perccel növeli, vagy csökkenti a beviteli mezőben látható időt. A beviteli mező ezeken a gombokon kívül mással nem szerkeszthet. Ez azért van, hogy a felhasználó ne adhasson meg magának olyan kezdési, vagy végzési időpontot, ami nem "kerek", és az időpontfoglalási rendszert összezavarná. 
+A munkaidőt beállítani, vagy a már beállítottat szerkeszteni a "Mentés" gombbal lehet.
+Ennek a hatására az alkalmazás elmenti a "WorkingHours" model-be az orvos munkaidejét. 
+Abban az esetben, ha még a kiválasztott napra nincs megadva az adott orvosnak munkaidő, akkor megjelenik a képen látható üzenet is az oldalon. 
+
+## 6.4. Az orvosok Profil oldala
+
+Az orvosok profil oldala ugyan abban a fájlban lett megvalósítva ugyan azzal a működési elvvel, mint az az oldal, amit az 5.5. fejezetben bemutattam. Azonban ennél a típusú felhasználónál akadtak nehézségek, mivel a "DoctorForm" form töltődik be a "PatientForm" helyett, és ennek a formnak kezelnie kell képeket. Itt is a Django beépített fájlbeviteli mezőjét szerettem volna használni, de azt nem sikerült CSS kóddal designolnom, és nem nyjtott kellően szép látványt. 
+A megoldásom az lett erre a problémára, hogy készítettem egy saját képbeviteli oldalt a "custom_clearable_file_input.html" fájlba, készítettem a "forms.py"-ba egy osztályt hozzá, és a 6.5. ábrán látható módon beleraktam a "DoctorForm"-ba, hogy ezt használja a képek beviteléhez.
+
+  #### 6.5. ábra. A "DoctorForm"
+![DoctorForm](README_PICTURES/doctor_form.png "DoctorForm")
+
+Ezt már lehetett CSS kóddal designolni, így megoldódott a probléma, és a 6.6. ábrán látható is a munka eredménye.
+
+  #### 6.6. ábra. A "DoctorForm" megjelenítése
+![DoctorForm](README_PICTURES/doctor_form_view.png "DoctorForm")
+
+A "Feltöltés" gomb megnyomásával ki lehet választani a képet, amit a felhasználó profilképként szeretne használni. Ez a kép jelenik meg a pácienseknek az időpont foglalásnál is, amikor az orvos kiválasztására kerül sor. A program a profilképeket a rendelo/media/doctor_pictures mappába menti. 
+
+# 7. "superuser" szintű felhasználói felületek, és azok működése
+
+A "superuser" szintű felhasználók az oldal adminisztrátorai. Nem tartozik a profiljukhoz sem "Patient" példány, sem "Doctor" példány. A felhasználók személyes adatain kívül mindenhez hozzáférnek az adatbázisban, és mindent joguk van törölni, vagy módosítani. A Django beépített admin felületére is van joguk bejelentkezni. 
+
+## 7.1. Az "Admin" oldal
+
+Az Admin oldal az "admin.html" fájlban lett megvalósítva, az adminisztrátor ezen az oldalon éri el az összes admin felületet.
+
+  #### 7.1. ábra. Az "Admin" oldal 
+![Admin](README_PICTURES/admin_page.png "Admin")
+
+Az oldalon a 7.1. ábrán látható három lenyíló menü fogadja a felhasználót. Ezekben vannak a kezelések, az orvosok, és a felhasználói fiókok szerkesztési lehetőségei. 
+
+Ha lenyitja a kezeléseket akkor kilistázza az oldal az adatbázisban található összes megadott kezelést. A lenyíló gomb alatt található egy "Új kezelés hozzáadása" gomb, ami az "add_treatment.html" oldalra navigálja a felhasználót. Ezen az oldalon a "TreatmentForm" található, amiben megadhatja a hozzáadni kívánt kezelés adatait, majd a "Mentés" gombbal elmentheti, vagy a "Mégsem" gombbal visszatérhet az Admin oldalra. 
+
+A kilistázott kezeléseknél mindegyikhez jut két gomb: "Törlés", vagy "Szerkesztés". 
+
+A "Törlés" a "Delete_treatment.html" fájlba navigálja a felhasználót, ahol megkérdezi az oldal, hogy biztosan törölni kívánja-e a kezelést, és megjeleníti a kezelés adatait is. Az oldalon található "Törlés" gomb értelem szerűen törli, míg a "Mégsem" gomb visszanavigál az Admin oldalra. 
+
+A "Szerkesztés" gomb az "edit_treatment.html" oldalra navigál, ahol szintén megjelenik a "TreatmentForm" a kiválasztott kezelés adataival kitöltve. Bármilyen adatot átírhat itt is a felhasználó, az oldalon lévő "Mentés" és "Mégsem" gombok pedig a megszokott módon működnek. 
+
+Az orvosok lenyíló menüben is hasonló lehetőségek találhatók, kilistázza az oldal az összes adatbázisban szereplő orvost egymás alá, és lehet újat elmenteni, szerkeszteni, és törölni az adatbázisból. Az új hozzáadása és a szerkesztés a "ProfileForm", és "DoctorForm" egítségével történik. Ezekhez a műveletekhez is külön oldalakat készítettem az alábbi fájlokban:
+- "add_doctor.html"
+- "edit_doctor.html"
+- "delete_doctor.html"
+
+Fontos, hogy itt az új orvos hozzáadása nem csak egy új "Doctor" példányt ad hozzá az adatbázishoz, hanem először létrehoz egy "RendeloUser"-t is, és annak az id-jával hozza létre a "Doctor"-t, hogy az orvos azonnal használhassa a felhasználói fiókját is. 
+Az új orvos létrehozása esetén az orvos a megadott email címére meg is kap egy emailt, amiben megkapja a belépési adatait, hogy meg tudja őket változtatni. 
+
+A felhasználói fiókok lenyíló menüben ismét az adatbázisban található összes adat fogadja a felhasználót kilistázva, viszont ezeket lehetősége van szűrni a megszokott módon felhasználónév alapján. 
+
+  #### 7.2. ábra. Az "Admin" oldal 
+![Felhasználói fiókok](README_PICTURES/admin_page_felhasznaloi_fiokok.png.png "Felhasználói fiókok")
+
+Az adminisztrátornak joga van új admin felhasználót hozzáadnia az adatbázishoz, amit az "Új admin felhasználó hozzáadása" gombbal tehet meg. Ez elvezeti az "add_admin_user.html" oldalra, amin a "CustomUserCreationForm" segítségével a megszokott módon létrehozhat új rekordot az adatbázisba.  
+
+A kilistázott felhasználók közül itt nem szerkeszthetők az orvosok, mivel azokhoz ott van az orvosok szerkesztési oldala, és itt nem szerkeszthető, vagy törölhető az admin saját fiókja sem. Ez egy védelem, hogy az alkalmazás ne maradhasson adminisztrátor nélkül. A szerkesztést viszont meg tudja oldani a saját "Profil" oldalán, ami ugyan úgy működik, mint a többi szintű felhasználó esetében. 
+
+A "user" szintű felhasználókat, és a többi adminisztrátort pedig ugyan úgy tudja szerkeszteni a "ProfileForm", és a "PatientForm" segítségével, vagy törölni a megszokott módon. Ezekhez is készítettem két külön oldalt:
+- "edit_user.html"
+- "delete_user.html"
 
 # 8. Design
 
