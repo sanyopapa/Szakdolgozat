@@ -1,0 +1,19 @@
+image: texlive/texlive:latest
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - cd kotestabla
+    - pdflatex kotestabla.tex
+    - cd ..
+    - pdflatex main.tex
+    - bibtex main.aux
+    - pdflatex main.tex
+    - pdflatex main.tex
+  artifacts:
+    paths:
+      - "kotestabla/*.pdf"
+      - "*.pdf"
