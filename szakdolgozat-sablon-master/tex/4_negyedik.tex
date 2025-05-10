@@ -9,7 +9,7 @@ Egy webes alkalmazásnak a Template a leglátványosabb része, hiszen ez jelen�
 
 Ezzel az új html oldalunk szülője a base.html lett. A szakdolgozatomban a base.html oldalt készítettem el a "fő" HTML fájlnak. Ebbe írtam meg a fejlécet, az importokat, a navigációs sávot, és a láblécet. Meg kellett adnom azokat a részeket az oldalon, amiket a belőle származó HTML oldalak változtatni fognak.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{Példa az öröklődésben használt block-okra}
 	\label{fig:htmloroklodes}
 	\centering
@@ -18,7 +18,7 @@ Ezzel az új html oldalunk szülője a base.html lett. A szakdolgozatomban a bas
 
 Az 4.1. ábrán egy példa látható az oldal main részének a block-jára. Ezután, ha írni szeretnénk egy származtatott oldalon ebbe a block-ba, akkor a "content" nevű block-ba szánt kódot\verb|{% block content %}| és \verb|{% endblock %}$| kód között kell megadnunk. Ennek hatására a származtatott oldalon megadott block kódot a base.html oldal main részébe fogja helyezni.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{A navigációs sáv kódja}
 	\label{fig:navigationbar}
 	\centering

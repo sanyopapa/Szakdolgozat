@@ -7,7 +7,7 @@ Ahogy a korábbiakban már leírtam, az alkalmazásban a "Staff" felhasználói 
 
 Ezen az oldalon az orvos rákereshet bármelyik páciensre név szerint az oldalon lévő kereső segítségével, vagy az "Összes páciens" gombra kattintva visszatérhet az alapértelmezett nézetbe, ami az összes adatbázisban lévő pácienst kilistázza az oldalon látható táblázatba. Az oldal a "patients.html" fájlban lett megvalósítva. Mindegyik páciens kattintható, kattintás hatására az adott páciens adatlapjára jut a felhasználó, ami a "patient.html" oldalon lett megvalósítva. Ezen az oldalon vannak a páciensnek az adatai láthatók amelyikre a felhasználó kattintott, továbbá az összes lefoglalt időpontja és azoknak leírása időrend szerint csökkenő sorrendben. Az oldalon alapértelmezetten minden a páciens által lefoglalt időpont megjelenik, viszont a felhasználónak lehetősége van hónap alapján szűrni őket, ezzel könnyebbé téve a kezeléstörténet vizsgálatát. Az oldalon található még egy "Vissza a páciensekhez" gomb, ami visszavezet a "Páciensek" oldalra. A 6.1. ábrán ennek az oldalnak a kinézete látható.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{A "Páciensek" oldal}
 	\label{fig:paciensek}
 	\centering
@@ -18,7 +18,7 @@ Ezen az oldalon az orvos rákereshet bármelyik páciensre név szerint az oldal
 
 Ezen az oldalon láthatja az orvos a hozzá foglalt időpontokat a megadott dátumon.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{Az "Időpontjaim mára" oldal}
 	\label{fig:idopontjaimmara}
 	\centering
@@ -27,7 +27,7 @@ Ezen az oldalon láthatja az orvos a hozzá foglalt időpontokat a megadott dát
 
 A 6.2. ábrán látható módon jelennek meg az időpontok az oldalon. Alapértelmezetten a jelenlegi dátumra lefoglalt időpontok jelennek meg, viszont a beviteli mező segítségével a más dátumokra foglalt időpontokat is meg lehet nézni. Egy adott időpontnál a "Szerkesztés" gomb átnavigálja a felhasználót az "Időpont adatai" oldalra, ahol a "user" típusú felhasználók csak nézhetik az időpontjaik adatait, viszont az orvosoknak lehetőségük van szerkeszteni azok leírását. Így adható meg a páciens kezeléstörténete. Ez az oldal az "edit\_appointment.html" oldalon lett megvalósítva.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{Az "Időpont adatai" oldal}
 	\label{fig:idopontadatai}
 	\centering
@@ -40,7 +40,7 @@ A "Metés" gombbal elmenthető a leírás amit az időponthoz rendeltünk, a "M�
 
 Az orvos a munkaidejét ezen az oldalon állíthatja be. Az oldal a "working\_hours.html" fájlban lett megvalósítva.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{A munkaidő megadása}
 	\label{fig:munkaidomegadasa}
 	\centering
@@ -53,7 +53,7 @@ Amikor a felhasználó ellátogat az oldalra és kiválaszt egy dátumot, akkor 
 
 Az orvosok profil oldala ugyan abban a fájlban lett megvalósítva ugyan azzal a működési elvvel, mint az az oldal, amit az 5.5. fejezetben bemutattam. Azonban ennél a típusú felhasználónál akadtak nehézségek, mivel a "DoctorForm" form töltődik be a "PatientForm" helyett, és ennek a formnak kezelnie kell képeket. Itt is a Django beépített fájlbeviteli mezőjét szerettem volna használni, de azt nem sikerült CSS kóddal designolnom, és nem nyújtott kellően szép látványt. A megoldásom az lett erre a problémára, hogy készítettem egy saját képbeviteli oldalt a "custom\_clearable\_file\_input.html" fájlba, készítettem a "forms.py"-ba egy osztályt hozzá, és a 6.5. ábrán látható módon beleraktam a "DoctorForm"-ba, hogy ezt használja a képek beviteléhez.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{A "DoctorForm"}
 	\label{fig:doctorform}
 	\centering
@@ -62,7 +62,7 @@ Az orvosok profil oldala ugyan abban a fájlban lett megvalósítva ugyan azzal 
 
 Ezt már lehetett CSS kóddal designolni, így megoldódott a probléma, és a 6.6. ábrán látható is a munka eredménye.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{A "DoctorForm" megjelenítése}
 	\label{fig:doctorformview}
 	\centering

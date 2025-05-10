@@ -4,7 +4,7 @@
 \section{Az adatbázis típusa}
 Először is el kell döntenünk, hogy milyen adatbázist fogunk használni a fejleszteni kívánt alkalmazásunkhoz. Ennek sok szempontja lehet, például hogy mekkora mennyiségű adattal szeretnénk dolgozni, vagy hogy mennyire kell gyorsnak lennie a lekérdezéseknek.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{Példa az adatbázis beállításra}
 	\label{fig:adatbazisbeallitas}
 	\centering
@@ -18,7 +18,7 @@ Az adatbázis típusának kiválasztása után a legfontosabb rész következik:
 from django.db import models\\
 Ezután python osztályként beleírhatjuk a fájlba a tárolni kívánt adatok tulajdonságait. Az ORM-ben az adatbázis táblák oszlopait a python osztályaink adják meg, és az adatbázis rekordok ezeknek a példányaiból keletkeznek. Minden model osztálynak közvetlenül, vagy közvetetten a models.Model modulból kell származnia. A nem közvetlen származás a python nyelv többszörös öröklődés támogatása miatt lehetséges.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{Példa az adatbázis model leírására}
 	\label{fig:adatbazismodell}
 	\centering
@@ -40,7 +40,7 @@ Az alkalmazás model osztályai:
 
 \subsection{Profilkezelés}
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{A felhasználói profilokat tároló model}
 	\label{fig:profilmodell}
 	\centering
@@ -61,7 +61,7 @@ Ha az adminisztrátor létrehoz egy új orvosnak egy profilt az alkalmazásban, 
 
 Hasonló folyamat történik, amikor egy user szintű felhasználó regisztrál az akalmazásba. Először létrejön a RendeloUser példány az egyedi uuid4 azonosítóval, ezután létrejön egy FHIR szabványos Patient objektum, amiben a páciens adatait tároljuk, a Patient objektum $id$ nevú karaktersorozat típusú adattagjába pedig bemásolja a program az egyedi azonosítót, így összekapcsolta a profiladatokat tároló RendeloUser példányt a páciens adatokat tároló Patient példánnyal. Ezek után pedig elmenti a user további adatait is. A 3.4. ábrán látható a Patient model.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{A Patient model}
 	\label{fig:patientmodel}
 	\centering

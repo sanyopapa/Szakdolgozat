@@ -17,7 +17,7 @@ Az alkalmazásomban a regisztráció és bejelentkezés funkciók a Django beép
 	\item "get\_user": Lekéri a felhasználót az azonosítója alapján. A Django beépített metódusa.
 \end{itemize}
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{Az "authentication.py"}
 	\label{fig:authentication}
 	\centering
@@ -36,7 +36,7 @@ A regisztráció során a felhasználó a "register.html" fájlban megvalósíto
 	\item A felhasználó beállított email címére egy email kerül kiküldésre, amelyben megköszöni a cég a regisztrációt. (Jelenleg egy konzolos email küldés van beállítva, csupán a demózás céljából.)
 \end{enumerate}
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{A register\_view nézet}
 	\label{fig:registerview}
 	\centering
@@ -59,7 +59,7 @@ A bejelentkezés során a felhasználó a "login.html" fájlban megvalósított 
 Az összes szintű felhasználó bejelentkezés után a kezdőoldalon találja magát, amit a kezdooldal.html fájlban valósítottam meg. Az oldalon található a base.html elemein kívül egy marketing leírás a rendelőről, ami statikusan az oldalra van írva, nem lehet változtatni, csak a HTML kódban.
 A leírás után pedig egy táblázat a rendelőben lehetséges kezelésekről, és azok árairól. A táblázat fejléce után Django sablon nyelven következik egy for ciklus, ami végigmegy az összes "Treatment" példányon az adatbázisban, és mindegyiknek a nevét, és az árát kiírja egy külön sorba. A Django Template fájlok az adatbázis objektumait a views.py egyik függvényétől kapják meg az 1.7. ábrán látható módon.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{A kezdőoldal views.py-ban található megjelenítési függvénye}
 	\label{fig:kezdooldal}
 	\centering
@@ -95,7 +95,7 @@ Az időpontfoglalás oldal az egyik legösszetettebb része az alkalmazásnak. A
 	
 	 Itt kihívásként említeném a felhasználó számára megjelenített elérhető időpontok megjelenítését. Azt kellett megoldanom, hogy ne csúszhassanak egymásba az időpontok. Tehát például ha le van foglalva valamilyen kezelésre egy időpont az adott dátumon 11:00-ra, akkor ne jeleníthessen meg a felhasználónak 10:45-re szabad időpontot, amikor egy 35 perc hosszúságú kezelést választott ki. Ezt az 5.4. ábrán látható metódussal oldottam meg, amit az "idopontfoglalas.html" JS kódja hív meg. A metódus először is 15-tel osztható számra kerekíti a kiválasztott kezelés hosszát felfelé, (például egy 50 perces kezelés hosszát 60 percesre kerekít), majd a HTML oldalon lévő JS kód által megjelenített időpontokat szűri. A get\_available\_slots metódus biztosítja, hogy csak azok az időpontok jelenjenek meg a felhasználónak, amelyek nem ütköznek más foglalásokkal. Ehhez a metódus minden egyes időintervallumot ellenőriz, hogy az adott időpontban és az azt követő időtartamban (a kezelés hossza alapján) ne legyen másik foglalás. A metódus figyelembe veszi az orvos munkaidejét is, így csak az orvos által megadott munkaidőn belüli időpontokat jeleníti meg. Az eredmény egy JSON válasz, amely tartalmazza az elérhető időpontokat és azok elérhetőségét. Ez a válasz a frontend JavaScript kódjában kerül feldolgozásra, amely a felhasználó számára vizuálisan is megjeleníti a szabad időpontokat.
 	 
-	  \begin{figure}[!htbp]
+	  \begin{figure}[H]
 	 	\caption{A get\_avaliable\_slots metódus implementációja a views.py-ban}
 	 	\label{fig:getavaliableslots}
 	 	\centering
@@ -200,7 +200,7 @@ Ennek hatására a fizetési oldalon egy bankkártya, vagy egy PayPal fiókos fi
 
 A profil oldal mindhárom felhasználói jogosultságú felhasználó számára látható, viszont mindhárom típusú felhasználó számára más jelenik meg rajta. A "ProfileForm" mindenképp megjelenik, ezen tudja változtatni a felhasználó a felhasználónevét, az email címét, és a jelszavát. Ez a form szerkeszti a "RendeloUser" model-t. A "profile\_view" metódus a views.py fájlban az 5.5. ábrán látható módon vizsgálja meg a felhasználó jogosultságát, hogy ez alapján jelenítse meg a formokat a felhasználó számára. Ha a felhasználó "superuser", akkor semmit nem jelenít meg a "ProfileForm" után(a $patient\_form$ változó amúgy is none kezdőértékű), ha nem "superuser", hanem "staff", akkor ez azt jelenti, hogy egy orvos kattintott az oldalra, tehát lekéri azt a "Doctor" osztálypéldányt az adatbázisból, amelyiknek egyezik az azonosítója a bejelentkezett felhasználó azonosítójával, és a $doctor\_form$ változóba is lekéri az adott formot, és átadja neki a "Doctor" példányt, amit lekért. Ha pedig nem is "staff" a felhasználó, akkor a "Patient" példányt és formot kéri le hozzá.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 	\caption{A profile\_view metódus form kiválasztása}
 	\label{fig:profileviewformkivalasztas}
 	\centering
