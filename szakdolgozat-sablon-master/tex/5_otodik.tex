@@ -153,7 +153,7 @@ Ezután egy "div"-hez hozzá kellett adnom a "paypal-button-container" id-t, és
 			return actions.order.create({
 				purchase_units: [{
 					amount: {
-						value: '1',
+						value: '1', // Teszt osszeg
 						currency_code: 'HUF'
 					}
 				}]
@@ -174,22 +174,39 @@ Ezután egy "div"-hez hozzá kellett adnom a "paypal-button-container" id-t, és
 					})
 				}).then(response => {
 					if (response.ok) {
-						alert('A tranzakció sikeresen megtörtént: ' + details.payer.name.given_name);
+						alert('A tranzakcio sikeresen megtortent: ' + details.payer.name.given_name);
 						window.location.href = "{% url 'profile' %}";
 					} else {
-						alert('Hiba történt a fizetés során.');
+						alert('Hiba tortent a fizetes soran.');
 					}
 				}).catch(error => {
-					console.error('Hiba történt a fizetés során:', error);
-					alert('Hiba történt a fizetés során.');
+					console.error('Hiba tortent a fizetes soran:', error);
+					alert('Hiba tortent a fizetes soran.');
 				});
 			});
 		},
 		onError: function(err) {
 			console.error(err);
-			alert('Hiba történt a fizetés során.');
+			alert('Hiba tortent a fizetes soran.');
 		}
 	}).render('#paypal-button-container');
 	</script>
 	
 \end{lstlisting}
+
+Ennek hatására a fizetési oldalon egy bankkártya, vagy egy PayPal fiókos fizetési opció jelenik meg, amiből a felhasználó tud választani. Ha a fizetés sikeres, akkor az időponthoz tartozó "PaymentStatus"-nak az $is\_paid$ adattagját "true"-ra állítja, és a felhasználót átirányítja a Profil oldalra, ahol a lefoglalt időpontnál látszik a "Fizetve" felirat. Ha nem sikerült a fizetés akkor kiírja a hibaüzenetet, és nem állítja az $is\_paid$ adattagot "true"-ra.
+
+\section{A profil oldal}
+
+A profil oldal mindhárom felhasználói jogosultságú felhasználó számára látható, viszont mindhárom típusú felhasználó számára más jelenik meg rajta. A "ProfileForm" mindenképp megjelenik, ezen tudja változtatni a felhasználó a felhasználónevét, az email címét, és a jelszavát. Ez a form szerkeszti a "RendeloUser" model-t. A "profile\_view" metódus a views.py fájlban az 5.5. ábrán látható módon vizsgálja meg a felhasználó jogosultságát, hogy ez alapján jelenítse meg a formokat a felhasználó számára. Ha a felhasználó "superuser", akkor semmit nem jelenít meg a "ProfileForm" után(a $patient\_form$ változó amúgy is none kezdőértékű), ha nem "superuser", hanem "staff", akkor ez azt jelenti, hogy egy orvos kattintott az oldalra, tehát lekéri azt a "Doctor" osztálypéldányt az adatbázisból, amelyiknek egyezik az azonosítója a bejelentkezett felhasználó azonosítójával, és a $doctor\_form$ változóba is lekéri az adott formot, és átadja neki a "Doctor" példányt, amit lekért. Ha pedig nem is "staff" a felhasználó, akkor a "Patient" példányt és formot kéri le hozzá.
+
+\begin{figure}[!htbp]
+	\caption{A profile\_view metódus form kiválasztása}
+	\label{fig:profileviewformkivalasztas}
+	\centering
+	\includegraphics[width=1.0\textwidth]{profile_view_forms.png}
+\end{figure}
+
+A formok kitöltve jelennek meg a felhasználók adataival az oldalon, amiket változtathatnak és a formok után található "Mentés" gombbal a változtatásaik elmenthetők.\\
+
+"User" szintű felhasználó esetében megjelennek a formok után a felhasználó által lefoglalt időpontok is, dátum szerint csökkenő sorrendben. Az időpontok kattinthatók, ezek átvisznek az "edit\_appointment.html" "read only" nézetébe, ahol a felhasználó megtekintheti az adott időponthoz írt kezelés leírást, és az időpont adatait bővebben. Például hogy fizetve van-e, vagy hogy melyik orvoshoz lett foglalva. Az időpontok le is mondhatók a "Lemondás" gombbal a profil oldalon abban az esetben, ha dátum szerint legalább egy nappal későbbre lettek lefoglalva. Az időpont lemondásához megerősítést kér az oldal egy párbeszédablakban. Az időpont törlését a views.py fájlban található "cancel\_appointment" metódus végzi.
