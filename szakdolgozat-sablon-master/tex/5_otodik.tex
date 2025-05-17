@@ -1,4 +1,4 @@
-\chapter{"user" szintű felhasználói felületek, és azok működése}
+\chapter{User-szintű felhasználói felületek, és azok működése}
 \label{chap:fejezet5}
 
 A fogászati rendelő alkalmazás számos felülettel rendelkezik.
@@ -26,7 +26,7 @@ Az alkalmazásomban a regisztráció és bejelentkezés funkciók a Django beép
 
 \subsection{Regisztráció}
 
-A regisztráció során a felhasználó a "register.html" fájlban megvalósított oldalon létrehozhat egy új fiókot, amelyet a rendszer a "RendeloUser" model-ben tárol. A regisztrációs folyamat a következőképpen működik:
+A regisztráció során a felhasználó a "register.html" fájlban megvalósított oldalon létrehozhat egy új fiókot, amelyet a rendszer a "RendeloUser" modellben tárol. A regisztrációs folyamat a következőképpen működik:
 
 \begin{enumerate}
 	\item Amikor a felhasználó megnyitja a regisztrációs oldalt, a "register\_view" nézet megjeleníti a regisztrációs űrlapot. Az űrlap két részből áll: a "RegistrationForm" a felhasználói fiók alapvető adatait (például felhasználónév, email cím, jelszó) kezeli, míg a "PatientForm" a páciens adatait (például név, születési dátum) tartalmazza.
@@ -138,7 +138,7 @@ Az időpontfoglalás oldal az egyik legösszetettebb része az alkalmazásnak. A
 \section{A fizetési oldal}
 
 A fizetési oldal a "payment\_page.html" oldalon lett megvalósítva. A fizetéshez a tématervembe OTP Simple Pay fizetési rendszert írtam, viszont egy kis kutatás után a PayPal-t könnyebben beépíthetőbbnek, stabilabbnak, és jobban átláthatóbbnak találtam. Ezért inkább azt építettem be az alkalmazásba.\\
-A PayPal fizetés demózásához létre kellett hoznom egy sandbox PayPal fiókot, majd az azonosítómat használva importálnom kellett az oldalra egy JavaScriptet az alábbi módon: \\ \\
+A PayPal fizetés demózásához létre kellett hoznom egy sandbox PayPal fiókot, majd az azonosítómat használva importálnom kellett az oldalra egy JavaScriptet az alábbi módon: 
 
 \begin{lstlisting}[caption={A PayPal sandbox importja},label={lst:stringstartswith}, language={HTML}]
 <script src="https://www.paypal.com/sdk/js?client-id=Abw9kvI2SEa...&currency=HUF"></script>
@@ -198,7 +198,7 @@ Ennek hatására a fizetési oldalon egy bankkártya, vagy egy PayPal fiókos fi
 
 \section{A profil oldal}
 
-A profil oldal mindhárom felhasználói jogosultságú felhasználó számára látható, viszont mindhárom típusú felhasználó számára más jelenik meg rajta. A "ProfileForm" mindenképp megjelenik, ezen tudja változtatni a felhasználó a felhasználónevét, az email címét, és a jelszavát. Ez a form szerkeszti a "RendeloUser" model-t. A "profile\_view" metódus a views.py fájlban az 5.5. ábrán látható módon vizsgálja meg a felhasználó jogosultságát, hogy ez alapján jelenítse meg a formokat a felhasználó számára. Ha a felhasználó "superuser", akkor semmit nem jelenít meg a "ProfileForm" után(a $patient\_form$ változó amúgy is none kezdőértékű), ha nem "superuser", hanem "staff", akkor ez azt jelenti, hogy egy orvos kattintott az oldalra, tehát lekéri azt a "Doctor" osztálypéldányt az adatbázisból, amelyiknek egyezik az azonosítója a bejelentkezett felhasználó azonosítójával, és a $doctor\_form$ változóba is lekéri az adott formot, és átadja neki a "Doctor" példányt, amit lekért. Ha pedig nem is "staff" a felhasználó, akkor a "Patient" példányt és formot kéri le hozzá.
+A profil oldal mindhárom felhasználói jogosultságú felhasználó számára látható, viszont mindhárom típusú felhasználó számára más jelenik meg rajta. A "ProfileForm" mindenképp megjelenik, ezen tudja változtatni a felhasználó a felhasználónevét, az email címét, és a jelszavát. Ez a form szerkeszti a "RendeloUser" modellt. A "profile\_view" metódus a views.py fájlban az 5.5. ábrán látható módon vizsgálja meg a felhasználó jogosultságát, hogy ez alapján jelenítse meg a formokat a felhasználó számára. Ha a felhasználó "superuser", akkor semmit nem jelenít meg a "ProfileForm" után (a $patient\_form$ változó amúgy is none kezdőértékű), ha nem "superuser", hanem "staff", akkor ez azt jelenti, hogy egy orvos kattintott az oldalra, tehát lekéri azt a "Doctor" osztálypéldányt az adatbázisból, amelyiknek egyezik az azonosítója a bejelentkezett felhasználó azonosítójával, és a $doctor\_form$ változóba is lekéri az adott formot, és átadja neki a "Doctor" példányt, amit lekért. Ha pedig nem is "staff" a felhasználó, akkor a "Patient" példányt és formot kéri le hozzá.
 
 \begin{figure}[H]
 	\caption{A profile\_view metódus form kiválasztása}
@@ -207,6 +207,6 @@ A profil oldal mindhárom felhasználói jogosultságú felhasználó számára 
 	\includegraphics[width=1.0\textwidth]{profile_view_forms.png}
 \end{figure}
 
-A formok kitöltve jelennek meg a felhasználók adataival az oldalon, amiket változtathatnak és a formok után található "Mentés" gombbal a változtatásaik elmenthetők.\\
+A formok kitöltve jelennek meg a felhasználók adataival az oldalon, amiket változtathatnak és a formok után található "Mentés" gombbal a változtatásaik elmenthetők.
 
 "User" szintű felhasználó esetében megjelennek a formok után a felhasználó által lefoglalt időpontok is, dátum szerint csökkenő sorrendben. Az időpontok kattinthatók, ezek átvisznek az "edit\_appointment.html" "read only" nézetébe, ahol a felhasználó megtekintheti az adott időponthoz írt kezelés leírást, és az időpont adatait bővebben. Például hogy fizetve van-e, vagy hogy melyik orvoshoz lett foglalva. Az időpontok le is mondhatók a "Lemondás" gombbal a profil oldalon abban az esetben, ha dátum szerint legalább egy nappal későbbre lettek lefoglalva. Az időpont lemondásához megerősítést kér az oldal egy párbeszédablakban. Az időpont törlését a views.py fájlban található "cancel\_appointment" metódus végzi.

@@ -1,7 +1,7 @@
-\chapter{"staff" szintű felhasználói felületek, és azok működése}
+\chapter{Staff-szintű felhasználói felületek, és azok működése}
 \label{chap:fejezet6}
 
-Ahogy a korábbiakban már leírtam, az alkalmazásban a "Staff" felhasználói szint az orvosokat reprezentálja. Nekik lehetőségük van belenézni bármelyik páciens kezeléstörténetébe, és hozzáférnek a páciensek elérhetőségéhez is. Továbbá megadhatják a saját munkaidejüket, és megnézhetik a saját időpontjaikat dátumonként szűrve. Ugyanakkor időpontfoglaláshoz nincs joguk, nem is lenne lehetséges, mivel az orvosok fiókjaihoz nincs "Patient" példány rendelve.
+Ahogy a korábbiakban már leírtam, az alkalmazásban a Staff felhasználói szint az orvosokat reprezentálja. Nekik lehetőségük van belenézni bármelyik páciens kezeléstörténetébe, és hozzáférnek a páciensek elérhetőségéhez is. Továbbá megadhatják a saját munkaidejüket, és megnézhetik a saját időpontjaikat dátumonként szűrve. Ugyanakkor időpontfoglaláshoz nincs joguk, nem is lenne lehetséges, mivel az orvosok fiókjaihoz nincs "Patient" példány rendelve.
 
 \section{A "Páciensek" oldal}
 
@@ -47,7 +47,7 @@ Az orvos a munkaidejét ezen az oldalon állíthatja be. Az oldal a "working\_ho
 	\includegraphics[width=1.0\textwidth]{working_hours.png}
 \end{figure}
 
-Amikor a felhasználó ellátogat az oldalra és kiválaszt egy dátumot, akkor a 6.4. ábrán látható kép fogadja. A rendelő 8:00-20:00 között van nyitva, tehát ennél korábbi kezdést, vagy későbbi végzést nem lehet beállítani munkaidőnek. A kezdés és végzés ideje a + és - gombokkal növelhető, vagy csökkenthető. Egy kattintás 15 perccel növeli, vagy csökkenti a beviteli mezőben látható időt. A beviteli mező ezeken a gombokon kívül mással nem szerkeszthető. Ez azért van, hogy a felhasználó ne adhasson meg magának olyan kezdési, vagy végzési időpontot, ami nem "kerek", és az időpontfoglalási rendszert összezavarná. A munkaidőt beállítani, vagy a már beállítottat szerkeszteni a "Mentés" gombbal lehet. Ennek a hatására az alkalmazás elmenti a "WorkingHours" model-be az orvos munkaidejét. Abban az esetben, ha még a kiválasztott napra nincs megadva az adott orvosnak munkaidő, akkor megjelenik a képen látható üzenet is az oldalon.
+Amikor a felhasználó ellátogat az oldalra és kiválaszt egy dátumot, akkor a 6.4. ábrán látható kép fogadja. A rendelő 8:00-20:00 között van nyitva, tehát ennél korábbi kezdést, vagy későbbi végzést nem lehet beállítani munkaidőnek. A kezdés és végzés ideje a + és - gombokkal növelhető, vagy csökkenthető. Egy kattintás 15 perccel növeli, vagy csökkenti a beviteli mezőben látható időt. A beviteli mező ezeken a gombokon kívül mással nem szerkeszthető. Ez azért van, hogy a felhasználó ne adhasson meg magának olyan kezdési, vagy végzési időpontot, ami nem "kerek", és az időpontfoglalási rendszert összezavarná. A munkaidőt beállítani, vagy a már beállítottat szerkeszteni a "Mentés" gombbal lehet. Ennek a hatására az alkalmazás elmenti a "WorkingHours" modellbe az orvos munkaidejét. Abban az esetben, ha még a kiválasztott napra nincs megadva az adott orvosnak munkaidő, akkor megjelenik a képen látható üzenet is az oldalon.
 
 \section{Az orvosok Profil oldala}
 

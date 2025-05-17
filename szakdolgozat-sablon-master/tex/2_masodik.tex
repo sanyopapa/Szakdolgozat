@@ -13,12 +13,12 @@ A "rendelo" mappa a következő részekből áll:
 	\item Projekt főkönyvtára ("rendelo"): Itt találhatók a projekt globális beállításait és konfigurációs fájljait, mint például a settings.py, urls.py, wsgi.py és asgi.py. Ezek a fájlok felelősek az alkalmazás működésének alapvető paramétereinek meghatározásáért, az útvonalak kezeléséért és a szerverrel való kommunikációért.
 	\item Alkalmazás könyvtára ("rendeloweboldal"): Ez a rész tartalmazza a rendszer egyes moduljait, amelyek a következő fő komponensekből állnak:
 	\begin{itemize}
-		\item models.py: Az adatbázis szerkezetét definiáló model-ek, melyek meghatározzák a páciensek, orvosok, kezelések, időpontfoglalások és az időpont foglalások fizetési státuszának struktúráját.
+		\item models.py: Az adatbázis szerkezetét definiáló modellek, melyek meghatározzák a páciensek, orvosok, kezelések, időpontfoglalások és az időpont foglalások fizetési státuszának struktúráját.
 		\item views.py: A felhasználói kérések feldolgozásáért és az üzleti logika megvalósításáért felelős fájl, amely összeköti a modelleket a sablonokkal.
 		\item forms.py: Az űrlapok és azok validációs szabályainak definíciója, melyek révén az adatbevitel és ellenőrzés történik.
 		\item urls.py: Az alkalmazás specifikus URL-konfigurációja, amely a különböző view-k elérését biztosítja.
-		\item admin.py: A Django beépített adminisztrátori felület konfigurációját tartalmazza. Hozzá kell adni az összes model-t az adatbázisból, amit elérhetővé szeretnénk tenni rajta.
-		\item migrations/: Az adatbázis változásait követő migrációs fájlokat tartalmazza, dokumentálva a model-ek módosításait.
+		\item admin.py: A Django beépített adminisztrátori felület konfigurációját tartalmazza. Hozzá kell adni az összes modellt az adatbázisból, amit elérhetővé szeretnénk tenni rajta.
+		\item migrations/: Az adatbázis változásait követő migrációs fájlokat tartalmazza, dokumentálva a modellek módosításait.
 		\item static/ és templates/: A statikus fájlokat (CSS, JavaScript, és az alkalmazás designjához tartozó képek) illetve a HTML template-eket rendszerezi, amelyek a felhasználói felület megjelenítéséért felelősek.
 	\end{itemize}
 \end{itemize}
